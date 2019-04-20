@@ -153,6 +153,9 @@ public class IjkPlayer extends BaseInternalPlayer {
                 mMediaPlayer.setDataSource(RawDataSourceProvider.create(applicationContext, rawUri));
             }
 
+            mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 1);
+            mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-hevc", 1);
+
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setScreenOnWhilePlaying(true);
             mMediaPlayer.prepareAsync();

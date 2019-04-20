@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:screenOrientation="portrait"
+    tools:context=".MainPlayerActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/top"
+        android:orientation="horizontal">
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#000000"
+            android:layout_margin="1dp"
+            android:id="@+id/p1" />
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_margin="1dp"
+            android:background="#000000"
+            android:id="@+id/p2" />
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_margin="1dp"
+            android:background="#000000"
+            android:id="@+id/p3" />
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_margin="1dp"
+            android:background="#000000"
+            android:id="@+id/p4" />
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_margin="1dp"
+            android:background="#000000"
+            android:id="@+id/p5" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/bottom"
+        android:layout_alignParentBottom="true">
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#000000"
+            android:layout_margin="1dp"
+            android:id="@+id/p6" />
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#000000"
+            android:layout_margin="1dp"
+            android:id="@+id/p7" />
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#000000"
+            android:layout_margin="1dp"
+            android:id="@+id/p8" />
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#000000"
+            android:layout_margin="1dp"
+            android:id="@+id/p9" />
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#000000"
+            android:layout_margin="1dp"
+            android:id="@+id/p10" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/left"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/top"
+        android:layout_above="@+id/bottom"
+        android:orientation="vertical"
+        android:layout_alignParentLeft="true">
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#000000"
+            android:layout_margin="1dp"
+            android:id="@+id/p11" />
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#000000"
+            android:layout_margin="1dp"
+            android:id="@+id/p12" />
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#000000"
+            android:layout_margin="1dp"
+            android:id="@+id/p13" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/right"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/top"
+        android:layout_above="@+id/bottom"
+        android:orientation="vertical"
+        android:layout_alignParentRight="true">
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#000000"
+            android:layout_margin="1dp"
+            android:id="@+id/p14" />
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#000000"
+            android:layout_margin="1dp"
+            android:id="@+id/p15" />
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#000000"
+            android:layout_margin="1dp"
+            android:id="@+id/p16" />
+    </LinearLayout>
+
+    <com.kk.taurus.playerbase.widget.BaseVideoView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:layout_below="@+id/top"
+        android:layout_above="@+id/bottom"
+        android:layout_toRightOf="@+id/left"
+        android:layout_toLeftOf="@+id/right"
+        android:layout_weight="1"
+        android:layout_margin="1dp"
+        android:background="#000000"
+        android:id="@+id/p17" />
+</RelativeLayout>

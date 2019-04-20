@@ -7,13 +7,43 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <com.kk.taurus.playerbase.widget.BaseVideoView
-        android:id="@+id/videoView1"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_margin="2dp"
-        android:background="#000000"
-        />
+        android:layout_height="wrap_content">
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:id="@+id/videoView1"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_margin="2dp"
+            android:background="#000000"
+            />
+
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:id="@+id/videoView2"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_margin="2dp"
+            android:background="#000000"
+            android:layout_below="@+id/videoView1"
+            />
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:id="@+id/videoView3"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_margin="2dp"
+            android:background="#000000"
+            android:layout_below="@+id/videoView2"
+            />
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:id="@+id/videoView4"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_margin="2dp"
+            android:background="#000000"
+            android:layout_below="@+id/videoView3"
+            />
+    </RelativeLayout>
+
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -29,6 +59,11 @@
             android:text="stop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/newActivity"
+            android:text="startActivity"/>
     </LinearLayout>
 
 
