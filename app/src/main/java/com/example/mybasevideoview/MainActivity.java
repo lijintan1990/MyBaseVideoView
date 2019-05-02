@@ -1,116 +1,66 @@
 package com.example.mybasevideoview;
 
-import android.content.Intent;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 
-import com.kk.taurus.playerbase.assist.OnVideoViewEventHandler;
-import com.kk.taurus.playerbase.config.PlayerConfig;
-import com.kk.taurus.playerbase.entity.DataSource;
-import com.kk.taurus.playerbase.event.OnErrorEventListener;
-import com.kk.taurus.playerbase.event.OnPlayerEventListener;
-import com.kk.taurus.playerbase.receiver.OnReceiverEventListener;
-import com.kk.taurus.playerbase.widget.BaseVideoView;
-import com.squareup.haha.perflib.Main;
+import com.example.mybasevideoview.view.FirstPaperFragment;
+import com.example.mybasevideoview.view.XslAboutFragmet;
+import com.example.mybasevideoview.view.XslMainFragment;
+import com.next.easynavigation.view.EasyNavigationBar;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.ButterKnife;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    BaseVideoView videoView1;
-    BaseVideoView videoView2;
-    BaseVideoView videoView3;
-    BaseVideoView videoView4;
-    Button mStartBtn;
-    Button mStopBtn;
+public class MainActivity extends AppCompatActivity {
     Button mStartNewAtyBtn;
+    Button mButterKnifeBtn;
+    private String[] tabText = {"首页", "乡射礼", "关于"};
+    //未选中icon
+    private int[] normalIcon = {R.mipmap.index, R.mipmap.find, R.mipmap.message};
+    //选中时icon
+    private int[] selectIcon = {R.mipmap.index1, R.mipmap.find1, R.mipmap.message1};
+
+    private List<Fragment> fragments = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-        initUI();
-        setListenVideoView(videoView1);
-        setListenVideoView(videoView2);
-        setListenVideoView(videoView3);
-        setListenVideoView(videoView4);
+        //hideStausbar(true);
+        //ButterKnife.bind(this);
+        EasyNavigationBar navigationBar = findViewById(R.id.navigationBar);
 
-        PlayerConfig.setDefaultPlanId(CustomApp.PLAN_ID_EXO);
+        fragments.add(new FirstPaperFragment());
+        fragments.add(new XslMainFragment());
+        fragments.add(new XslAboutFragmet());
+
+        navigationBar.titleItems(tabText)
+                .normalIconItems(normalIcon)
+                .selectIconItems(selectIcon)
+                .fragmentList(fragments)
+                .canScroll(true)
+                .fragmentManager(getSupportFragmentManager())
+                .build();
     }
 
-    void initUI() {
-        videoView1 = (BaseVideoView)findViewById(R.id.videoView1);
-        videoView2 = (BaseVideoView)findViewById(R.id.videoView2);
-        videoView3 = (BaseVideoView)findViewById(R.id.videoView3);
-        videoView4 = (BaseVideoView)findViewById(R.id.videoView4);
-        mStartBtn = (Button)findViewById(R.id.start_btn);
-        mStopBtn = (Button)findViewById(R.id.stop_btn);
-        mStartNewAtyBtn = (Button)findViewById(R.id.newActivity);
-        mStopBtn.setOnClickListener(this);
-        mStartBtn.setOnClickListener(this);
-        mStartNewAtyBtn.setOnClickListener(this);
-    }
-
-    void setListenVideoView(BaseVideoView videoView) {
-
-        videoView.setOnPlayerEventListener(new OnPlayerEventListener() {
-            @Override
-            public void onPlayerEvent(int eventCode, Bundle bundle) {
-                //...
-            }
-        });
-        videoView.setOnReceiverEventListener(new OnReceiverEventListener() {
-            @Override
-            public void onReceiverEvent(int eventCode, Bundle bundle) {
-                //...
-            }
-        });
-        videoView.setOnErrorEventListener(new OnErrorEventListener() {
-            @Override
-            public void onErrorEvent(int eventCode, Bundle bundle) {
-                //...
-            }
-        });
-        videoView.setEventHandler(new OnVideoViewEventHandler(){
-            @Override
-            public void onAssistHandle(BaseVideoView assist, int eventCode, Bundle bundle) {
-                super.onAssistHandle(assist, eventCode, bundle);
-                //...
-            }
-        });
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.start_btn:
-                startPlay();
-                break;
-            case R.id.stop_btn:
-                stopPlay();
-                break;
-            case R.id.newActivity:
-                Intent intent = new Intent(MainActivity.this, MainPlayerActivity.class);
-                startActivity(intent);
-                break;
+    //true隐藏，false显示
+    private void hideStausbar(boolean enable) {
+        if (enable) {
+            WindowManager.LayoutParams attrs = getWindow().getAttributes();
+            attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+            getWindow().setAttributes(attrs);
+        } else {
+            WindowManager.LayoutParams attrs = getWindow().getAttributes();
+            attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
+            getWindow().setAttributes(attrs);
         }
-    }
-
-    void startPlay() {
-        videoView1.setDataSource(new DataSource("https://mov.bn.netease.com/open-movie/nos/mp4/2016/01/11/SBC46Q9DV_hd.mp4"));
-        videoView2.setDataSource(new DataSource("https://mov.bn.netease.com/open-movie/nos/mp4/2016/01/11/SBC46Q9DV_hd.mp4"));
-        videoView3.setDataSource(new DataSource("https://mov.bn.netease.com/open-movie/nos/mp4/2016/01/11/SBC46Q9DV_hd.mp4"));
-        videoView4.setDataSource(new DataSource("https://mov.bn.netease.com/open-movie/nos/mp4/2016/01/11/SBC46Q9DV_hd.mp4"));
-        videoView1.start();
-        videoView2.start();
-        videoView3.start();
-        videoView4.start();
-    }
-
-    void stopPlay() {
-        videoView1.stop();
-        videoView2.stop();
-        videoView3.stop();
-        videoView4.stop();
     }
 }
