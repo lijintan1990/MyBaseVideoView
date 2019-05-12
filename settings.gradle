@@ -1,1 +1,1 @@
-include ':app', ':playerbase', ':ijkplayer', ':exoplayer', ':easynavigition'
+include ':app', ':easynavigition'

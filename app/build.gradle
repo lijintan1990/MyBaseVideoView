@@ -40,13 +40,18 @@ dependencies {
     //releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
     //implementation project(path: ':playerbase')
     implementation files('libs/logtools.jar')
-    implementation project(path: ':exoplayer')
-    implementation project(path: ':ijkplayer')
+//    implementation project(path: ':exoplayer')
+//    implementation project(path: ':ijkplayer')
+//    implementation project(':playerbase')
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.9.1'
+    implementation 'com.google.android.exoplayer:exoplayer-dash:2.9.1'
+    implementation 'com.google.android.exoplayer:exoplayer-hls:2.9.1'
+    implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.9.1'
     implementation 'com.github.forvv231:EasyNavigation:1.0.2'
-    implementation "com.squareup.okhttp3:okhttp:3.10.0"
-    implementation "com.squareup.retrofit2:retrofit:2.4.0"
-    implementation "com.squareup.retrofit2:converter-gson:2.4.0"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:2.4.0"
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.4.0'
     //json解析
-    implementation"com.google.code.gson:gson:2.8.5"
+    implementation 'com.google.code.gson:gson:2.8.5'
 }

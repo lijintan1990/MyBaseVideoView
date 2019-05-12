@@ -52,9 +52,21 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:id="@+id/controller"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="pause"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/bottom"
-        android:layout_alignParentBottom="true">
+        android:layout_above="@+id/controller">
         <com.kk.taurus.playerbase.widget.BaseVideoView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -166,4 +178,6 @@
         android:layout_margin="1dp"
         android:background="#000000"
         android:id="@+id/p17" />
+
+
 </RelativeLayout>
