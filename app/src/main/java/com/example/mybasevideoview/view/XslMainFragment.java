@@ -25,6 +25,11 @@ public class XslMainFragment extends Fragment {
     @BindView(R.id.test_retrofit)
     public Button btnTestRetrofit;
 
+    @BindView(R.id.decor_view_btn)
+    public Button btnDecorView;
+
+    GuideViewUtil guideViewUtil;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -40,7 +45,7 @@ public class XslMainFragment extends Fragment {
         unbinder.unbind();
     }
 
-    @OnClick({R.id.start_players_btn, R.id.test_retrofit})
+    @OnClick({R.id.start_players_btn, R.id.test_retrofit, R.id.decor_view_btn})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.start_players_btn:
@@ -50,6 +55,11 @@ public class XslMainFragment extends Fragment {
             case R.id.test_retrofit:
                 Intent intent1 = new Intent(getContext(), ButterTestActivity.class);
                 startActivity(intent1);
+                break;
+            case R.id.decor_view_btn:
+                guideViewUtil = new GuideViewUtil(this.getActivity(), 0);
+                guideViewUtil.showGuide();
+                break;
         }
     }
 }

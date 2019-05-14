@@ -15,5 +15,11 @@
         android:layout_height="wrap_content"
         android:id="@+id/test_retrofit"
         android:text="测试Retrofit"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/decor_view_btn"
+        android:text="蒙版"
+        android:layout_margin="1dp"/>
 
 </LinearLayout>
