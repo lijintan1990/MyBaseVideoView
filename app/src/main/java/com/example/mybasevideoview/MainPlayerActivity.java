@@ -136,7 +136,7 @@ public class MainPlayerActivity extends Activity {
         BaseVideoView rightLinearLayout = (BaseVideoView)findViewById(R.id.p15);
         linearParams = (LinearLayout.LayoutParams)leftLinearLayout.getLayoutParams();
 
-        linearParams.width = (dm.widthPixels - convertDpToPixel(10))/5;
+        linearParams.width = (dm.widthPixels - convertDpToPixel(40))/5;
         leftLinearLayout.setLayoutParams(linearParams);
         rightLinearLayout.setLayoutParams(linearParams);
     }

@@ -9,9 +9,23 @@
     tools:context=".MainPlayerActivity">
 
     <LinearLayout
+        android:layout_width="30dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="visible"
+        android:id="@+id/rightButtons"
+        android:layout_alignParentRight="true">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="简介"/>
+
+    </LinearLayout>
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/top"
+        android:layout_toLeftOf="@+id/rightButtons"
         android:orientation="horizontal">
         <com.kk.taurus.playerbase.widget.BaseVideoView
             android:layout_width="match_parent"
@@ -109,6 +123,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/bottom"
+        android:layout_toLeftOf="@+id/rightButtons"
         android:layout_above="@+id/controller">
         <com.kk.taurus.playerbase.widget.BaseVideoView
             android:layout_width="match_parent"
@@ -185,7 +200,7 @@
         android:layout_below="@+id/top"
         android:layout_above="@+id/bottom"
         android:orientation="vertical"
-        android:layout_alignParentRight="true">
+        android:layout_toLeftOf="@+id/rightButtons">
         <com.kk.taurus.playerbase.widget.BaseVideoView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
