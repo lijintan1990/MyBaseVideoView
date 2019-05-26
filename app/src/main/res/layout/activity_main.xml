@@ -4,14 +4,60 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:launchMode="singleTask"
-    android:screenOrientation="portrait"
+    android:background="@color/black"
     tools:context=".MainActivity">
 
-    <com.next.easynavigation.view.EasyNavigationBar
+    <!--com.next.easynavigation.view.EasyNavigationBar
         android:id="@+id/navigationBar"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    </com.next.easynavigation.view.EasyNavigationBar>
+    </com.next.easynavigation.view.EasyNavigationBar-->
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.7"
+        android:orientation="vertical"
+        android:layout_marginLeft="34dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginVertical="30dp">
+
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="#000000"
+            android:layout_margin="1dp"
+            android:id="@+id/one" />
+
+        <include layout="@layout/layout_progress"></include>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.3"
+        android:background="@color/black"
+        android:orientation="vertical"
+        android:layout_marginVertical="30dp"
+        android:layout_marginRight="36dp">
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:layout_marginBottom="10dp"
+            android:background="#000000"
+            android:id="@+id/subMovie" />
+
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:background="#000000"
+            android:id="@+id/wholeMovie" />
+    </LinearLayout>
+
 </LinearLayout>

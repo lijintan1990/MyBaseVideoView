@@ -18,12 +18,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".ButterTestActivity"></activity>
-        <activity android:name=".MainPlayerActivity" />
-        <activity android:name=".MainActivity"
-            android:screenOrientation="portrait">
+        <activity android:name=".SubFilmActivity"></activity>
+        <!-- android:theme="@android:style/Theme.Translucent" 设置activity透明! -->
+        <activity
+            android:name=".view.langugueActivity"
+            android:theme="@style/translucent" />
+        <activity android:name=".ButterTestActivity" />
+        <activity
+            android:name=".MainPlayerActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

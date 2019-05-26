@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context=".view.langugueActivity">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true">
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/chinese_btn"
+            android:background="@drawable/xsl_langugue_btn_color"
+            android:drawableLeft="@drawable/xsl_langugue"
+            android:gravity="center_vertical"
+            android:paddingLeft="20dp"
+            android:text="中文"/>
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/cantonese_btn"
+            android:background="@drawable/xsl_langugue_btn_color"
+            android:text="粤语"/>
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/english_btn"
+            android:background="@drawable/xsl_langugue_btn_color"
+            android:text="ENGLISH"/>
+    </LinearLayout>
+
+
+</RelativeLayout>

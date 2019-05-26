@@ -18,6 +18,4 @@ public class XslAboutFragmet extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_xls_about_fragmet, container, false);
     }
-
-
 }

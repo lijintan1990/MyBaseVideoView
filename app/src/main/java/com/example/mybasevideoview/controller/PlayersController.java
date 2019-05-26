@@ -76,14 +76,7 @@ public class PlayersController extends Thread{
                     }
                     continue;
                 }
-                if (playCtrlEventListener == null) {
-                    try {
-                        Thread.sleep(20);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    continue;
-                }
+
                 //getCurrentPosition获取的是微妙
                 if (playData.getStartTime() >  currentPlayTime) {
                     continue;
@@ -94,40 +87,47 @@ public class PlayersController extends Thread{
                     playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL, playData.getIndex(), playData.getCameraId(), OnPlayCtrlEventListener.CENTER_NONE);
                 }
             }
-
-            // 轮询中间窗口播放逻辑
-            if (curMainPlayer != null) {
-                continue;
-            }
-            //中间没有播放的，优先选择第三个进行播放
-            for (int index=2; index < 16; index++) {
-                if (videoViewList.get(index).isPlaying()) {
-                    playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL,
-                            videoViewList.get(index).getmIndexInPlayDataLst(),
-                            index, OnPlayCtrlEventListener.CENTER_FULL);
-                    curMainPlayer = listWeakReference.get().get(videoViewList.get(index).getmIndexInPlayDataLst());
-                    break;
-                }
-            }
-
-            //继续轮询
-            if (curMainPlayer == null) {
-                for (int index=0; index!=2; index++) {
-                    if (videoViewList.get(index).isPlaying()) {
-                        playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL,
-                                videoViewList.get(index).getmIndexInPlayDataLst(),
-                                index, OnPlayCtrlEventListener.CENTER_FULL);
-                        curMainPlayer = listWeakReference.get().get(videoViewList.get(index).getmIndexInPlayDataLst());
-                        break;
-                    }
-                }
-            }
-
+//测试代码
             try {
-                Thread.sleep(20);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+continue;
+//结束测试的代码
+            // 轮询中间窗口播放逻辑
+//            if (curMainPlayer != null) {
+//                continue;
+//            }
+//            //中间没有播放的，优先选择第三个进行播放
+//            for (int index=2; index < 16; index++) {
+//                if (videoViewList.get(index).isPlaying()) {
+//                    playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL,
+//                            videoViewList.get(index).getmIndexInPlayDataLst(),
+//                            index, OnPlayCtrlEventListener.CENTER_FULL);
+//                    curMainPlayer = listWeakReference.get().get(videoViewList.get(index).getmIndexInPlayDataLst());
+//                    break;
+//                }
+//            }
+//
+//            //继续轮询
+//            if (curMainPlayer == null) {
+//                for (int index=0; index!=2; index++) {
+//                    if (videoViewList.get(index).isPlaying()) {
+//                        playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL,
+//                                videoViewList.get(index).getmIndexInPlayDataLst(),
+//                                index, OnPlayCtrlEventListener.CENTER_FULL);
+//                        curMainPlayer = listWeakReference.get().get(videoViewList.get(index).getmIndexInPlayDataLst());
+//                        break;
+//                    }
+//                }
+//            }
+//
+//            try {
+//                Thread.sleep(20);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
         }
     }
 }

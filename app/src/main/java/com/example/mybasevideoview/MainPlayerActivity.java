@@ -1,6 +1,7 @@
 package com.example.mybasevideoview;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Build;
@@ -11,6 +12,9 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.example.mybasevideoview.controller.OnPlayCtrlEventListener;
@@ -22,6 +26,8 @@ import com.example.mybasevideoview.cover.LoadingCover;
 import com.example.mybasevideoview.model.PlayData;
 import com.example.mybasevideoview.play.DataInter;
 
+import com.example.mybasevideoview.utils.XslUtils;
+import com.example.mybasevideoview.view.langugueActivity;
 import com.kk.taurus.playerbase.assist.InterEvent;
 import com.kk.taurus.playerbase.assist.OnVideoViewEventHandler;
 import com.kk.taurus.playerbase.entity.DataSource;
@@ -46,6 +52,8 @@ public class MainPlayerActivity extends Activity {
     PlayControlHandler playControlHandler = null;
     ArrayList<PlayData> playDataList = null;
 
+    Button appliances = null;
+    ImageButton langugueBtn = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +63,29 @@ public class MainPlayerActivity extends Activity {
             //getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);//设置固定状态栏常驻，不覆盖app布局
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);////设置固定状态栏常驻，覆盖app布局
             getWindow().setStatusBarColor(Color.parseColor("#000000"));//设置状态栏颜色
-            hideStausbar(true);
+            XslUtils.hideStausbar(new WeakReference<Activity>(this), true);
+
+            appliances = (Button) findViewById(R.id.appliances);
+            appliances.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i(TAG, "click imageview");
+                    //appliances.setSelected(true);
+                    if (appliances.isSelected())
+                        appliances.setSelected(false);
+                    else
+                        appliances.setSelected(true);
+                }
+            });
+
+            langugueBtn = (ImageButton) findViewById(R.id.langugue_activity_btn);
+            langugueBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(MainPlayerActivity.this, langugueActivity.class);
+                    startActivity(intent);
+                }
+            });
         }
     }
 
@@ -74,10 +104,6 @@ public class MainPlayerActivity extends Activity {
         videoViewArrayList.add((BaseVideoView)findViewById(R.id.p11));
         videoViewArrayList.add((BaseVideoView)findViewById(R.id.p12));
         videoViewArrayList.add((BaseVideoView)findViewById(R.id.p13));
-        videoViewArrayList.add((BaseVideoView)findViewById(R.id.p14));
-        videoViewArrayList.add((BaseVideoView)findViewById(R.id.p15));
-        videoViewArrayList.add((BaseVideoView)findViewById(R.id.p16));
-        videoViewArrayList.add((BaseVideoView)findViewById(R.id.p17));
 
 //        ReceiverGroup receiverGroup = new ReceiverGroup();
 //        receiverGroup.addReceiver(DataInter.ReceiverKey.KEY_LOADING_COVER, new LoadingCover(this));
@@ -124,21 +150,23 @@ public class MainPlayerActivity extends Activity {
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         System.out.println("width-display :" + dm.widthPixels);
         System.out.println("heigth-display :" + dm.heightPixels);
+        //设置顶层和底层的播放空间的高度
+        BaseVideoView p1 = (BaseVideoView)findViewById(R.id.p1);
+        BaseVideoView p8 = (BaseVideoView)findViewById(R.id.p8);
 
-        BaseVideoView topLinearLayout = (BaseVideoView) findViewById(R.id.p1);
-        BaseVideoView bottomLinearLayout = (BaseVideoView)findViewById(R.id.p6);
-        LinearLayout.LayoutParams linearParams = (LinearLayout.LayoutParams)topLinearLayout.getLayoutParams();
+        LinearLayout.LayoutParams linearParams = (LinearLayout.LayoutParams)p1.getLayoutParams();
         linearParams.height = (dm.heightPixels - 20)/5;
-        topLinearLayout.setLayoutParams(linearParams);
-        bottomLinearLayout.setLayoutParams(linearParams);
+        p1.setLayoutParams(linearParams);
+        p8.setLayoutParams(linearParams);
 
-        BaseVideoView leftLinearLayout = (BaseVideoView) findViewById(R.id.p11);
-        BaseVideoView rightLinearLayout = (BaseVideoView)findViewById(R.id.p15);
-        linearParams = (LinearLayout.LayoutParams)leftLinearLayout.getLayoutParams();
+        //设置左边和右边播放控件的宽度
+        BaseVideoView p11 = (BaseVideoView) findViewById(R.id.p11);
+        BaseVideoView p5 = (BaseVideoView)findViewById(R.id.p5);
+        linearParams = (LinearLayout.LayoutParams)p11.getLayoutParams();
 
-        linearParams.width = (dm.widthPixels - convertDpToPixel(40))/5;
-        leftLinearLayout.setLayoutParams(linearParams);
-        rightLinearLayout.setLayoutParams(linearParams);
+        linearParams.width = (dm.widthPixels - convertDpToPixel(60))/5;
+        p11.setLayoutParams(linearParams);
+        p5.setLayoutParams(linearParams);
     }
 
     private int convertDpToPixel(int dp) {
@@ -164,19 +192,6 @@ public class MainPlayerActivity extends Activity {
         }
         Log.e("-------", "状态栏-方法1:" + statusBarHeight1);
         return statusBarHeight1;
-    }
-
-    //true隐藏，false显示
-    private void hideStausbar(boolean enable) {
-        if (enable) {
-            WindowManager.LayoutParams attrs = getWindow().getAttributes();
-            attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
-            getWindow().setAttributes(attrs);
-        } else {
-            WindowManager.LayoutParams attrs = getWindow().getAttributes();
-            attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
-            getWindow().setAttributes(attrs);
-        }
     }
 
     void setListenVideoView(BaseVideoView videoView) {
@@ -235,8 +250,6 @@ public class MainPlayerActivity extends Activity {
          */
         if(getRequestedOrientation()!= ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE){
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        } else {
-
             reLayout();
             init();
         }
@@ -254,6 +267,11 @@ public class MainPlayerActivity extends Activity {
         super.onStop();
 //        if (videoViewArrayList.get(17) != null)
 //            videoViewArrayList.get(17).stopPlayback();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     public static class PlayControlHandler extends Handler {
