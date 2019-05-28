@@ -30,32 +30,34 @@
             android:layout_height="wrap_content"
             android:id="@+id/top"
             android:layout_alignParentTop="true"
+            android:layout_marginBottom="1dp"
             android:orientation="horizontal">
             <View
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:layout_marginRight="1dp"
                 android:background="#000000"/>
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#000000"
-                android:layout_margin="1dp"
+                android:layout_marginRight="1dp"
                 android:id="@+id/p1" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_margin="1dp"
                 android:background="#000000"
+                android:layout_marginRight="1dp"
                 android:id="@+id/p2" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_margin="1dp"
                 android:background="#000000"
+                android:layout_marginRight="1dp"
                 android:id="@+id/p3" />
             <View
                 android:layout_width="match_parent"
@@ -123,32 +125,34 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/bottom"
+            android:layout_marginTop="1dp"
             android:layout_above="@+id/controller">
             <View
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:layout_marginRight="1dp"
                 android:background="#000000"/>
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#000000"
-                android:layout_margin="1dp"
+                android:layout_marginRight="1dp"
                 android:id="@+id/p9" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#000000"
-                android:layout_margin="1dp"
+                android:layout_marginRight="1dp"
                 android:id="@+id/p8" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#000000"
-                android:layout_margin="1dp"
+                android:layout_marginRight="1dp"
                 android:id="@+id/p7" />
             <View
                 android:layout_width="match_parent"
@@ -163,6 +167,7 @@
             android:layout_height="match_parent"
             android:layout_below="@+id/top"
             android:layout_above="@+id/bottom"
+            android:layout_marginRight="1dp"
             android:orientation="vertical"
             android:layout_alignParentLeft="true">
             <com.kk.taurus.playerbase.widget.BaseVideoView
@@ -170,21 +175,20 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#000000"
-                android:layout_margin="1dp"
+                android:layout_marginBottom="1dp"
                 android:id="@+id/p12" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#000000"
-                android:layout_margin="1dp"
+                android:layout_marginBottom="1dp"
                 android:id="@+id/p11" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#000000"
-                android:layout_margin="1dp"
                 android:id="@+id/p10" />
         </LinearLayout>
 
@@ -195,27 +199,27 @@
             android:layout_below="@+id/top"
             android:layout_above="@+id/bottom"
             android:layout_alignParentRight="true"
+            android:layout_marginLeft="1dp"
             android:orientation="vertical">
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#000000"
-                android:layout_margin="1dp"
+                android:layout_marginBottom="1dp"
                 android:id="@+id/p4" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#000000"
-                android:layout_margin="1dp"
+                android:layout_marginBottom="1dp"
                 android:id="@+id/p5" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="#000000"
-                android:layout_margin="1dp"
                 android:id="@+id/p6" />
         </LinearLayout>
 
@@ -227,8 +231,6 @@
             android:layout_above="@+id/bottom"
             android:layout_toRightOf="@+id/left"
             android:layout_toLeftOf="@+id/right"
-            android:layout_weight="1"
-            android:layout_margin="1dp"
             android:background="#000000"
             android:id="@+id/p13" />
     </RelativeLayout>

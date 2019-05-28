@@ -104,6 +104,9 @@ public class MainPlayerActivity extends Activity {
         videoViewArrayList.add((BaseVideoView)findViewById(R.id.p11));
         videoViewArrayList.add((BaseVideoView)findViewById(R.id.p12));
         videoViewArrayList.add((BaseVideoView)findViewById(R.id.p13));
+        for (int i=0; i!= 12; i++) {
+            videoViewArrayList.get(i).setElevationShadow(Color.BLACK, 1.0f);
+        }
 
 //        ReceiverGroup receiverGroup = new ReceiverGroup();
 //        receiverGroup.addReceiver(DataInter.ReceiverKey.KEY_LOADING_COVER, new LoadingCover(this));
@@ -151,8 +154,8 @@ public class MainPlayerActivity extends Activity {
         System.out.println("width-display :" + dm.widthPixels);
         System.out.println("heigth-display :" + dm.heightPixels);
         //设置顶层和底层的播放空间的高度
-        BaseVideoView p1 = (BaseVideoView)findViewById(R.id.p1);
-        BaseVideoView p8 = (BaseVideoView)findViewById(R.id.p8);
+        BaseVideoView p1 = findViewById(R.id.p1);
+        BaseVideoView p8 = findViewById(R.id.p8);
 
         LinearLayout.LayoutParams linearParams = (LinearLayout.LayoutParams)p1.getLayoutParams();
         linearParams.height = (dm.heightPixels - 20)/5;
@@ -160,12 +163,15 @@ public class MainPlayerActivity extends Activity {
         p8.setLayoutParams(linearParams);
 
         //设置左边和右边播放控件的宽度
-        BaseVideoView p11 = (BaseVideoView) findViewById(R.id.p11);
-        BaseVideoView p5 = (BaseVideoView)findViewById(R.id.p5);
+        BaseVideoView p11 = findViewById(R.id.p11);
+        BaseVideoView p5 = findViewById(R.id.p5);
         linearParams = (LinearLayout.LayoutParams)p11.getLayoutParams();
-
-        linearParams.width = (dm.widthPixels - convertDpToPixel(60))/5;
+        //60是左边返回控件30dp和右边介绍按钮30dp
+        linearParams.width = (dm.widthPixels - convertDpToPixel(60))/5 - convertDpToPixel(1);
         p11.setLayoutParams(linearParams);
+
+        linearParams = (LinearLayout.LayoutParams)p5.getLayoutParams();
+        linearParams.width = (dm.widthPixels - convertDpToPixel(60))/5;
         p5.setLayoutParams(linearParams);
     }
 
