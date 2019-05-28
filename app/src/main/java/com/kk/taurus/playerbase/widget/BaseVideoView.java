@@ -17,6 +17,9 @@
 package com.kk.taurus.playerbase.widget;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.media.AudioManager;
 import android.os.Build;
@@ -82,6 +85,7 @@ public class BaseVideoView extends FrameLayout implements IVideoView, IStyleSett
     private int mVideoSarNum;
     private int mVideoSarDen;
     private int mVideoRotation;
+    private Paint mVideoBoardPaint = null;
     // 播放的playData在playDataList中的位置
     private int mIndexInPlayDataLst;
 
@@ -105,6 +109,7 @@ public class BaseVideoView extends FrameLayout implements IVideoView, IStyleSett
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr) {
+        initPaint();
         mPlayer = createPlayer();
         //attach listener
         mPlayer.setOnPlayerEventListener(mInternalPlayerEventListener);
@@ -572,6 +577,32 @@ public class BaseVideoView extends FrameLayout implements IVideoView, IStyleSett
     };
 
     //----------------------------set video view style--------------------------
+    private boolean mOpenBoard = false;
+    private int mBoardColor = Color.BLACK;
+    public void setBoardColor(int color, boolean openBoard) {
+        mOpenBoard = openBoard;
+        mBoardColor = color;
+        initPaint();
+    }
+
+    void initPaint() {
+        mVideoBoardPaint = new Paint();
+        mVideoBoardPaint.setStrokeWidth(2);
+        mVideoBoardPaint.setColor(mBoardColor);
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        if (mOpenBoard) {
+            canvas.drawLine(0, 0, this.getWidth(), 0, mVideoBoardPaint);
+            canvas.drawLine(0, 0, 0, this.getHeight(), mVideoBoardPaint);
+            canvas.drawLine(this.getWidth(), 0, this.getWidth(), this.getHeight(), mVideoBoardPaint);
+            canvas.drawLine(0, this.getHeight(), this.getWidth(), this.getHeight(), mVideoBoardPaint);
+            canvas.save();
+        }
+
+        super.onDraw(canvas);
+    }
 
     @Override
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)

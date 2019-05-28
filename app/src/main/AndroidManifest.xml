@@ -18,8 +18,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".SubFilmActivity"></activity>
-        <!-- android:theme="@android:style/Theme.Translucent" 设置activity透明! -->
+        <activity
+            android:name=".view.TransactActivity"
+            android:theme="@style/translucent">
+        </activity>
+        <activity android:name=".SubFilmActivity" /> <!-- android:theme="@android:style/Theme.Translucent" 设置activity透明! -->
         <activity
             android:name=".view.langugueActivity"
             android:theme="@style/translucent" />

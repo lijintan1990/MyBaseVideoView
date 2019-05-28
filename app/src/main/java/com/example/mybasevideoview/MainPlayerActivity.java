@@ -27,6 +27,7 @@ import com.example.mybasevideoview.model.PlayData;
 import com.example.mybasevideoview.play.DataInter;
 
 import com.example.mybasevideoview.utils.XslUtils;
+import com.example.mybasevideoview.view.TransactActivity;
 import com.example.mybasevideoview.view.langugueActivity;
 import com.kk.taurus.playerbase.assist.InterEvent;
 import com.kk.taurus.playerbase.assist.OnVideoViewEventHandler;
@@ -104,9 +105,9 @@ public class MainPlayerActivity extends Activity {
         videoViewArrayList.add((BaseVideoView)findViewById(R.id.p11));
         videoViewArrayList.add((BaseVideoView)findViewById(R.id.p12));
         videoViewArrayList.add((BaseVideoView)findViewById(R.id.p13));
-        for (int i=0; i!= 12; i++) {
-            videoViewArrayList.get(i).setElevationShadow(Color.BLACK, 1.0f);
-        }
+
+        //测试边框
+        videoViewArrayList.get(1).setBoardColor(Color.RED, true);
 
 //        ReceiverGroup receiverGroup = new ReceiverGroup();
 //        receiverGroup.addReceiver(DataInter.ReceiverKey.KEY_LOADING_COVER, new LoadingCover(this));
@@ -258,6 +259,12 @@ public class MainPlayerActivity extends Activity {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             reLayout();
             init();
+        }
+
+        boolean bShowTranslucentActivity = true;
+        if (bShowTranslucentActivity) {
+            Intent intent = new Intent(MainPlayerActivity.this, TransactActivity.class);
+            startActivity(intent);
         }
 
         super.onResume();

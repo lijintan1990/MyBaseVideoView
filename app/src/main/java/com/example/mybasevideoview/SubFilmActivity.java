@@ -14,6 +14,6 @@ public class SubFilmActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sub_film);
-        XslUtils.hideStausbar(new WeakReference<Activity>(this), true);
+        XslUtils.hideStausbar(new WeakReference<>(this), true);
     }
 }

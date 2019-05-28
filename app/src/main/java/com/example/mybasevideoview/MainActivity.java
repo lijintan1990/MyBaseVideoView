@@ -1,6 +1,7 @@
 package com.example.mybasevideoview;
 
 //import android.support.v4.app.Fragment;
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
+import com.example.mybasevideoview.utils.XslUtils;
 import com.kk.taurus.playerbase.widget.BaseVideoView;
 //import android.widget.Button;
 //
@@ -21,6 +23,8 @@ import com.kk.taurus.playerbase.widget.BaseVideoView;
 //import java.util.ArrayList;
 //import java.util.List;
 //
+import java.lang.ref.WeakReference;
+
 import butterknife.ButterKnife;
 
 
@@ -41,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-        hideStausbar(true);
+        XslUtils.hideStausbar(new WeakReference<>(this), true);
         //ButterKnife.bind(this);
 //        EasyNavigationBar navigationBar = findViewById(R.id.navigationBar);
 //        fragments.add(new FirstPaperFragment());
@@ -84,18 +88,5 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-    }
-
-    //true隐藏，false显示
-    private void hideStausbar(boolean enable) {
-        if (enable) {
-            WindowManager.LayoutParams attrs = getWindow().getAttributes();
-            attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
-            getWindow().setAttributes(attrs);
-        } else {
-            WindowManager.LayoutParams attrs = getWindow().getAttributes();
-            attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
-            getWindow().setAttributes(attrs);
-        }
     }
 }
