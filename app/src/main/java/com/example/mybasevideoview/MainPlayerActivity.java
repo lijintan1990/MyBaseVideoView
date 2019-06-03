@@ -27,6 +27,7 @@ import com.example.mybasevideoview.model.PlayData;
 import com.example.mybasevideoview.play.DataInter;
 
 import com.example.mybasevideoview.utils.XslUtils;
+import com.example.mybasevideoview.view.ChapterActivity;
 import com.example.mybasevideoview.view.TransactActivity;
 import com.example.mybasevideoview.view.langugueActivity;
 import com.kk.taurus.playerbase.assist.InterEvent;
@@ -40,8 +41,11 @@ import com.kk.taurus.playerbase.widget.BaseVideoView;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
+
+import butterknife.BindViews;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MainPlayerActivity extends Activity {
     private static final String TAG = "MainPlayerActivity";
@@ -53,41 +57,109 @@ public class MainPlayerActivity extends Activity {
     PlayControlHandler playControlHandler = null;
     ArrayList<PlayData> playDataList = null;
 
-    Button appliances = null;
+    ImageButton appliances = null;
     ImageButton langugueBtn = null;
+    boolean mNeedStartTransactAty = true;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_player);
+        ButterKnife.bind(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             //getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);//设置固定状态栏常驻，不覆盖app布局
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);////设置固定状态栏常驻，覆盖app布局
             getWindow().setStatusBarColor(Color.parseColor("#000000"));//设置状态栏颜色
             XslUtils.hideStausbar(new WeakReference<Activity>(this), true);
-
-            appliances = (Button) findViewById(R.id.appliances);
-            appliances.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.i(TAG, "click imageview");
-                    //appliances.setSelected(true);
-                    if (appliances.isSelected())
-                        appliances.setSelected(false);
-                    else
-                        appliances.setSelected(true);
-                }
-            });
-
-            langugueBtn = (ImageButton) findViewById(R.id.langugue_activity_btn);
-            langugueBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(MainPlayerActivity.this, langugueActivity.class);
-                    startActivity(intent);
-                }
-            });
         }
+
+        if (mNeedStartTransactAty) {
+            Log.d(TAG, "start transactActivity");
+            createActivity(TransactActivity.class, 1);
+        }
+    }
+
+    @BindViews({R.id.about_btn, R.id.langugue_btn, R.id.appliances_btn, R.id.action_btn, R.id.chapter_btn, R.id.word_btn})
+    List<ImageButton> buttonList;
+
+    @OnClick({R.id.about_btn, R.id.langugue_btn, R.id.appliances_btn, R.id.action_btn, R.id.chapter_btn, R.id.word_btn})
+    void buttonClick(View view) {
+        switch (view.getId()) {
+            case R.id.about_btn:
+                buttonList.get(0);
+                break;
+            case R.id.action_btn:
+                break;
+            case R.id.appliances_btn:
+                if (buttonList.get(2).isSelected()) {
+                    buttonList.get(2).setSelected(false);
+                } else {
+                    buttonList.get(2).setSelected(true);
+                }
+                break;
+            case R.id.chapter_btn:
+                if (buttonList.get(4).isSelected()) {
+                    buttonList.get(4).setSelected(false);
+                } else {
+                    buttonList.get(4).setSelected(true);
+                }
+                createActivity(ChapterActivity.class, 4);
+                break;
+            case R.id.word_btn:
+                break;
+            case R.id.langugue_btn:
+                if (buttonList.get(1).isSelected()) {
+                    buttonList.get(1).setSelected(false);
+                } else {
+                    buttonList.get(1).setSelected(true);
+                }
+                createActivity(langugueActivity.class, 1);
+                break;
+        }
+    }
+
+    void createActivity(Class<?> cls, int requestCode) {
+        Intent intent = new Intent(MainPlayerActivity.this, cls);
+        startActivityForResult(intent, requestCode);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            mNeedStartTransactAty = false;
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        /**
+         * 设置为横屏
+         */
+        if(getRequestedOrientation()!= ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE){
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            reLayout();
+            init();
+        }
+
+        super.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        closeAllPlayers();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     void init() {
@@ -107,7 +179,7 @@ public class MainPlayerActivity extends Activity {
         videoViewArrayList.add((BaseVideoView)findViewById(R.id.p13));
 
         //测试边框
-        videoViewArrayList.get(1).setBoardColor(Color.RED, true);
+        videoViewArrayList.get(0).setBoardColor(Color.RED, true);
 
 //        ReceiverGroup receiverGroup = new ReceiverGroup();
 //        receiverGroup.addReceiver(DataInter.ReceiverKey.KEY_LOADING_COVER, new LoadingCover(this));
@@ -149,6 +221,15 @@ public class MainPlayerActivity extends Activity {
         playersController.start();
     }
 
+    void closeAllPlayers() {
+        playersController.stopController();
+
+        for (BaseVideoView videoView : videoViewArrayList) {
+            videoView.stop();
+            videoView.stopPlayback();
+        }
+    }
+
     void reLayout() {
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -167,8 +248,8 @@ public class MainPlayerActivity extends Activity {
         BaseVideoView p11 = findViewById(R.id.p11);
         BaseVideoView p5 = findViewById(R.id.p5);
         linearParams = (LinearLayout.LayoutParams)p11.getLayoutParams();
-        //60是左边返回控件30dp和右边介绍按钮30dp
-        linearParams.width = (dm.widthPixels - convertDpToPixel(60))/5 - convertDpToPixel(1);
+        //28+20+10是左边返回控件64dp和右边介绍按钮30dp + 20dp
+        linearParams.width = (dm.widthPixels - convertDpToPixel(108))/5 - convertDpToPixel(1);
         p11.setLayoutParams(linearParams);
 
         linearParams = (LinearLayout.LayoutParams)p5.getLayoutParams();
@@ -250,42 +331,6 @@ public class MainPlayerActivity extends Activity {
         });
     }
 
-    @Override
-    protected void onResume() {
-        /**
-         * 设置为横屏
-         */
-        if(getRequestedOrientation()!= ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE){
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            reLayout();
-            init();
-        }
-
-        boolean bShowTranslucentActivity = true;
-        if (bShowTranslucentActivity) {
-            Intent intent = new Intent(MainPlayerActivity.this, TransactActivity.class);
-            startActivity(intent);
-        }
-
-        super.onResume();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-//        if (videoViewArrayList.get(17) != null)
-//            videoViewArrayList.get(17).stopPlayback();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
 
     public static class PlayControlHandler extends Handler {
         WeakReference<ArrayList<BaseVideoView>> videoViewLst;

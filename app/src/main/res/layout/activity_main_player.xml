@@ -5,16 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:background="#0000ff"
+    android:background="#000000"
     tools:context=".MainPlayerActivity">
 
     <LinearLayout
-        android:layout_width="30dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:id="@+id/left_layout">
         <Button
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginVertical="20dp"
+            android:layout_marginRight="10dp"
             android:background="@mipmap/back"
             android:id="@+id/back_btn"/>
     </LinearLayout>
@@ -42,7 +45,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="#000000"
+                android:background="@drawable/xsl_video_shape"
                 android:layout_marginRight="1dp"
                 android:clickable="true"
                 android:id="@+id/p1" />
@@ -50,14 +53,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="#000000"
+                android:background="@drawable/xsl_video_shape"
                 android:layout_marginRight="1dp"
                 android:id="@+id/p2" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="#000000"
+                android:background="@drawable/xsl_video_shape"
                 android:layout_marginRight="1dp"
                 android:id="@+id/p3" />
             <View
@@ -138,21 +141,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="#000000"
+                android:background="@drawable/xsl_video_shape"
                 android:layout_marginRight="1dp"
                 android:id="@+id/p9" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="#000000"
+                android:background="@drawable/xsl_video_shape"
                 android:layout_marginRight="1dp"
                 android:id="@+id/p8" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="#000000"
+                android:background="@drawable/xsl_video_shape"
                 android:layout_marginRight="1dp"
                 android:id="@+id/p7" />
             <View
@@ -175,21 +178,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="#000000"
+                android:background="@drawable/xsl_video_shape"
                 android:layout_marginBottom="1dp"
                 android:id="@+id/p12" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="#000000"
+                android:background="@drawable/xsl_video_shape"
                 android:layout_marginBottom="1dp"
                 android:id="@+id/p11" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="#000000"
+                android:background="@drawable/xsl_video_shape"
                 android:id="@+id/p10" />
         </LinearLayout>
 
@@ -206,21 +209,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="#000000"
+                android:background="@drawable/xsl_video_shape"
                 android:layout_marginBottom="1dp"
                 android:id="@+id/p4" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="#000000"
+                android:background="@drawable/xsl_video_shape"
                 android:layout_marginBottom="1dp"
                 android:id="@+id/p5" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="#000000"
+                android:background="@drawable/xsl_video_shape"
                 android:id="@+id/p6" />
         </LinearLayout>
 
@@ -241,30 +244,45 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:visibility="visible"
+        android:layout_marginRight="20dp"
         android:id="@+id/rightButtons">
-        <Button
+        <ImageButton
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginTop="33dp"
+            android:layout_marginTop="20dp"
             android:layout_marginBottom="10dp"
-            android:id="@+id/appliances"
-            android:background="@drawable/xsl_appliances_bkg"/>
+            android:id="@+id/about_btn"
+            android:background="@drawable/xsl_about"/>
         <ImageButton
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginVertical="10dp"
-            android:background="@drawable/xsl_appliances_bkg"/>
-        <ImageButton
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginVertical="10dp"
-            android:background="@drawable/xsl_clothes"/>
-        <ImageButton
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:id="@+id/langugue_activity_btn"
-            android:layout_marginVertical="10dp"
+            android:id="@+id/langugue_btn"
             android:background="@drawable/xsl_langugue"/>
+        <ImageButton
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginVertical="10dp"
+            android:id="@+id/appliances_btn"
+            android:background="@drawable/xsl_appliances"/>
+        <ImageButton
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:id="@+id/action_btn"
+            android:layout_marginVertical="10dp"
+            android:background="@drawable/xsl_action"/>
+        <ImageButton
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:id="@+id/word_btn"
+            android:layout_marginVertical="10dp"
+            android:background="@drawable/xsl_word"/>
+        <ImageButton
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:id="@+id/chapter_btn"
+            android:layout_marginVertical="10dp"
+            android:background="@drawable/xsl_chapter"/>
 
     </LinearLayout>
 
