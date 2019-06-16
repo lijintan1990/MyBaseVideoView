@@ -22,4 +22,13 @@ public class XslUtils {
             activity.getWindow().setAttributes(attrs);
         }
     }
+
+    public static String convertSecToTimeString(long lSeconds) {
+        long nHour = lSeconds / 3600;
+        long nMin = lSeconds % 3600;
+        long nSec = nMin % 60;
+        nMin = nMin / 60;
+
+        return String.format("%02d:%02d:%02d", nHour, nMin, nSec);
+    }
 }

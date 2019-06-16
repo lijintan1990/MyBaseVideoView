@@ -55,7 +55,7 @@ public final class EventDispatcher implements IEventDispatcher{
                     @Override
                     public void onEach(IReceiver receiver) {
                         if(receiver instanceof OnTimerUpdateListener && bundle!=null)
-                            ((OnTimerUpdateListener)receiver).onTimerUpdate(
+                            ((OnTimerUpdateListener)receiver).onTimerUpdate(//这里更新时间
                                     bundle.getInt(EventKey.INT_ARG1),
                                     bundle.getInt(EventKey.INT_ARG2),
                                     bundle.getInt(EventKey.INT_ARG3));

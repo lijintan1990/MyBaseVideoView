@@ -30,10 +30,14 @@
             android:layout_weight="1"
             android:background="#000000"
             android:layout_margin="1dp"
-            android:id="@+id/one" />
+            android:id="@+id/one" >
+            <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/videoImageView"/>
+        </com.kk.taurus.playerbase.widget.BaseVideoView>
 
         <include layout="@layout/layout_progress"></include>
-
     </LinearLayout>
 
     <LinearLayout
@@ -44,20 +48,39 @@
         android:orientation="vertical"
         android:layout_marginVertical="30dp"
         android:layout_marginRight="36dp">
-        <com.kk.taurus.playerbase.widget.BaseVideoView
+
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.5"
             android:layout_marginBottom="10dp"
             android:background="#000000"
-            android:id="@+id/subMovie" />
+            android:id="@+id/subMovie">
 
-        <com.kk.taurus.playerbase.widget.BaseVideoView
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="center"
+                android:id="@+id/subImageView"/>
+
+            <include layout="@layout/layout_sub_film"/>
+        </FrameLayout>
+
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.5"
             android:background="#000000"
-            android:id="@+id/wholeMovie" />
+            android:id="@+id/wholeMovie">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="center"
+                android:id="@+id/wholeImageView"/>
+
+            <include layout="@layout/layout_whole_film"/>
+        </FrameLayout>
+
     </LinearLayout>
 
 </LinearLayout>

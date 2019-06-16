@@ -22,8 +22,12 @@ import com.example.mybasevideoview.controller.PlayersController;
 import com.example.mybasevideoview.cover.CompleteCover;
 import com.example.mybasevideoview.cover.ControllerCover;
 import com.example.mybasevideoview.cover.ErrorCover;
+import com.example.mybasevideoview.cover.GestureCover;
 import com.example.mybasevideoview.cover.LoadingCover;
+import com.example.mybasevideoview.model.HomePageInfo;
+import com.example.mybasevideoview.model.ObtainNetWorkData;
 import com.example.mybasevideoview.model.PlayData;
+import com.example.mybasevideoview.model.TimeLineInfo;
 import com.example.mybasevideoview.play.DataInter;
 
 import com.example.mybasevideoview.utils.XslUtils;
@@ -46,6 +50,14 @@ import java.util.List;
 import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import static com.example.mybasevideoview.play.DataInter.ReceiverKey.KEY_COMPLETE_COVER;
+import static com.example.mybasevideoview.play.DataInter.ReceiverKey.KEY_CONTROLLER_COVER;
+import static com.example.mybasevideoview.play.DataInter.ReceiverKey.KEY_ERROR_COVER;
+import static com.example.mybasevideoview.play.DataInter.ReceiverKey.KEY_GESTURE_COVER;
 
 public class MainPlayerActivity extends Activity {
     private static final String TAG = "MainPlayerActivity";
@@ -61,6 +73,8 @@ public class MainPlayerActivity extends Activity {
     ImageButton langugueBtn = null;
     boolean mNeedStartTransactAty = true;
 
+
+    private ReceiverGroup mReceiverGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,6 +177,7 @@ public class MainPlayerActivity extends Activity {
     }
 
     void init() {
+        getTimeLine();
         videoViewArrayList = new ArrayList<BaseVideoView>();
         videoViewArrayList.add((BaseVideoView)findViewById(R.id.p1));
         videoViewArrayList.add((BaseVideoView)findViewById(R.id.p2));
@@ -191,27 +206,21 @@ public class MainPlayerActivity extends Activity {
 //        videoViewArrayList.get(17).setDataSource(new DataSource("https://mov.bn.netease.com/open-movie/nos/mp4/2016/01/11/SBC46Q9DV_hd.mp4"));
 //        videoViewArrayList.get(17).start();
 //        setListenVideoView(videoViewArrayList.get(17));
-        playDataList = new ArrayList<PlayData>();
-        PlayData playData = new PlayData();
-        playData.setUri("https://mov.bn.netease.com/open-movie/nos/mp4/2016/01/11/SBC46Q9DV_hd.mp4");
-        playData.setCameraId(0);
-        playData.setStartTime(0);
-        playData.setEndTime(60000);
-        playDataList.add(playData);
 
-        for (int i=2; i!=4; i++) {
-            playData = new PlayData();
-            playData.setUri("https://mov.bn.netease.com/open-movie/nos/mp4/2016/01/11/SBC46Q9DV_hd.mp4");
-            playData.setCameraId(i);
-            playData.setStartTime(10000 * i);
-            playData.setEndTime(10000 * i + 60000);
-            playDataList.add(playData);
-        }
+
+        //给第一个视频添加进度条
+//        ReceiverGroup receiverGroup = new ReceiverGroup(null);
+//        receiverGroup.addReceiver(KEY_CONTROLLER_COVER, new ControllerCover(this));
+//        receiverGroup.addReceiver(KEY_ERROR_COVER, new ErrorCover(this));
+//        receiverGroup.addReceiver(KEY_COMPLETE_COVER, new CompleteCover(this));
+//        receiverGroup.addReceiver(KEY_GESTURE_COVER, new GestureCover(this));
+//        receiverGroup.addReceiver(KEY_ERROR_COVER, new ErrorCover(this));
+//        videoViewArrayList.get(12).setReceiverGroup(receiverGroup);
+
 
         playControlHandler = new PlayControlHandler(videoViewArrayList, playDataList);
         playersController = new PlayersController(playDataList, videoViewArrayList);
         playersController.setCtrlEventListener(new OnPlayCtrlEventListener() {
-
             @Override
             public void onPlayCtrlCallback(int action, int playDataIndex, int videoViewIndex, int centerType) {
                 Message msg = playControlHandler.obtainMessage(action, centerType, videoViewIndex, playDataList.get(playDataIndex));
@@ -219,6 +228,54 @@ public class MainPlayerActivity extends Activity {
             }
         });
         playersController.start();
+    }
+
+//    void createPlayDatalist() {
+//        if (playDataList == null) {
+//            playDataList = new ArrayList<PlayData>();
+//            for (TimeLineInfo.DataBean data : mTimelineInfo.getData()) {
+//
+//            }
+//        }
+//        PlayData playData = new PlayData();
+//        playData.setUri("https://mov.bn.netease.com/open-movie/nos/mp4/2016/01/11/SBC46Q9DV_hd.mp4");
+//        playData.setCameraId(12);
+//        playData.setStartTime(0);
+//        playData.setEndTime(60000);
+//        playDataList.add(playData);
+//
+//        for (int i=2; i!=4; i++) {
+//            playData = new PlayData();
+//            playData.setUri("https://mov.bn.netease.com/open-movie/nos/mp4/2016/01/11/SBC46Q9DV_hd.mp4");
+//            playData.setCameraId(i);
+//            playData.setStartTime(10000 * i);
+//            playData.setEndTime(10000 * i + 60000);
+//            playDataList.add(playData);
+//        }
+//    }
+    static TimeLineInfo mTimelineInfo = null;
+    private void getTimeLine() {
+        ObtainNetWorkData.getTimelineData(new Callback<TimeLineInfo>() {
+            @Override
+            public void onResponse(Call<TimeLineInfo> call, Response<TimeLineInfo> response) {
+                Log.d(TAG, "get homepage data success");
+                mTimelineInfo = response.body();
+                Log.d(TAG, "onResponse thread id:"+Thread.currentThread().getId());
+            }
+
+            @Override
+            public void onFailure(Call<TimeLineInfo> call, Throwable t) {
+                Log.w(TAG, "get homepage failed, "+t.toString());
+            }
+        });
+    }
+
+    public static TimeLineInfo getTimelineInfo() {
+        return mTimelineInfo;
+    }
+
+    void getVideoList() {
+
     }
 
     void closeAllPlayers() {
@@ -330,7 +387,6 @@ public class MainPlayerActivity extends Activity {
 
         });
     }
-
 
     public static class PlayControlHandler extends Handler {
         WeakReference<ArrayList<BaseVideoView>> videoViewLst;

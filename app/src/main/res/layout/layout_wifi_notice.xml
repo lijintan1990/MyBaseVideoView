@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/translucent_background">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_centerInParent="true"
+        android:text="继续播放"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:id="@+id/play_continue_btn"
+        android:background="@drawable/xsl_iknow_btn"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/play_continue_btn"
+        android:textColor="@color/white"
+        android:layout_marginBottom="15dp"
+        android:layout_centerHorizontal="true"
+        android:text="正在使用非WI-WI网络，播放将产生流量费用"
+        android:textSize="12sp"/>
+</RelativeLayout>
