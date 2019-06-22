@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context=".view.RelateVerticalActivity">
+
+    <Button
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginVertical="20dp"
+        android:layout_marginRight="10dp"
+        android:background="@mipmap/back"
+        android:id="@+id/back_btn"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginHorizontal="152dp">
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/topVideoView"
+            >
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <Button
+                    android:layout_width="@dimen/close_btn_size"
+                    android:layout_height="@dimen/close_btn_size"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:background="@mipmap/icon_close"
+                    android:id="@+id/top_close"/>
+            </RelativeLayout>
+        </com.kk.taurus.playerbase.widget.BaseVideoView>
+
+        <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/bottomVideoView"
+            >
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <Button
+                    android:layout_width="@dimen/close_btn_size"
+                    android:layout_height="@dimen/close_btn_size"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:background="@mipmap/icon_close"
+                    android:id="@+id/bottom_close"/>
+            </RelativeLayout>
+        </com.kk.taurus.playerbase.widget.BaseVideoView>
+    </LinearLayout>
+
+</LinearLayout>

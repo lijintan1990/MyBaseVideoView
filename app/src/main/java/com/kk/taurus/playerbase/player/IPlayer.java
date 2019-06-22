@@ -30,15 +30,15 @@ import com.kk.taurus.playerbase.event.OnPlayerEventListener;
 
 public interface IPlayer {
 
-    int STATE_END = -2;
-    int STATE_ERROR = -1;
-    int STATE_IDLE = 0;
-    int STATE_INITIALIZED = 1;
-    int STATE_PREPARED = 2;
-    int STATE_STARTED = 3;
-    int STATE_PAUSED = 4;
-    int STATE_STOPPED = 5;
-    int STATE_PLAYBACK_COMPLETE = 6;
+    public static int STATE_END = -2;
+    public static int STATE_ERROR = -1;
+    public static int STATE_IDLE = 0;
+    public static int STATE_INITIALIZED = 1;
+    public static int STATE_PREPARED = 2;
+    public static int STATE_STARTED = 3;
+    public static int STATE_PAUSED = 4;
+    public static int STATE_STOPPED = 5;
+    public static int STATE_PLAYBACK_COMPLETE = 6;
 
     /**
      * with this method, you can send some params for player init or switch some setting.

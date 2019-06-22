@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.example.mybasevideoview.controller.OnPlayCtrlEventListener;
 import com.example.mybasevideoview.controller.PlayersController;
@@ -32,6 +33,8 @@ import com.example.mybasevideoview.play.DataInter;
 
 import com.example.mybasevideoview.utils.XslUtils;
 import com.example.mybasevideoview.view.ChapterActivity;
+import com.example.mybasevideoview.view.RelateHorizonActivity;
+import com.example.mybasevideoview.view.RelateVerticalActivity;
 import com.example.mybasevideoview.view.TransactActivity;
 import com.example.mybasevideoview.view.langugueActivity;
 import com.kk.taurus.playerbase.assist.InterEvent;
@@ -43,6 +46,7 @@ import com.kk.taurus.playerbase.receiver.OnReceiverEventListener;
 import com.kk.taurus.playerbase.receiver.ReceiverGroup;
 import com.kk.taurus.playerbase.widget.BaseVideoView;
 
+import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,14 +71,17 @@ public class MainPlayerActivity extends Activity {
     private boolean isLandscape;
     PlayersController playersController = null;
     PlayControlHandler playControlHandler = null;
-    ArrayList<PlayData> playDataList = null;
 
     ImageButton appliances = null;
     ImageButton langugueBtn = null;
     boolean mNeedStartTransactAty = true;
-
-
     private ReceiverGroup mReceiverGroup;
+
+    //activity 相关返回值
+    public static final int ACT_TRANSACT = 1; //主面板引导页
+    public static final int ACT_VIDEO_RELATE = 2; // 关联视频
+
+    public static final String sRelateInfo = "relateInfo";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,7 +140,7 @@ public class MainPlayerActivity extends Activity {
         }
     }
 
-    void createActivity(Class<?> cls, int requestCode) {
+    public void createActivity(Class<?> cls, int requestCode) {
         Intent intent = new Intent(MainPlayerActivity.this, cls);
         startActivityForResult(intent, requestCode);
     }
@@ -143,6 +150,8 @@ public class MainPlayerActivity extends Activity {
         //super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
             mNeedStartTransactAty = false;
+        } else if (requestCode == 2) {
+
         }
     }
 
@@ -218,41 +227,71 @@ public class MainPlayerActivity extends Activity {
 //        videoViewArrayList.get(12).setReceiverGroup(receiverGroup);
 
 
-        playControlHandler = new PlayControlHandler(videoViewArrayList, playDataList);
-        playersController = new PlayersController(playDataList, videoViewArrayList);
+        playControlHandler = new PlayControlHandler(videoViewArrayList, this);
+        playersController = new PlayersController(videoViewArrayList);
         playersController.setCtrlEventListener(new OnPlayCtrlEventListener() {
             @Override
-            public void onPlayCtrlCallback(int action, int playDataIndex, int videoViewIndex, int centerType) {
-                Message msg = playControlHandler.obtainMessage(action, centerType, videoViewIndex, playDataList.get(playDataIndex));
+            public void onPlayCtrlCallback(int action, TimeLineInfo.DataBean dataBean, int videoViewIndex, int centerType) {
+                Message msg = playControlHandler.obtainMessage(action, centerType, videoViewIndex, dataBean);
+                playControlHandler.sendMessage(msg);
+            }
+
+            @Override
+            public void onPlayRelateVideos(int action, int id1, int id2, String uri_1, String uri_2) {
+                RelateVideoInfo info = new RelateVideoInfo(id1, id2, uri_1, uri_2);
+                Message msg = playControlHandler.obtainMessage(action, info);
                 playControlHandler.sendMessage(msg);
             }
         });
-        playersController.start();
+        playersController.startPlay();
     }
 
-//    void createPlayDatalist() {
-//        if (playDataList == null) {
-//            playDataList = new ArrayList<PlayData>();
-//            for (TimeLineInfo.DataBean data : mTimelineInfo.getData()) {
-//
-//            }
-//        }
-//        PlayData playData = new PlayData();
-//        playData.setUri("https://mov.bn.netease.com/open-movie/nos/mp4/2016/01/11/SBC46Q9DV_hd.mp4");
-//        playData.setCameraId(12);
-//        playData.setStartTime(0);
-//        playData.setEndTime(60000);
-//        playDataList.add(playData);
-//
-//        for (int i=2; i!=4; i++) {
-//            playData = new PlayData();
-//            playData.setUri("https://mov.bn.netease.com/open-movie/nos/mp4/2016/01/11/SBC46Q9DV_hd.mp4");
-//            playData.setCameraId(i);
-//            playData.setStartTime(10000 * i);
-//            playData.setEndTime(10000 * i + 60000);
-//            playDataList.add(playData);
-//        }
-//    }
+    public static class RelateVideoInfo implements Serializable {
+        private int id1;
+        private int id2;
+        private String uri_1;
+        private String uri_2;
+
+        public RelateVideoInfo(int id1, int id2, String uri_1, String uri_2) {
+            this.id1 = id1;
+            this.id2 = id2;
+            this.uri_1 = uri_1;
+            this.uri_2 = uri_2;
+        }
+
+        public int getId1() {
+            return id1;
+        }
+
+        public void setId1(int id1) {
+            this.id1 = id1;
+        }
+
+        public int getId2() {
+            return id2;
+        }
+
+        public void setId2(int id2) {
+            this.id2 = id2;
+        }
+
+        public String getUri_1() {
+            return uri_1;
+        }
+
+        public void setUri_1(String uri_1) {
+            this.uri_1 = uri_1;
+        }
+
+        public String getUri_2() {
+            return uri_2;
+        }
+
+        public void setUri_2(String uri_2) {
+            this.uri_2 = uri_2;
+        }
+    }
+
     static TimeLineInfo mTimelineInfo = null;
     private void getTimeLine() {
         ObtainNetWorkData.getTimelineData(new Callback<TimeLineInfo>() {
@@ -272,10 +311,6 @@ public class MainPlayerActivity extends Activity {
 
     public static TimeLineInfo getTimelineInfo() {
         return mTimelineInfo;
-    }
-
-    void getVideoList() {
-
     }
 
     void closeAllPlayers() {
@@ -380,7 +415,7 @@ public class MainPlayerActivity extends Activity {
                                 ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                         break;
                     case DataInter.Event.EVENT_CODE_ERROR_SHOW:
-                        videoViewArrayList.get(17).stop();
+                        //videoViewArrayList.get(17).stop();
                         break;
                 }
             }
@@ -390,10 +425,10 @@ public class MainPlayerActivity extends Activity {
 
     public static class PlayControlHandler extends Handler {
         WeakReference<ArrayList<BaseVideoView>> videoViewLst;
-        WeakReference<ArrayList<PlayData>> playDataLst;
-        public PlayControlHandler(ArrayList<BaseVideoView> lst, ArrayList<PlayData> datalst) {
+        WeakReference<MainPlayerActivity> mainPlayerActivityWeakReference;
+        public PlayControlHandler(ArrayList<BaseVideoView> lst, MainPlayerActivity mainPlayerActivity) {
             videoViewLst = new WeakReference<ArrayList<BaseVideoView>>(lst);
-            playDataLst = new WeakReference<ArrayList<PlayData>>(datalst);
+            mainPlayerActivityWeakReference = new WeakReference<MainPlayerActivity>(mainPlayerActivity);
         }
 
         @Override
@@ -403,25 +438,29 @@ public class MainPlayerActivity extends Activity {
             switch (msg.what) {
                 //action, centerType, videoViewIndex, playDataList.get(playDataIndex)
                 case OnPlayCtrlEventListener.PLAY_CTRL:
-                    PlayData playData = (PlayData) msg.obj;
+                    TimeLineInfo.DataBean dataBean = (TimeLineInfo.DataBean) msg.obj;
 
                     if (videoViewLst.get() != null) {
-                        if (msg.arg1 == OnPlayCtrlEventListener.CENTER_FULL) {
-                            cameraId = 16;
-                        } else {
-                            cameraId = msg.arg2;
-                        }
+                        cameraId = msg.arg2;
                         Log.d(TAG, "play cameraId:"+ cameraId);
-                        videoViewLst.get().get(cameraId).setmIndexInPlayDataLst(playData.getIndex());
-                        videoViewLst.get().get(cameraId).setDataSource(new DataSource(playData.getUri()));
+                        //videoViewLst.get().get(cameraId).setmIndexInDataBeanLst(dataBean.getIndex());
+                        videoViewLst.get().get(cameraId).setDataSource(new DataSource(dataBean.getVideo().getVideoUrl()));
                         videoViewLst.get().get(cameraId).start();
                     }
                     break;
                 case OnPlayCtrlEventListener.STOP_CTRL:
-                    PlayData playData1 = (PlayData) msg.obj;
-                    if (videoViewLst.get().get(msg.arg2).isPlaying()) {
-                        videoViewLst.get().get(msg.arg2).stop();
-                    }
+                    break;
+                case OnPlayCtrlEventListener.PLAY_RELATE_VERTICAL_CTRL:
+                    Intent intent = new Intent(mainPlayerActivityWeakReference.get(), RelateVerticalActivity.class);
+                    intent.putExtra(sRelateInfo, (RelateVideoInfo)msg.obj);
+                    mainPlayerActivityWeakReference.get().startActivityForResult(intent, 2);
+                    break;
+                case OnPlayCtrlEventListener.PLAY_RELATE_HORIZON_CTRL:
+                    Intent intent1 = new Intent(mainPlayerActivityWeakReference.get(), RelateHorizonActivity.class);
+                    intent1.putExtra(sRelateInfo, (RelateVideoInfo)msg.obj);
+                    mainPlayerActivityWeakReference.get().startActivityForResult(intent1, 2);
+                    //mainPlayerActivityWeakReference.get().createActivity(RelateHorizonActivity.class, 2);
+                    break;
             }
         }
     }

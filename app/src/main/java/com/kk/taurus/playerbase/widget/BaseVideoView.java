@@ -86,8 +86,8 @@ public class BaseVideoView extends FrameLayout implements IVideoView, IStyleSett
     private int mVideoSarDen;
     private int mVideoRotation;
     private Paint mVideoBoardPaint = null;
-    // 播放的playData在playDataList中的位置
-    private int mIndexInPlayDataLst;
+    // 播放的video在DataBean中的位置
+    private int mIndexInDataBeanLst;
 
     private IRender.IRenderHolder mRenderHolder;
 
@@ -645,10 +645,10 @@ public class BaseVideoView extends FrameLayout implements IVideoView, IStyleSett
     }
 
     public int getmIndexInPlayDataLst() {
-        return mIndexInPlayDataLst;
+        return mIndexInDataBeanLst;
     }
 
-    public void setmIndexInPlayDataLst(int indexInPlayDataLst) {
-        mIndexInPlayDataLst = indexInPlayDataLst;
+    public void setmIndexInDataBeanLst(int indexInDataBeanLst) {
+        mIndexInDataBeanLst = indexInDataBeanLst;
     }
 }
