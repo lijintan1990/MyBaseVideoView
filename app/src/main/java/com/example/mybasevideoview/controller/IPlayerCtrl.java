@@ -22,10 +22,10 @@ public interface IPlayerCtrl {
     int getBufferPercentage();
     int getPlayerState();
 
-    void startPlay();
-    void pause();
-    void resume();
-    void seekTo(int msc);
-    void stop();
-    void stopPlayback();
+    void startPlay_();
+    void pause_();
+    void resume_();
+    void seekTo_(int msc);
+    void stop_();
+    void stopPlayback_();
 }

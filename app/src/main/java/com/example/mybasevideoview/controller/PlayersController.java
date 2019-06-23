@@ -1,5 +1,6 @@
 package com.example.mybasevideoview.controller;
 
+import android.graphics.Color;
 import android.util.Log;
 import android.widget.VideoView;
 
@@ -40,8 +41,12 @@ public class PlayersController extends Thread implements IPlayerCtrl{
     private List<BaseVideoView> videoViewList;
     OnPlayCtrlEventListener playCtrlEventListener;
 
+    //操作所有view的锁
+    Object lockObj;
+
     public PlayersController(List<BaseVideoView> videoViewList) {
         this.videoViewList = videoViewList;
+        lockObj = new Object();
     }
 
     public void setCtrlEventListener(OnPlayCtrlEventListener onPlayCtrlEventListener) {
@@ -95,6 +100,8 @@ public class PlayersController extends Thread implements IPlayerCtrl{
 
     @Override
     public int getDuration() {
+        if (MainPlayerActivity.getTimelineInfo() == null)
+            return 0;
         if (totalDuration != 0)
             return totalDuration;
 
@@ -106,7 +113,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                 totalDuration = dataBeanList.get(i).getStartTime() + dataBeanList.get(i).getVideo().getDuration();
             }
         }
-        return 0;
+        return totalDuration;
     }
 
     @Override
@@ -125,32 +132,55 @@ public class PlayersController extends Thread implements IPlayerCtrl{
     }
 
     @Override
-    public void startPlay() {
-        if (running) return;
-        running = true;
-        start();
+    public void startPlay_() {
+        synchronized (lockObj) {
+            if (running) return;
+            running = true;
+            start();
+        }
     }
 
     @Override
-    public void pause() {
+    public void pause_() {
+        synchronized (lockObj) {
+            for (BaseVideoView videoView : videoViewList) {
+                videoView.pause();
+            }
+        }
+    }
+
+    @Override
+    public void resume_() {
+        synchronized (lockObj) {
+            for (BaseVideoView videoView : videoViewList) {
+                videoView.resume();
+            }
+        }
+    }
+
+    @Override
+    public void seekTo_(int msc) {
 
     }
 
     @Override
-    public void seekTo(int msc) {
+    public void stop_() {
+        synchronized (lockObj) {
+            running = false;
+            for (BaseVideoView videoView : videoViewList) {
+                videoView.stop();
+            }
+        }
 
+        try {
+            join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public void stopPlayback() {
-
-    }
-
-    public void stopController() {
-        running = false;
-    }
-
-    public void seek(int pos) {
+    public void stopPlayback_() {
 
     }
 
@@ -228,6 +258,8 @@ public class PlayersController extends Thread implements IPlayerCtrl{
             //中间窗口有视频播放，那么开始计时
             if (centerPlayIndex != -1) {
                 currentPlayTime = centerStartTime + videoViewList.get(12).getCurrentPosition() / 1000;
+                //通知更新进度条
+                playCtrlEventListener.onPlayTimeCallback(OnPlayCtrlEventListener.PLAY_TIME_SET_CTRL, totalDuration, currentPlayTime);
             }
 
             int type = -1;
@@ -251,24 +283,6 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                             playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL,
                                     dataBean, index, OnPlayCtrlEventListener.CENTER_NONE);
 
-                            //只需对上面和右面的视频进行判断有没有关联视频
-//                            if (index <= 5) {
-//                                //判断有没有关联视频需要播放
-//                                if (dataBean.getVideo().getRelevanceType() == OnPlayCtrlEventListener.RELATIVE_HORIZON
-//                                || dataBean.getVideo().getRelevanceType() == OnPlayCtrlEventListener.RELATIVE_VERTICAL) {
-//                                    int relateId = getRelativeVideoView(index);
-//                                    TimeLineInfo.DataBean retData = getRelativeDataBean(currentPlayTime, relateId);
-//                                    if (retData != null) {
-//                                        //小窗口播放关联视频，减少开销，先不播放他
-//                                        playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL,
-//                                                retData, relateId, OnPlayCtrlEventListener.CENTER_NONE);
-//                                        //通知启动新的Activity播放关联视频
-//                                        playCtrlEventListener.onPlayRelateVideos(
-//                                                index < 3 ? OnPlayCtrlEventListener.PLAY_RELATE_VERTICAL_CTRL : OnPlayCtrlEventListener.PLAY_RELATE_HORIZON_CTRL,
-//                                                index, relateId, dataBean, retData);
-//                                    }
-//                                }
-//                            }
                             //是否有关联视频
                         int relateType = dataBean.getVideo().getRelevanceType();
                         if (relateType == OnPlayCtrlEventListener.RELATIVE_VERTICAL) {
@@ -291,6 +305,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                                     dataBean, 12, OnPlayCtrlEventListener.CENTER_FULL);
                             //这里是有隐藏的bug，如果中间的因为某种原因导致播放失败，那需要继续播放，
                             centerPlayIndex = index;
+                            videoViewList.get(index).setBoardColor(Color.RED, true);
                             centerStartTime = dataBean.getStartTime();
                         }
                     }
@@ -306,82 +321,14 @@ public class PlayersController extends Thread implements IPlayerCtrl{
             }
 
             //线程睡眠，避免cpu过高
-            try {
-                sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            if (running) {
+                try {
+                    sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
+        Log.e(TAG, "controller thread exit");
     }
 }
-
-//
-//            //轮询小窗口播放
-//            for (PlayData playData : listWeakReference.get()) {
-//                if (playData.isPlaying()) {
-//                    if (playData.getEndTime() <= currentPlayTime) {
-//                        //还有个stopPlayback,后面看看这个有没有问题
-//                        //playData.getVideoView().stop();
-////                        videoViewList.get(playData.getCameraId()).stop();
-////                        playData.setPlaying(false);
-////                        Log.d(TAG, "stop "+ playData.getCameraId());
-//                        playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.STOP_CTRL, playData.getIndex(), playData.getCameraId(), OnPlayCtrlEventListener.CENTER_NONE);
-//                    }
-//                    continue;
-//                }
-//
-//                //getCurrentPosition获取的是微妙
-//                if (playData.getStartTime() >  currentPlayTime) {
-//                    continue;
-//                } else if (playData.getStartTime() <= currentPlayTime && playData.getEndTime() > currentPlayTime) {
-//                    //需要播放这个视频
-//                    playData.setPlaying(true);
-//                    Log.d(TAG, "play "+playData.getCameraId());
-//                    playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL, playData.getIndex(), playData.getCameraId(), OnPlayCtrlEventListener.CENTER_NONE);
-//                }
-//            }
-//
-//
-//            // 轮询中间窗口播放逻辑
-//            if (curMainPlayer != null) {
-//                continue;
-//            }
-//            //中间没有播放的，优先选择第三个进行播放
-//            for (int index=2; index < 16; index++) {
-//                if (videoViewList.get(index).isPlaying()) {
-//                    playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL,
-//                            videoViewList.get(index).getmIndexInPlayDataLst(),
-//                            index, OnPlayCtrlEventListener.CENTER_FULL);
-//                    curMainPlayer = listWeakReference.get().get(videoViewList.get(index).getmIndexInPlayDataLst());
-//                    break;
-//                }
-//            }
-//
-//            //继续轮询
-//            if (curMainPlayer == null) {
-//                for (int index=0; index!=2; index++) {
-//                    if (videoViewList.get(index).isPlaying()) {
-//                        playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL,
-//                                videoViewList.get(index).getmIndexInPlayDataLst(),
-//                                index, OnPlayCtrlEventListener.CENTER_FULL);
-//                        curMainPlayer = listWeakReference.get().get(videoViewList.get(index).getmIndexInPlayDataLst());
-//                        break;
-//                    }
-//                }
-//            }
-//
-//            try {
-//                Thread.sleep(20);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
-
-
-//    public static void main(String[] args) {
-//        List<Human> humans = Human.getAInitHumanList();
-//        //lamdba 表达式 ->
-//        Collections.sort(humans, (Human h1, Human h2) -> h1.getAge() - h2.getAge());
-//        System.out.println(humans);
-//    }

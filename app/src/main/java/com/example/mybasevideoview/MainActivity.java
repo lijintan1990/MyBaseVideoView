@@ -105,19 +105,7 @@ public class MainActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
         XslUtils.hideStausbar(new WeakReference<>(this), true);
-        //ButterKnife.bind(this);
-//        EasyNavigationBar navigationBar = findViewById(R.id.navigationBar);
-//        fragments.add(new FirstPaperFragment());
-//        fragments.add(new XslMainFragment());
-//        fragments.add(new XslAboutFragmet());
-//
-//        navigationBar.titleItems(tabText)
-//                .normalIconItems(normalIcon)
-//                .selectIconItems(selectIcon)
-//                .fragmentList(fragments)
-//                .canScroll(true)
-//                .fragmentManager(getSupportFragmentManager())
-//                .build();
+
         Log.d(TAG, "main thread id:"+Thread.currentThread().getId());
         init();
 

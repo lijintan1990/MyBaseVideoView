@@ -50,7 +50,7 @@ public class BundlePool {
                 return mPool.get(i);
             }
         }
-        PLog.w("BundlePool","<create new bundle object>");
+        //PLog.w("BundlePool","<create new bundle object>");
         return new Bundle();
     }
 

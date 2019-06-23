@@ -10,6 +10,7 @@ public interface OnPlayCtrlEventListener {
     int RESUME_CTRL = 4;
     int PLAY_RELATE_HORIZON_CTRL = 5;
     int PLAY_RELATE_VERTICAL_CTRL = 6;
+    int PLAY_TIME_SET_CTRL = 7;
 
     //在中间显示的标识号
     int CENTER_NONE = 0;
@@ -26,4 +27,5 @@ public interface OnPlayCtrlEventListener {
 
     void onPlayCtrlCallback(int action, TimeLineInfo.DataBean dataBean, int videoViewIndex, int centerType);
     void onPlayRelateVideos(int action, int id1, int id2, String uri_1, String uri_2);
+    void onPlayTimeCallback(int action, int duration, int curTime);
 }

@@ -17,22 +17,21 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.example.mybasevideoview.controller.OnPlayCtrlEventListener;
 import com.example.mybasevideoview.controller.PlayersController;
-import com.example.mybasevideoview.cover.CompleteCover;
-import com.example.mybasevideoview.cover.ControllerCover;
-import com.example.mybasevideoview.cover.ErrorCover;
-import com.example.mybasevideoview.cover.GestureCover;
-import com.example.mybasevideoview.cover.LoadingCover;
+import com.example.mybasevideoview.model.ChapterListInfo;
 import com.example.mybasevideoview.model.HomePageInfo;
 import com.example.mybasevideoview.model.ObtainNetWorkData;
 import com.example.mybasevideoview.model.PlayData;
+import com.example.mybasevideoview.model.RequestCode;
 import com.example.mybasevideoview.model.TimeLineInfo;
 import com.example.mybasevideoview.play.DataInter;
 
 import com.example.mybasevideoview.utils.XslUtils;
 import com.example.mybasevideoview.view.ChapterActivity;
+import com.example.mybasevideoview.view.MySeekBar;
 import com.example.mybasevideoview.view.RelateHorizonActivity;
 import com.example.mybasevideoview.view.RelateVerticalActivity;
 import com.example.mybasevideoview.view.TransactActivity;
@@ -51,17 +50,13 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
 import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static com.example.mybasevideoview.play.DataInter.ReceiverKey.KEY_COMPLETE_COVER;
-import static com.example.mybasevideoview.play.DataInter.ReceiverKey.KEY_CONTROLLER_COVER;
-import static com.example.mybasevideoview.play.DataInter.ReceiverKey.KEY_ERROR_COVER;
-import static com.example.mybasevideoview.play.DataInter.ReceiverKey.KEY_GESTURE_COVER;
 
 public class MainPlayerActivity extends Activity {
     private static final String TAG = "MainPlayerActivity";
@@ -76,12 +71,16 @@ public class MainPlayerActivity extends Activity {
     ImageButton langugueBtn = null;
     boolean mNeedStartTransactAty = true;
     private ReceiverGroup mReceiverGroup;
-
-    //activity 相关返回值
-    public static final int ACT_TRANSACT = 1; //主面板引导页
-    public static final int ACT_VIDEO_RELATE = 2; // 关联视频
-
     public static final String sRelateInfo = "relateInfo";
+
+    @BindViews({R.id.about_btn, R.id.langugue_btn, R.id.appliances_btn, R.id.action_btn, R.id.chapter_btn, R.id.word_btn, R.id.back_btn})
+    List<ImageButton> buttonList;
+    @BindViews({R.id.main_controller_text_view_curr_time, R.id.main_controller_text_view_total_time})
+    List<TextView> textViews;
+    @BindView(R.id.main_controller_image_view_play_state)
+    ImageView ctrlImageView;
+
+    private MySeekBar mySeekBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,16 +94,18 @@ public class MainPlayerActivity extends Activity {
             XslUtils.hideStausbar(new WeakReference<Activity>(this), true);
         }
 
+        mySeekBar = (MySeekBar)findViewById(R.id.main_controller_seek_bar);
+        mySeekBar.setMax(1000);
+
+        reLayout();
+        init();
         if (mNeedStartTransactAty) {
             Log.d(TAG, "start transactActivity");
             createActivity(TransactActivity.class, 1);
         }
     }
 
-    @BindViews({R.id.about_btn, R.id.langugue_btn, R.id.appliances_btn, R.id.action_btn, R.id.chapter_btn, R.id.word_btn})
-    List<ImageButton> buttonList;
-
-    @OnClick({R.id.about_btn, R.id.langugue_btn, R.id.appliances_btn, R.id.action_btn, R.id.chapter_btn, R.id.word_btn})
+    @OnClick({R.id.about_btn, R.id.langugue_btn, R.id.appliances_btn, R.id.action_btn, R.id.chapter_btn, R.id.word_btn, R.id.back_btn})
     void buttonClick(View view) {
         switch (view.getId()) {
             case R.id.about_btn:
@@ -137,7 +138,73 @@ public class MainPlayerActivity extends Activity {
                 }
                 createActivity(langugueActivity.class, 1);
                 break;
+            case R.id.back_btn:
+                playersController.stop_();
+                finish();
+                break;
         }
+    }
+
+    /**
+     * 暂停 继续按钮
+     */
+    @OnClick(R.id.main_controller_image_view_play_state)
+    void playCtrlClick() {
+        if (videoViewArrayList.get(12).isPlaying()) {
+            ctrlImageView.setSelected(true);
+            playersController.pause_();
+        } else {
+            playersController.resume_();
+            ctrlImageView.setSelected(false);
+        }
+    }
+
+    void init() {
+        videoViewArrayList = new ArrayList<>();
+        videoViewArrayList.add(findViewById(R.id.p1));
+        videoViewArrayList.add(findViewById(R.id.p2));
+        videoViewArrayList.add(findViewById(R.id.p3));
+        videoViewArrayList.add(findViewById(R.id.p4));
+        videoViewArrayList.add(findViewById(R.id.p5));
+        videoViewArrayList.add(findViewById(R.id.p6));
+        videoViewArrayList.add(findViewById(R.id.p7));
+        videoViewArrayList.add(findViewById(R.id.p8));
+        videoViewArrayList.add(findViewById(R.id.p9));
+        videoViewArrayList.add(findViewById(R.id.p10));
+        videoViewArrayList.add(findViewById(R.id.p11));
+        videoViewArrayList.add(findViewById(R.id.p12));
+        videoViewArrayList.add(findViewById(R.id.p13));
+
+        createPlayCtrl();
+        getTimeLine();
+        getChapter();
+    }
+
+    private void createPlayCtrl() {
+        playControlHandler = new PlayControlHandler(videoViewArrayList, this);
+        playersController = new PlayersController(videoViewArrayList);
+        playersController.setCtrlEventListener(new OnPlayCtrlEventListener() {
+            @Override
+            public void onPlayCtrlCallback(int action, TimeLineInfo.DataBean dataBean, int videoViewIndex, int centerType) {
+                Message msg = playControlHandler.obtainMessage(action, centerType, videoViewIndex, dataBean);
+                playControlHandler.sendMessage(msg);
+            }
+
+            @Override
+            public void onPlayRelateVideos(int action, int id1, int id2, String uri_1, String uri_2) {
+                RelateVideoInfo info = new RelateVideoInfo(id1, id2, uri_1, uri_2);
+                Message msg = playControlHandler.obtainMessage(action, info);
+                playControlHandler.sendMessage(msg);
+            }
+
+            @Override
+            public void onPlayTimeCallback(int action, int duration, int curTime) {
+                Message msg = playControlHandler.obtainMessage(action, duration, curTime);
+                playControlHandler.sendMessage(msg);
+            }
+        });
+
+        playersController.startPlay_();
     }
 
     public void createActivity(Class<?> cls, int requestCode) {
@@ -152,20 +219,22 @@ public class MainPlayerActivity extends Activity {
             mNeedStartTransactAty = false;
         } else if (requestCode == 2) {
 
+        } else if (requestCode == RequestCode.Relate_req) {
+            for (BaseVideoView videoView : videoViewArrayList) {
+                videoView.resume();
+            }
         }
     }
 
     @Override
     protected void onResume() {
-        /**
-         * 设置为横屏
-         */
-        if(getRequestedOrientation()!= ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE){
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            reLayout();
-            init();
-        }
-
+//        /**
+//         * 设置为横屏
+//         */
+//        if(getRequestedOrientation()!= ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE){
+//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//
+//        }
         super.onResume();
     }
 
@@ -185,66 +254,6 @@ public class MainPlayerActivity extends Activity {
         super.onPause();
     }
 
-    void init() {
-        getTimeLine();
-        videoViewArrayList = new ArrayList<BaseVideoView>();
-        videoViewArrayList.add((BaseVideoView)findViewById(R.id.p1));
-        videoViewArrayList.add((BaseVideoView)findViewById(R.id.p2));
-        videoViewArrayList.add((BaseVideoView)findViewById(R.id.p3));
-        videoViewArrayList.add((BaseVideoView)findViewById(R.id.p4));
-        videoViewArrayList.add((BaseVideoView)findViewById(R.id.p5));
-        videoViewArrayList.add((BaseVideoView)findViewById(R.id.p6));
-        videoViewArrayList.add((BaseVideoView)findViewById(R.id.p7));
-        videoViewArrayList.add((BaseVideoView)findViewById(R.id.p8));
-        videoViewArrayList.add((BaseVideoView)findViewById(R.id.p9));
-        videoViewArrayList.add((BaseVideoView)findViewById(R.id.p10));
-        videoViewArrayList.add((BaseVideoView)findViewById(R.id.p11));
-        videoViewArrayList.add((BaseVideoView)findViewById(R.id.p12));
-        videoViewArrayList.add((BaseVideoView)findViewById(R.id.p13));
-
-        //测试边框
-        videoViewArrayList.get(0).setBoardColor(Color.RED, true);
-
-//        ReceiverGroup receiverGroup = new ReceiverGroup();
-//        receiverGroup.addReceiver(DataInter.ReceiverKey.KEY_LOADING_COVER, new LoadingCover(this));
-//        receiverGroup.addReceiver(DataInter.ReceiverKey.KEY_CONTROLLER_COVER, new ControllerCover(this));
-//        receiverGroup.addReceiver(DataInter.ReceiverKey.KEY_COMPLETE_COVER, new CompleteCover(this));
-//        receiverGroup.addReceiver(DataInter.ReceiverKey.KEY_ERROR_COVER, new ErrorCover(this));
-//        videoViewArrayList.get(17).setReceiverGroup(receiverGroup);
-//        videoViewArrayList.get(17).setOnPlayerEventListener(this);
-//        videoViewArrayList.get(17).setDataSource(new DataSource("https://mov.bn.netease.com/open-movie/nos/mp4/2016/01/11/SBC46Q9DV_hd.mp4"));
-//        videoViewArrayList.get(17).start();
-//        setListenVideoView(videoViewArrayList.get(17));
-
-
-        //给第一个视频添加进度条
-//        ReceiverGroup receiverGroup = new ReceiverGroup(null);
-//        receiverGroup.addReceiver(KEY_CONTROLLER_COVER, new ControllerCover(this));
-//        receiverGroup.addReceiver(KEY_ERROR_COVER, new ErrorCover(this));
-//        receiverGroup.addReceiver(KEY_COMPLETE_COVER, new CompleteCover(this));
-//        receiverGroup.addReceiver(KEY_GESTURE_COVER, new GestureCover(this));
-//        receiverGroup.addReceiver(KEY_ERROR_COVER, new ErrorCover(this));
-//        videoViewArrayList.get(12).setReceiverGroup(receiverGroup);
-
-
-        playControlHandler = new PlayControlHandler(videoViewArrayList, this);
-        playersController = new PlayersController(videoViewArrayList);
-        playersController.setCtrlEventListener(new OnPlayCtrlEventListener() {
-            @Override
-            public void onPlayCtrlCallback(int action, TimeLineInfo.DataBean dataBean, int videoViewIndex, int centerType) {
-                Message msg = playControlHandler.obtainMessage(action, centerType, videoViewIndex, dataBean);
-                playControlHandler.sendMessage(msg);
-            }
-
-            @Override
-            public void onPlayRelateVideos(int action, int id1, int id2, String uri_1, String uri_2) {
-                RelateVideoInfo info = new RelateVideoInfo(id1, id2, uri_1, uri_2);
-                Message msg = playControlHandler.obtainMessage(action, info);
-                playControlHandler.sendMessage(msg);
-            }
-        });
-        playersController.startPlay();
-    }
 
     public static class RelateVideoInfo implements Serializable {
         private int id1;
@@ -300,21 +309,44 @@ public class MainPlayerActivity extends Activity {
                 Log.d(TAG, "get homepage data success");
                 mTimelineInfo = response.body();
                 Log.d(TAG, "onResponse thread id:"+Thread.currentThread().getId());
+
+                int duration = playersController.getDuration();
+                if (duration != 0) {
+                    mySeekBar.setChapterListInfo(chapterListInfo, duration);
+                }
             }
 
             @Override
             public void onFailure(Call<TimeLineInfo> call, Throwable t) {
-                Log.w(TAG, "get homepage failed, "+t.toString());
+                Log.w(TAG, "get timeline failed, "+t.toString());
             }
         });
     }
-
     public static TimeLineInfo getTimelineInfo() {
         return mTimelineInfo;
     }
 
+    ChapterListInfo chapterListInfo = null;
+    private void getChapter() {
+        ObtainNetWorkData.getChapterListData(new Callback<ChapterListInfo>() {
+            @Override
+            public void onResponse(Call<ChapterListInfo> call, Response<ChapterListInfo> response) {
+                chapterListInfo = response.body();
+                int duration = playersController.getDuration();
+                if (duration != 0) {
+                    mySeekBar.setChapterListInfo(chapterListInfo, duration);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ChapterListInfo> call, Throwable t) {
+                Log.w(TAG, "get chapter info failed, "+t.toString());
+            }
+        });
+    }
+
     void closeAllPlayers() {
-        playersController.stopController();
+        playersController.stop_();
 
         for (BaseVideoView videoView : videoViewArrayList) {
             videoView.stop();
@@ -322,6 +354,7 @@ public class MainPlayerActivity extends Activity {
         }
     }
 
+    //主播放页面重新布局
     void reLayout() {
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -331,8 +364,9 @@ public class MainPlayerActivity extends Activity {
         BaseVideoView p1 = findViewById(R.id.p1);
         BaseVideoView p8 = findViewById(R.id.p8);
 
+        int seekbarHeight = 24;
         LinearLayout.LayoutParams linearParams = (LinearLayout.LayoutParams)p1.getLayoutParams();
-        linearParams.height = (dm.heightPixels - 20)/5;
+        linearParams.height = (dm.heightPixels - seekbarHeight)/5;
         p1.setLayoutParams(linearParams);
         p8.setLayoutParams(linearParams);
 
@@ -372,6 +406,16 @@ public class MainPlayerActivity extends Activity {
         }
         Log.e("-------", "状态栏-方法1:" + statusBarHeight1);
         return statusBarHeight1;
+    }
+
+    void updataPlayCtroller(int duration, int curTime) {
+        if (duration <= 0)
+            return;
+        mySeekBar.setProgress(curTime * 1000 / duration);
+        //当前时间设置
+        textViews.get(0).setText(XslUtils.convertSecToTimeString(curTime));
+        //总时间设置
+        textViews.get(1).setText(XslUtils.convertSecToTimeString(duration));
     }
 
     void setListenVideoView(BaseVideoView videoView) {
@@ -451,16 +495,20 @@ public class MainPlayerActivity extends Activity {
                 case OnPlayCtrlEventListener.STOP_CTRL:
                     break;
                 case OnPlayCtrlEventListener.PLAY_RELATE_VERTICAL_CTRL:
+                    mainPlayerActivityWeakReference.get().playersController.pause_();
                     Intent intent = new Intent(mainPlayerActivityWeakReference.get(), RelateVerticalActivity.class);
                     intent.putExtra(sRelateInfo, (RelateVideoInfo)msg.obj);
-                    mainPlayerActivityWeakReference.get().startActivityForResult(intent, 2);
+                    mainPlayerActivityWeakReference.get().startActivityForResult(intent, RequestCode.Relate_req);
                     break;
                 case OnPlayCtrlEventListener.PLAY_RELATE_HORIZON_CTRL:
+                    mainPlayerActivityWeakReference.get().playersController.pause_();
                     Intent intent1 = new Intent(mainPlayerActivityWeakReference.get(), RelateHorizonActivity.class);
                     intent1.putExtra(sRelateInfo, (RelateVideoInfo)msg.obj);
-                    mainPlayerActivityWeakReference.get().startActivityForResult(intent1, 2);
+                    mainPlayerActivityWeakReference.get().startActivityForResult(intent1, RequestCode.Relate_req);
                     //mainPlayerActivityWeakReference.get().createActivity(RelateHorizonActivity.class, 2);
                     break;
+                case OnPlayCtrlEventListener.PLAY_TIME_SET_CTRL:
+                    mainPlayerActivityWeakReference.get().updataPlayCtroller(msg.arg1, msg.arg2);
             }
         }
     }

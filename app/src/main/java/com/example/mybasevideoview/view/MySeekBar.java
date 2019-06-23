@@ -8,8 +8,12 @@ import android.support.v7.widget.AppCompatSeekBar;
 import android.util.AttributeSet;
 import android.util.Log;
 
+import com.example.mybasevideoview.model.ChapterListInfo;
+
 public class MySeekBar extends AppCompatSeekBar {
     private Paint whitePaint;
+    private int mDuration;
+    ChapterListInfo chapterListInfo = null;
 
     public MySeekBar(Context context) {
         super(context);
@@ -26,6 +30,10 @@ public class MySeekBar extends AppCompatSeekBar {
         initPaint();
     }
 
+    public void setChapterListInfo(ChapterListInfo info, int totalDuration) {
+        chapterListInfo = info;
+        mDuration = totalDuration;
+    }
 
     void initPaint() {
         if (whitePaint == null)
@@ -34,17 +42,26 @@ public class MySeekBar extends AppCompatSeekBar {
             whitePaint.setStrokeWidth(20);
             whitePaint.setColor(Color.WHITE);
         }
-
     }
+
     @Override
     protected synchronized void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        if (mDuration <= 0) {
+            return;
+        }
         int w = getWidth();
         int h = getHeight();
         Log.d("MyseekBar", "w:"+w+"  h:" + h);
-        canvas.drawCircle(100, 36, 20, whitePaint);
-        canvas.drawCircle(200, 36, 25, whitePaint);
-        canvas.drawCircle(300, 36, 15, whitePaint);
-        canvas.drawCircle(400, 36, 18, whitePaint);
+        for (ChapterListInfo.DataBean data : chapterListInfo.getData()) {
+            if (data.getStartTime() > mDuration)
+                break;
+
+            int posX = data.getStartTime() * 1000 /mDuration;
+            //seekBar左边总是会有预留空间，容错
+            if (posX < 50)
+                posX = 50;
+            canvas.drawCircle(posX, 36, 12, whitePaint);
+        }
     }
 }
