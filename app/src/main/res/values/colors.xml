@@ -11,6 +11,7 @@
     <color name="controller_bg_light">#00000000</color>
 
     <color name="edit_base_line_color">#77ffffff</color>
+    <color name="grew">#77ffffff</color>
 
     <color name="translucent_background">#80000000</color>
     <color name="black">#000000</color>

@@ -139,7 +139,8 @@ public class MainPlayerActivity extends Activity {
                 createActivity(langugueActivity.class, 1);
                 break;
             case R.id.back_btn:
-                playersController.stop_();
+                if (playersController != null)
+                    playersController.stop_();
                 finish();
                 break;
         }
@@ -346,7 +347,8 @@ public class MainPlayerActivity extends Activity {
     }
 
     void closeAllPlayers() {
-        playersController.stop_();
+        if (playersController != null)
+            playersController.stop_();
 
         for (BaseVideoView videoView : videoViewArrayList) {
             videoView.stop();

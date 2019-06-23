@@ -24,7 +24,7 @@
         <activity android:name=".view.RelateVerticalActivity"
             android:theme="@style/translucent" />
         <activity android:name=".view.RelateHorizonActivity"
-            android:theme="@style/translucent" />/>
+            android:theme="@style/translucent" />
         <activity
             android:name=".view.ChapterActivity"
             android:theme="@style/translucent" />

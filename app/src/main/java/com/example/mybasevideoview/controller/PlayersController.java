@@ -12,6 +12,7 @@ import com.kk.taurus.playerbase.player.IPlayer;
 import com.kk.taurus.playerbase.render.AspectRatio;
 import com.kk.taurus.playerbase.widget.BaseVideoView;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -38,14 +39,14 @@ public class PlayersController extends Thread implements IPlayerCtrl{
     //当前播放时间，这时间是当前播放时间相对于第一个视频起始播放的时间
     private int currentPlayTime = 0;
     private boolean running = false;
-    private List<BaseVideoView> videoViewList;
+    private WeakReference<List<BaseVideoView>> videoViewList;
     OnPlayCtrlEventListener playCtrlEventListener;
 
     //操作所有view的锁
     Object lockObj;
 
     public PlayersController(List<BaseVideoView> videoViewList) {
-        this.videoViewList = videoViewList;
+        this.videoViewList = new WeakReference<>(videoViewList) ;
         lockObj = new Object();
     }
 
@@ -143,8 +144,11 @@ public class PlayersController extends Thread implements IPlayerCtrl{
     @Override
     public void pause_() {
         synchronized (lockObj) {
-            for (BaseVideoView videoView : videoViewList) {
-                videoView.pause();
+            if (videoViewList.get() != null) {
+                List<BaseVideoView> lst = videoViewList.get();
+                for (BaseVideoView videoView : lst) {
+                    videoView.pause();
+                }
             }
         }
     }
@@ -152,8 +156,12 @@ public class PlayersController extends Thread implements IPlayerCtrl{
     @Override
     public void resume_() {
         synchronized (lockObj) {
-            for (BaseVideoView videoView : videoViewList) {
-                videoView.resume();
+            if (videoViewList.get() != null) {
+                List<BaseVideoView> lst = videoViewList.get();
+
+                for (BaseVideoView videoView : lst) {
+                    videoView.resume();
+                }
             }
         }
     }
@@ -167,7 +175,8 @@ public class PlayersController extends Thread implements IPlayerCtrl{
     public void stop_() {
         synchronized (lockObj) {
             running = false;
-            for (BaseVideoView videoView : videoViewList) {
+            List<BaseVideoView> lst = videoViewList.get();
+            for (BaseVideoView videoView : lst) {
                 videoView.stop();
             }
         }
@@ -255,9 +264,12 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                 continue;
             }
 
+            List<BaseVideoView> lst = videoViewList.get();
+
             //中间窗口有视频播放，那么开始计时
             if (centerPlayIndex != -1) {
-                currentPlayTime = centerStartTime + videoViewList.get(12).getCurrentPosition() / 1000;
+
+                currentPlayTime = centerStartTime + lst.get(12).getCurrentPosition() / 1000;
                 //通知更新进度条
                 playCtrlEventListener.onPlayTimeCallback(OnPlayCtrlEventListener.PLAY_TIME_SET_CTRL, totalDuration, currentPlayTime);
             }
@@ -277,8 +289,8 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                     //判断是否需要播放
                     if (dataBean.getStartTime() <= currentPlayTime
                         && (dataBean.getStartTime() + dataBean.getVideo().getDuration()) > currentPlayTime
-                        && (videoViewList.get(index).getState() < IPlayer.STATE_INITIALIZED
-                            || videoViewList.get(index).getState() >= IPlayer.STATE_STOPPED)) {
+                        && (lst.get(index).getState() < IPlayer.STATE_INITIALIZED
+                            || lst.get(index).getState() >= IPlayer.STATE_STOPPED)) {
                         //播放该窗口视频
                             playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL,
                                     dataBean, index, OnPlayCtrlEventListener.CENTER_NONE);
@@ -298,14 +310,14 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                         //播放中间窗口
                         if (centerPlayIndex == -1) {
                             //如果正在播放，那先结束这个播放，在子线程里面结束，不知道会不会有问题，暂时不加到回调里面去
-                            if (videoViewList.get(12).isPlaying()) {
-                                videoViewList.get(12).stop();
+                            if (lst.get(12).isPlaying()) {
+                                lst.get(12).stop();
                             }
                             playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL,
                                     dataBean, 12, OnPlayCtrlEventListener.CENTER_FULL);
                             //这里是有隐藏的bug，如果中间的因为某种原因导致播放失败，那需要继续播放，
                             centerPlayIndex = index;
-                            videoViewList.get(index).setBoardColor(Color.RED, true);
+                            lst.get(index).setBoardColor(Color.RED, true);
                             centerStartTime = dataBean.getStartTime();
                         }
                     }
