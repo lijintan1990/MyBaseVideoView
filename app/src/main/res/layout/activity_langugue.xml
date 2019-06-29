@@ -7,33 +7,64 @@
     android:orientation="horizontal"
     tools:context=".view.langugueActivity">
 
-    <LinearLayout
+    <TextView
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="字幕选择"
+        android:textSize="20sp"
+        android:layout_marginTop="30dp"
+        android:textColor="@color/white"
+        android:layout_marginBottom="60dp"
+        />
+    <LinearLayout
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_centerInParent="true">
         <Button
-            android:layout_width="100dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/chinese_btn"
             android:background="@drawable/xsl_langugue_btn_color"
-            android:drawableLeft="@drawable/xsl_langugue"
+            android:drawableLeft="@mipmap/xsl_langugue"
+            android:drawablePadding="@dimen/draw_padding_text"
             android:gravity="center_vertical"
-            android:paddingLeft="20dp"
-            android:text="中文"/>
+            android:paddingLeft="@dimen/padding_left_size"
+            android:text="中文简体"/>
         <Button
-            android:layout_width="100dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginVertical="20dp"
             android:id="@+id/cantonese_btn"
-            android:background="@drawable/xsl_langugue_btn_color"
-            android:text="粤语"/>
+            android:background="@color/translucent_background"
+            android:drawableLeft="@mipmap/xsl_langugue_complex"
+            android:drawablePadding="@dimen/draw_padding_text"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/padding_left_size"
+            android:text="中文繁体"/>
         <Button
-            android:layout_width="100dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/english_btn"
-            android:background="@drawable/xsl_langugue_btn_color"
+            android:background="@color/translucent_background"
+            android:drawableLeft="@mipmap/xsl_langugue_english"
+            android:drawablePadding="@dimen/draw_padding_text"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/padding_left_size"
+            android:layout_gravity="center"
             android:text="ENGLISH"/>
     </LinearLayout>
+
+    <Button
+        android:layout_width="@dimen/close_btn_size"
+        android:layout_height="@dimen/close_btn_size"
+        android:id="@+id/close_btn"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="134dp"
+        android:layout_marginTop="30dp"
+        android:background="@mipmap/icon_close"/>
 
 
 </RelativeLayout>

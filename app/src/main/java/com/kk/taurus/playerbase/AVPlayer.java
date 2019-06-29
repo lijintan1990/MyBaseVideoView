@@ -381,7 +381,6 @@ public final class AVPlayer implements IPlayer{
         //if not set DataProvider,will be set data to decoder.
         if(!useProvider())
             interPlayerSetDataSource(dataSource);
-
     }
 
     boolean isLive(){

@@ -94,6 +94,7 @@ public class BaseVideoView extends FrameLayout implements IVideoView, IStyleSett
     private boolean isBuffering;
 
     private OnVideoViewEventHandler mEventAssistHandler;
+    public String uri;
 
     public BaseVideoView(Context context){
         this(context, null);
@@ -198,7 +199,7 @@ public class BaseVideoView extends FrameLayout implements IVideoView, IStyleSett
     @Override
     public void setDataSource(DataSource dataSource) {
         //init AudioManager
-        requestAudioFocus();
+        //requestAudioFocus();
         //release render on data change.
         releaseRender();
         //Reconfigure the rendering view each time the resource is switched

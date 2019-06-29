@@ -6,8 +6,8 @@ public class TimeLineInfo {
 
     /**
      * status : 0
-     * msg : string
-     * data : [{"id":0,"type":0,"startTime":0,"scale":0,"video":{"id":0,"index":0,"thumbnailUrl":"string","name":"string","videoUrl":"string","duration":0,"relevanceType":0,"relevanceVideo":{"id":3,"index":8,"thumbnailUrl":"string","name":"string","videoUrl":"string","duration":113,"relevanceType":1,"relevanceVideo":null}},"chapter":{"id":0,"code":"string","name":"string","type":0,"startTime":0,"scale":0},"text":{"id":0,"name":"string","content":"string"}}]
+     * msg : 成功
+     * data : [{"id":0,"type":0,"startTime":0,"scale":0,"video":{"id":0,"index":0,"thumbnailUrl":"string","name":"string","videoUrl90":"https://www.hongmingyuan.net/video/2-4v1-90.mp4","videoUrl360":"https://www.hongmingyuan.net/video/2-4v1-360.mp4","videoUrl720":"https://www.hongmingyuan.net/video/2-4v1-720.mp4","videoUrl1080":"https://www.hongmingyuan.net/video/2-4v1-1080.mp4","duration":0,"relevanceType":0,"relevanceVideo":{"id":3,"index":8,"thumbnailUrl":"string","name":"string","videoUrl":"string","duration":113,"relevanceType":1,"relevanceVideo":null}},"chapter":{"id":0,"code":"string","name":"string","type":0,"startTime":0,"scale":0},"text":{"id":0,"name":"string","content":"string"}}]
      */
 
     private int status;
@@ -44,7 +44,7 @@ public class TimeLineInfo {
          * type : 0
          * startTime : 0
          * scale : 0
-         * video : {"id":0,"index":0,"thumbnailUrl":"string","name":"string","videoUrl":"string","duration":0,"relevanceType":0,"relevanceVideo":{"id":3,"index":8,"thumbnailUrl":"string","name":"string","videoUrl":"string","duration":113,"relevanceType":1,"relevanceVideo":null}}
+         * video : {"id":0,"index":0,"thumbnailUrl":"string","name":"string","videoUrl90":"https://www.hongmingyuan.net/video/2-4v1-90.mp4","videoUrl360":"https://www.hongmingyuan.net/video/2-4v1-360.mp4","videoUrl720":"https://www.hongmingyuan.net/video/2-4v1-720.mp4","videoUrl1080":"https://www.hongmingyuan.net/video/2-4v1-1080.mp4","duration":0,"relevanceType":0,"relevanceVideo":{"id":3,"index":8,"thumbnailUrl":"string","name":"string","videoUrl":"string","duration":113,"relevanceType":1,"relevanceVideo":null}}
          * chapter : {"id":0,"code":"string","name":"string","type":0,"startTime":0,"scale":0}
          * text : {"id":0,"name":"string","content":"string"}
          */
@@ -119,7 +119,10 @@ public class TimeLineInfo {
              * index : 0
              * thumbnailUrl : string
              * name : string
-             * videoUrl : string
+             * videoUrl90 : https://www.hongmingyuan.net/video/2-4v1-90.mp4
+             * videoUrl360 : https://www.hongmingyuan.net/video/2-4v1-360.mp4
+             * videoUrl720 : https://www.hongmingyuan.net/video/2-4v1-720.mp4
+             * videoUrl1080 : https://www.hongmingyuan.net/video/2-4v1-1080.mp4
              * duration : 0
              * relevanceType : 0
              * relevanceVideo : {"id":3,"index":8,"thumbnailUrl":"string","name":"string","videoUrl":"string","duration":113,"relevanceType":1,"relevanceVideo":null}
@@ -129,7 +132,10 @@ public class TimeLineInfo {
             private int index;
             private String thumbnailUrl;
             private String name;
-            private String videoUrl;
+            private String videoUrl90;
+            private String videoUrl360;
+            private String videoUrl720;
+            private String videoUrl1080;
             private int duration;
             private int relevanceType;
             private RelevanceVideoBean relevanceVideo;
@@ -166,12 +172,36 @@ public class TimeLineInfo {
                 this.name = name;
             }
 
-            public String getVideoUrl() {
-                return videoUrl;
+            public String getVideoUrl90() {
+                return videoUrl90;
             }
 
-            public void setVideoUrl(String videoUrl) {
-                this.videoUrl = videoUrl;
+            public void setVideoUrl90(String videoUrl90) {
+                this.videoUrl90 = videoUrl90;
+            }
+
+            public String getVideoUrl360() {
+                return videoUrl360;
+            }
+
+            public void setVideoUrl360(String videoUrl360) {
+                this.videoUrl360 = videoUrl360;
+            }
+
+            public String getVideoUrl720() {
+                return videoUrl720;
+            }
+
+            public void setVideoUrl720(String videoUrl720) {
+                this.videoUrl720 = videoUrl720;
+            }
+
+            public String getVideoUrl1080() {
+                return videoUrl1080;
+            }
+
+            public void setVideoUrl1080(String videoUrl1080) {
+                this.videoUrl1080 = videoUrl1080;
             }
 
             public int getDuration() {

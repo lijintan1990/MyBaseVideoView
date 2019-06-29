@@ -1,8 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_pressed="false"
-    android:drawable="@mipmap/xsl_about"/>
-
+    <item android:state_focused="true"
+        android:drawable="@mipmap/xsl_about_bright"/>
+    <item android:state_selected="true"
+        android:drawable="@mipmap/xsl_about_bright"/>
     <item android:state_pressed="true"
-    android:drawable="@mipmap/xsl_about_bright"/>
+        android:drawable="@mipmap/xsl_about_bright"/>
+    <!--这个一定要放在state_selected之后，不然点击之后
+    就算你在代码里面改变select状态，效果不会保持，立马变成白色图标-->
+    <item android:drawable="@mipmap/xsl_about"/>
 </selector>

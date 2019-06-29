@@ -268,17 +268,17 @@ public class PlayersController extends Thread implements IPlayerCtrl{
 
             //中间窗口有视频播放，那么开始计时
             if (centerPlayIndex != -1) {
-
                 currentPlayTime = centerStartTime + lst.get(12).getCurrentPosition() / 1000;
                 //通知更新进度条
                 playCtrlEventListener.onPlayTimeCallback(OnPlayCtrlEventListener.PLAY_TIME_SET_CTRL, totalDuration, currentPlayTime);
+            } else {
+                playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_ALL_CTRL, null, 0, 0);
             }
 
             int type = -1;
             for (TimeLineInfo.DataBean dataBean : timeLineInfo.getData()) {
                 type = dataBean.getType();
                 if (type == DataType.XSL_VIDEO) {
-                    //1.轮询小窗口播放
                     TimeLineInfo.DataBean.VideoBean videoBean = dataBean.getVideo();
                     int index = videoBean.getIndex();
                     if (index == -1) {
@@ -286,41 +286,53 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                         continue;
                     }
 
-                    //判断是否需要播放
-                    if (dataBean.getStartTime() <= currentPlayTime
-                        && (dataBean.getStartTime() + dataBean.getVideo().getDuration()) > currentPlayTime
-                        && (lst.get(index).getState() < IPlayer.STATE_INITIALIZED
-                            || lst.get(index).getState() >= IPlayer.STATE_STOPPED)) {
-                        //播放该窗口视频
-                            playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL,
-                                    dataBean, index, OnPlayCtrlEventListener.CENTER_NONE);
+                    //先假定从第二个开始播放
+                    if (index == 1) {
+//                        playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL,
+//                                dataBean, 12, OnPlayCtrlEventListener.CENTER_FULL);
+                        //这里是有隐藏的bug，如果中间的因为某种原因导致播放失败，那需要继续播放，
+                        centerPlayIndex = index;
+                        lst.get(index).setBoardColor(Color.RED, true);
 
-                            //是否有关联视频
-                        int relateType = dataBean.getVideo().getRelevanceType();
-                        if (relateType == OnPlayCtrlEventListener.RELATIVE_VERTICAL) {
-                            TimeLineInfo.DataBean.VideoBean.RelevanceVideoBean relevanceVideoBean = dataBean.getVideo().getRelevanceVideo();
-                            playCtrlEventListener.onPlayRelateVideos(OnPlayCtrlEventListener.PLAY_RELATE_VERTICAL_CTRL,
-                                    index, relevanceVideoBean.getIndex(), dataBean.getVideo().getVideoUrl(), relevanceVideoBean.getVideoUrl());
-                        } else if (relateType == OnPlayCtrlEventListener.RELATIVE_HORIZON) {
-                            TimeLineInfo.DataBean.VideoBean.RelevanceVideoBean relevanceVideoBean = dataBean.getVideo().getRelevanceVideo();
-                            playCtrlEventListener.onPlayRelateVideos(OnPlayCtrlEventListener.PLAY_RELATE_HORIZON_CTRL,
-                                    index, relevanceVideoBean.getIndex(), dataBean.getVideo().getVideoUrl(), relevanceVideoBean.getVideoUrl());
-                        }
-
-                        //播放中间窗口
-                        if (centerPlayIndex == -1) {
-                            //如果正在播放，那先结束这个播放，在子线程里面结束，不知道会不会有问题，暂时不加到回调里面去
-                            if (lst.get(12).isPlaying()) {
-                                lst.get(12).stop();
-                            }
-                            playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL,
-                                    dataBean, 12, OnPlayCtrlEventListener.CENTER_FULL);
-                            //这里是有隐藏的bug，如果中间的因为某种原因导致播放失败，那需要继续播放，
-                            centerPlayIndex = index;
-                            lst.get(index).setBoardColor(Color.RED, true);
-                            centerStartTime = dataBean.getStartTime();
-                        }
+                        centerPlayIndex = 1;
+                        centerStartTime = 0;
                     }
+
+                    //判断是否需要播放
+//                    if (dataBean.getStartTime() <= currentPlayTime
+//                        && (dataBean.getStartTime() + dataBean.getVideo().getDuration()) > currentPlayTime
+//                        && (lst.get(index).getState() < IPlayer.STATE_INITIALIZED
+//                            || lst.get(index).getState() >= IPlayer.STATE_STOPPED)) {
+//                        //播放该窗口视频
+//                            playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL,
+//                                    dataBean, index, OnPlayCtrlEventListener.CENTER_NONE);
+//
+//                            //是否有关联视频
+//                        int relateType = dataBean.getVideo().getRelevanceType();
+//                        if (relateType == OnPlayCtrlEventListener.RELATIVE_VERTICAL) {
+//                            TimeLineInfo.DataBean.VideoBean.RelevanceVideoBean relevanceVideoBean = dataBean.getVideo().getRelevanceVideo();
+//                            playCtrlEventListener.onPlayRelateVideos(OnPlayCtrlEventListener.PLAY_RELATE_VERTICAL_CTRL,
+//                                    index, relevanceVideoBean.getIndex(), dataBean.getVideo().getVideoUrl(), relevanceVideoBean.getVideoUrl());
+//                        } else if (relateType == OnPlayCtrlEventListener.RELATIVE_HORIZON) {
+//                            TimeLineInfo.DataBean.VideoBean.RelevanceVideoBean relevanceVideoBean = dataBean.getVideo().getRelevanceVideo();
+//                            playCtrlEventListener.onPlayRelateVideos(OnPlayCtrlEventListener.PLAY_RELATE_HORIZON_CTRL,
+//                                    index, relevanceVideoBean.getIndex(), dataBean.getVideo().getVideoUrl(), relevanceVideoBean.getVideoUrl());
+//                        }
+//
+//                        //播放中间窗口
+//                        if (centerPlayIndex == -1) {
+//                            //如果正在播放，那先结束这个播放，在子线程里面结束，不知道会不会有问题，暂时不加到回调里面去
+//                            if (lst.get(12).isPlaying()) {
+//                                lst.get(12).stop();
+//                            }
+//                            playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL,
+//                                    dataBean, 12, OnPlayCtrlEventListener.CENTER_FULL);
+//                            //这里是有隐藏的bug，如果中间的因为某种原因导致播放失败，那需要继续播放，
+//                            centerPlayIndex = index;
+//                            lst.get(index).setBoardColor(Color.RED, true);
+//                            centerStartTime = dataBean.getStartTime();
+//                        }
+//                    }
                 } else if (type == DataType.XSL_CHAPTER) {
 
                 } else if (type == DataType.XSL_APPLIANCES) {

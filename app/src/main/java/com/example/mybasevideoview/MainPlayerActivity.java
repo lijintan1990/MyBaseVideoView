@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.example.mybasevideoview.controller.OnPlayCtrlEventListener;
 import com.example.mybasevideoview.controller.PlayersController;
 import com.example.mybasevideoview.model.ChapterListInfo;
+import com.example.mybasevideoview.model.DataType;
 import com.example.mybasevideoview.model.HomePageInfo;
 import com.example.mybasevideoview.model.ObtainNetWorkData;
 import com.example.mybasevideoview.model.PlayData;
@@ -30,6 +31,7 @@ import com.example.mybasevideoview.model.TimeLineInfo;
 import com.example.mybasevideoview.play.DataInter;
 
 import com.example.mybasevideoview.utils.XslUtils;
+import com.example.mybasevideoview.view.AboutActivity;
 import com.example.mybasevideoview.view.ChapterActivity;
 import com.example.mybasevideoview.view.MySeekBar;
 import com.example.mybasevideoview.view.RelateHorizonActivity;
@@ -101,7 +103,7 @@ public class MainPlayerActivity extends Activity {
         init();
         if (mNeedStartTransactAty) {
             Log.d(TAG, "start transactActivity");
-            createActivity(TransactActivity.class, 1);
+            createActivity(TransactActivity.class, RequestCode.Transact_req);
         }
     }
 
@@ -109,7 +111,12 @@ public class MainPlayerActivity extends Activity {
     void buttonClick(View view) {
         switch (view.getId()) {
             case R.id.about_btn:
-                buttonList.get(0);
+                if (buttonList.get(0).isSelected()) {
+                    buttonList.get(0).setSelected(false);
+                } else {
+                    buttonList.get(0).setSelected(true);
+                }
+                createActivity(AboutActivity.class, RequestCode.About_req);
                 break;
             case R.id.action_btn:
                 break;
@@ -126,7 +133,7 @@ public class MainPlayerActivity extends Activity {
                 } else {
                     buttonList.get(4).setSelected(true);
                 }
-                createActivity(ChapterActivity.class, 4);
+                createActivity(ChapterActivity.class, RequestCode.Chapter_req);
                 break;
             case R.id.word_btn:
                 break;
@@ -136,7 +143,7 @@ public class MainPlayerActivity extends Activity {
                 } else {
                     buttonList.get(1).setSelected(true);
                 }
-                createActivity(langugueActivity.class, 1);
+                createActivity(langugueActivity.class, RequestCode.Languge_req);
                 break;
             case R.id.back_btn:
                 if (playersController != null)
@@ -216,13 +223,26 @@ public class MainPlayerActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1) {
+        if (requestCode == RequestCode.Transact_req) {
             mNeedStartTransactAty = false;
-        } else if (requestCode == 2) {
-
+        } else if (requestCode == RequestCode.About_req) {
+            buttonList.get(0).setSelected(false);
         } else if (requestCode == RequestCode.Relate_req) {
             for (BaseVideoView videoView : videoViewArrayList) {
                 videoView.resume();
+            }
+        } else if (requestCode == RequestCode.Languge_req) {
+            int langugueSelector = 0;
+            Bundle bd = data.getExtras();
+            langugueSelector = bd.getInt(langugueActivity.langugue_key);
+
+            switch (langugueSelector) {
+                case langugueActivity.chinese:
+                    break;
+                case langugueActivity.cantonese:
+                    break;
+                case langugueActivity.english:
+                    break;
             }
         }
     }
@@ -302,6 +322,18 @@ public class MainPlayerActivity extends Activity {
         }
     }
 
+    private void playAll() {
+        int id = -1;
+        for (TimeLineInfo.DataBean dataBean : mTimelineInfo.getData()) {
+            if (dataBean.getType() == DataType.XSL_VIDEO) {
+                id = dataBean.getVideo().getId();
+                videoViewArrayList.get(id).uri = dataBean.getVideo().getVideoUrl90();
+                videoViewArrayList.get(id).setDataSource(new DataSource(videoViewArrayList.get(id).uri));
+                videoViewArrayList.get(id).start();
+            }
+        }
+    }
+
     static TimeLineInfo mTimelineInfo = null;
     private void getTimeLine() {
         ObtainNetWorkData.getTimelineData(new Callback<TimeLineInfo>() {
@@ -311,9 +343,13 @@ public class MainPlayerActivity extends Activity {
                 mTimelineInfo = response.body();
                 Log.d(TAG, "onResponse thread id:"+Thread.currentThread().getId());
 
-                int duration = playersController.getDuration();
-                if (duration != 0) {
-                    mySeekBar.setChapterListInfo(chapterListInfo, duration);
+
+                if (playersController != null)
+                {
+                    int duration = playersController.getDuration();
+                    if (duration != 0) {
+                        mySeekBar.setChapterListInfo(chapterListInfo, duration);
+                    }
                 }
             }
 
@@ -333,9 +369,11 @@ public class MainPlayerActivity extends Activity {
             @Override
             public void onResponse(Call<ChapterListInfo> call, Response<ChapterListInfo> response) {
                 chapterListInfo = response.body();
-                int duration = playersController.getDuration();
-                if (duration != 0) {
-                    mySeekBar.setChapterListInfo(chapterListInfo, duration);
+                if (playersController != null) {
+                    int duration = playersController.getDuration();
+                    if (duration != 0) {
+                        mySeekBar.setChapterListInfo(chapterListInfo, duration);
+                    }
                 }
             }
 
@@ -490,9 +528,12 @@ public class MainPlayerActivity extends Activity {
                         cameraId = msg.arg2;
                         Log.d(TAG, "play cameraId:"+ cameraId);
                         //videoViewLst.get().get(cameraId).setmIndexInDataBeanLst(dataBean.getIndex());
-                        videoViewLst.get().get(cameraId).setDataSource(new DataSource(dataBean.getVideo().getVideoUrl()));
+                        videoViewLst.get().get(cameraId).setDataSource(new DataSource(dataBean.getVideo().getVideoUrl360()));
                         videoViewLst.get().get(cameraId).start();
                     }
+                    break;
+                case OnPlayCtrlEventListener.PLAY_ALL_CTRL:
+                    mainPlayerActivityWeakReference.get().playAll();
                     break;
                 case OnPlayCtrlEventListener.STOP_CTRL:
                     break;

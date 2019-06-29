@@ -11,6 +11,7 @@ public interface OnPlayCtrlEventListener {
     int PLAY_RELATE_HORIZON_CTRL = 5;
     int PLAY_RELATE_VERTICAL_CTRL = 6;
     int PLAY_TIME_SET_CTRL = 7;
+    int PLAY_ALL_CTRL = 8;
 
     //在中间显示的标识号
     int CENTER_NONE = 0;
