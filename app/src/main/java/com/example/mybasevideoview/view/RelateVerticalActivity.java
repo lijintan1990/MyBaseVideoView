@@ -11,6 +11,7 @@ import android.widget.Button;
 import com.example.mybasevideoview.MainPlayerActivity;
 import com.example.mybasevideoview.R;
 import com.example.mybasevideoview.model.RequestCode;
+import com.example.mybasevideoview.model.VideoListInfo;
 import com.example.mybasevideoview.utils.XslUtils;
 import com.kk.taurus.playerbase.entity.DataSource;
 import com.kk.taurus.playerbase.widget.BaseVideoView;
@@ -25,9 +26,11 @@ import butterknife.OnClick;
 public class RelateVerticalActivity extends Activity {
     private BaseVideoView topVideoView = null;
     private BaseVideoView bottomVideoView = null;
-    MainPlayerActivity.RelateVideoInfo relateVideoInfo = null;
+    //MainPlayerActivity.RelateVideoInfo relateVideoInfo = null;
     //@BindViews({R.id.back_btn, R.id.top_close, R.id.bottom_close})
     List<Button> buttonList;
+    int videoIndex1;
+    int videoIndex2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,15 +40,20 @@ public class RelateVerticalActivity extends Activity {
         ButterKnife.bind(this);
         XslUtils.hideStausbar(new WeakReference<>(this), true);
         Intent intent = getIntent();
-        relateVideoInfo = (MainPlayerActivity.RelateVideoInfo)intent.getSerializableExtra(MainPlayerActivity.sRelateInfo);
+        //relateVideoInfo = (MainPlayerActivity.RelateVideoInfo)intent.getSerializableExtra(MainPlayerActivity.sRelateInfo);
+        videoIndex1 = intent.getIntExtra(MainPlayerActivity.RELATE_ID_ONE, 0);
+        videoIndex2 = intent.getIntExtra(MainPlayerActivity.RELATE_ID_TWO, 0);
         playVideos();
     }
 
     void playVideos() {
+        VideoListInfo videoListInfo = MainPlayerActivity.getVideoLstInfo();
         topVideoView = findViewById(R.id.topVideoView);
         bottomVideoView = findViewById(R.id.bottomVideoView);
-        topVideoView.setDataSource(new DataSource(relateVideoInfo.getUri_1()));
-        bottomVideoView.setDataSource(new DataSource(relateVideoInfo.getUri_2()));
+//        topVideoView.setDataSource(new DataSource(relateVideoInfo.getUri_1()));
+//        bottomVideoView.setDataSource(new DataSource(relateVideoInfo.getUri_2()));
+        topVideoView.setDataSource(new DataSource(videoListInfo.getData().get(videoIndex1).getVideoUrl360()));
+        bottomVideoView.setDataSource(new DataSource(videoListInfo.getData().get(videoIndex2).getVideoUrl360()));
         topVideoView.start();
         bottomVideoView.start();
     }

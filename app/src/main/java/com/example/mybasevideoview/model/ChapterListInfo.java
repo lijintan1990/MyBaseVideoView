@@ -7,7 +7,7 @@ public class ChapterListInfo {
     /**
      * status : 0
      * msg : string
-     * data : [{"id":0,"code":"string","name":"string","type":0,"startTime":0,"scale":0}]
+     * data : [{"id":0,"code":"string","objId":0,"name":"string","type":0,"startTime":0,"duration":0,"scale":0,"relevanceType":0}]
      */
 
     private int status;
@@ -42,18 +42,24 @@ public class ChapterListInfo {
         /**
          * id : 0
          * code : string
+         * objId : 0
          * name : string
          * type : 0
          * startTime : 0
+         * duration : 0
          * scale : 0
+         * relevanceType : 0
          */
 
         private int id;
         private String code;
+        private int objId;
         private String name;
         private int type;
         private int startTime;
+        private int duration;
         private int scale;
+        private int relevanceType;
 
         public int getId() {
             return id;
@@ -69,6 +75,14 @@ public class ChapterListInfo {
 
         public void setCode(String code) {
             this.code = code;
+        }
+
+        public int getObjId() {
+            return objId;
+        }
+
+        public void setObjId(int objId) {
+            this.objId = objId;
         }
 
         public String getName() {
@@ -95,12 +109,28 @@ public class ChapterListInfo {
             this.startTime = startTime;
         }
 
+        public int getDuration() {
+            return duration;
+        }
+
+        public void setDuration(int duration) {
+            this.duration = duration;
+        }
+
         public int getScale() {
             return scale;
         }
 
         public void setScale(int scale) {
             this.scale = scale;
+        }
+
+        public int getRelevanceType() {
+            return relevanceType;
+        }
+
+        public void setRelevanceType(int relevanceType) {
+            this.relevanceType = relevanceType;
         }
     }
 }

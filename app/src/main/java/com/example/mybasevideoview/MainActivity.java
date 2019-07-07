@@ -184,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
                         //Log.d(TAG, "pos:"+pos);
                         seekBar.setProgress(pos);
                     }
+                    //18098953191
                     break;
                 case UPDATE_PLAY_DURATION:
                     videoDuration = msg.arg1;

@@ -21,30 +21,45 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".view.TextAboutActivity"></activity>
+        <activity android:name=".view.ActionActivity"></activity>
+        <activity
+            android:name=".view.AppliancesActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/translucent" />
+        <activity
+            android:name=".view.TextAboutActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/translucent" />
         <activity
             android:name=".view.AboutActivity"
+            android:screenOrientation="landscape"
             android:theme="@style/translucent" />
         <activity
             android:name=".view.RelateVerticalActivity"
+            android:screenOrientation="landscape"
             android:theme="@style/translucent" />
         <activity
             android:name=".view.RelateHorizonActivity"
+            android:screenOrientation="landscape"
             android:theme="@style/translucent" />
         <activity
             android:name=".view.ChapterActivity"
+            android:screenOrientation="landscape"
             android:theme="@style/translucent" />
         <activity
             android:name=".view.TransactActivity"
+            android:screenOrientation="landscape"
             android:theme="@style/translucent" />
         <activity android:name=".SubFilmActivity" /> <!-- android:theme="@android:style/Theme.Translucent" 设置activity透明! -->
         <activity
             android:name=".view.langugueActivity"
+            android:screenOrientation="landscape"
             android:theme="@style/translucent" />
         <activity android:name=".ButterTestActivity" />
         <activity
             android:name=".MainPlayerActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize" />
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="landscape" />
         <activity
             android:name=".MainActivity"
             android:screenOrientation="landscape">
