@@ -131,7 +131,8 @@ public class AppliancesActivity extends Activity {
             @Override
             public void onPlayerEvent(int eventCode, Bundle bundle) {
                 if (eventCode == PLAYER_EVENT_ON_TIMER_UPDATE)
-                    updateUI(bundle.getInt(EventKey.INT_ARG1), bundle.getInt(EventKey.INT_ARG2));
+                    if (bNativeSeekFinish)
+                        updateUI(bundle.getInt(EventKey.INT_ARG1), bundle.getInt(EventKey.INT_ARG2));
                 if (eventCode == PLAYER_EVENT_ON_SEEK_COMPLETE) {
                     bNativeSeekFinish = true;
                 }
@@ -172,8 +173,7 @@ public class AppliancesActivity extends Activity {
     void videoPlay() {
         videoView.setDataSource(new DataSource(playUrl));
         videoView.start();
-        ImageView imageView = findViewById(R.id.videoImageView);
-        imageView.setVisibility(View.GONE);
+
 //        playThread = new PlayThread(new WeakReference<>(videoView), new WeakReference<>(handler));
 //        playThread.start();
     }

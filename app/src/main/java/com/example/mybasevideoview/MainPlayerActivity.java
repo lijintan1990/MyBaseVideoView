@@ -139,7 +139,7 @@ public class MainPlayerActivity extends Activity {
                 } else {
                     buttonList.get(2).setSelected(true);
                 }
-                createActivity(AppliancesActivity.class, RequestCode.Appliance_req);
+                createActivity(AppliancesActivity.class, RequestCode.Appliance_req, mApplienceUrl);
                 break;
             case R.id.chapter_btn:
                 if (buttonList.get(4).isSelected()) {
@@ -157,6 +157,7 @@ public class MainPlayerActivity extends Activity {
                 } else {
                     buttonList.get(1).setSelected(true);
                 }
+                playersController.pause_();
                 createActivity(langugueActivity.class, RequestCode.Languge_req);
                 break;
             case R.id.back_btn:
@@ -249,10 +250,12 @@ public class MainPlayerActivity extends Activity {
                             case OnBtnStateListener.XSL_APPLIANCE_ENABLE:
                                 buttonList.get(2).setClickable(true);
                                 buttonList.get(2).getBackground().setAlpha(255);
+                                mApplienceUrl = url;
                                 break;
                             case OnBtnStateListener.XSL_ACTION_ENABLE:
                                 buttonList.get(3).setClickable(true);
                                 buttonList.get(3).getBackground().setAlpha(255);
+                                mActionUrl = url;
                         }
                     }
                 });

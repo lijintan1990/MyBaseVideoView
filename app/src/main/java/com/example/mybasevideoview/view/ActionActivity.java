@@ -137,7 +137,5 @@ public class ActionActivity extends Activity {
     void videoPlay() {
         videoView.setDataSource(new DataSource(playUrl));
         videoView.start();
-        ImageView imageView = findViewById(R.id.videoImageView);
-        imageView.setVisibility(View.GONE);
     }
 }
