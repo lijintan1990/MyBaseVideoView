@@ -27,15 +27,13 @@
             android:layout_height="wrap_content"
             android:id="@+id/chinese_btn"
             android:background="@drawable/xsl_langugue_btn_color"
-            android:drawableLeft="@mipmap/xsl_langugue"
-            android:drawablePadding="@dimen/draw_padding_text"
             android:gravity="center_vertical"
             android:paddingLeft="@dimen/padding_left_size"
             android:text="中文简体"/>
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="20dp"
+            android:layout_marginVertical="0dp"
             android:id="@+id/cantonese_btn"
             android:background="@color/translucent_background"
             android:drawableLeft="@mipmap/xsl_langugue_complex"

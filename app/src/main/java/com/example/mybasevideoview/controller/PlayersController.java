@@ -7,6 +7,7 @@ import android.widget.VideoView;
 import com.example.mybasevideoview.MainPlayerActivity;
 import com.example.mybasevideoview.model.DataType;
 import com.example.mybasevideoview.model.TimeLineInfo;
+import com.example.mybasevideoview.utils.XslUtils;
 import com.kk.taurus.playerbase.entity.DataSource;
 import com.kk.taurus.playerbase.player.IPlayer;
 import com.kk.taurus.playerbase.render.AspectRatio;
@@ -32,7 +33,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
     private int startTime;
     //
     private int pauseTime;
-    //整个播放的总时长
+    //整个播放的总时长,单位秒
     private int totalDuration = 0;
 
     //当前播放时间，这时间是当前播放时间相对于第一个视频起始播放的时间
@@ -112,10 +113,8 @@ public class PlayersController extends Thread implements IPlayerCtrl{
 
         List<TimeLineInfo.DataBean> dataBeanList = MainPlayerActivity.getTimelineInfo().getData();
         for (int i = dataBeanList.size()-1; i >= 0; i--) {
-            if (dataBeanList.get(i).getType() == DataType.XSL_VIDEO
-                && dataBeanList.get(i).getVideo() != null
-                && dataBeanList.get(i).getVideo().getIndex() != -1) {
-                totalDuration = dataBeanList.get(i).getStartTime() + dataBeanList.get(i).getVideo().getDuration();
+            if (dataBeanList.get(i).getType() == DataType.XSL_VIDEO) {
+                totalDuration = dataBeanList.get(i).getStartTime() + dataBeanList.get(i).getDuration();
             }
         }
         return totalDuration;
@@ -180,6 +179,8 @@ public class PlayersController extends Thread implements IPlayerCtrl{
         synchronized (lockObj) {
             running = false;
             List<BaseVideoView> lst = videoViewList.get();
+            if (lst == null)
+                return;
             for (BaseVideoView videoView : lst) {
                 videoView.stop();
             }
@@ -266,6 +267,8 @@ public class PlayersController extends Thread implements IPlayerCtrl{
 
     void videoProc(TimeLineInfo.DataBean dataBean) {
         List<BaseVideoView> lst = videoViewList.get();
+        if (lst == null)
+            return;
         int windowIndex = dataBean.getObjId() - 1;
         //中间播放窗口和当前轮询到的id不一致，那么通知界面播放这个id
         if (centerVideoViewIndex != windowIndex) {
@@ -290,18 +293,64 @@ public class PlayersController extends Thread implements IPlayerCtrl{
         }
     }
 
-    private void chapterProc(TimeLineInfo.DataBean dataBean) {
+    private void chapterProc(TimeLineInfo.DataBean dataBean, boolean enable) {
 
     }
 
     private void applienceProc(TimeLineInfo.DataBean dataBean, boolean enable) {
-        if (btnStateListener != null) {
-            btnStateListener.onStateChange(enable ? OnBtnStateListener.XSL_APPLIANCE_ENABLE : OnBtnStateListener.XSL_APPLIANCE_DISABLE,
-                    dataBean.getVideo().getVideoUrl360());
+        if (btnStateListener == null)
+            return;
+
+        if (dataBean == null || !enable) {
+            btnStateListener.onStateChange(OnBtnStateListener.XSL_APPLIANCE_BTN_STATE, false, null);
+            return;
+        }
+
+        if (dataBean.getVideo().getVideoUrl360() != null && !dataBean.getVideo().getVideoUrl360().isEmpty())
+            btnStateListener.onStateChange(OnBtnStateListener.XSL_APPLIANCE_BTN_STATE , enable, dataBean.getVideo().getVideoUrl360());
+        else if (dataBean.getVideo().getVideoUrl720() != null && !dataBean.getVideo().getVideoUrl720().isEmpty()) {
+            btnStateListener.onStateChange(OnBtnStateListener.XSL_APPLIANCE_BTN_STATE, enable, dataBean.getVideo().getVideoUrl720());
+        } else if (dataBean.getVideo().getVideoUrl1080() != null && !dataBean.getVideo().getVideoUrl1080().isEmpty()) {
+            btnStateListener.onStateChange(OnBtnStateListener.XSL_APPLIANCE_BTN_STATE, enable, dataBean.getVideo().getVideoUrl1080());
         }
     }
 
+    private void actionProc(TimeLineInfo.DataBean dataBean, boolean enable) {
+        if (btnStateListener != null) {
+            //关闭动作按钮
+            if (dataBean == null || !enable) {
+                btnStateListener.onStateChange(OnBtnStateListener.XSL_ACTION_BTN_STATE, enable,null);
+                return;
+            }
+            //打开动作按钮
+            if (dataBean.getVideo().getVideoUrl360() != null && !dataBean.getVideo().getVideoUrl360().isEmpty())
+                btnStateListener.onStateChange(OnBtnStateListener.XSL_ACTION_BTN_STATE, enable,
+                    dataBean.getVideo().getVideoUrl360());
+            else if (dataBean.getVideo().getVideoUrl720() != null && !dataBean.getVideo().getVideoUrl720().isEmpty()) {
+                btnStateListener.onStateChange(OnBtnStateListener.XSL_ACTION_BTN_STATE, enable,
+                        dataBean.getVideo().getVideoUrl720());
+            } else if (dataBean.getVideo().getVideoUrl1080() != null && !dataBean.getVideo().getVideoUrl1080().isEmpty()) {
+                btnStateListener.onStateChange(OnBtnStateListener.XSL_ACTION_BTN_STATE, enable,
+                        dataBean.getVideo().getVideoUrl1080());
+            }
+        }
+    }
 
+    private void wordProc(TimeLineInfo.DataBean dataBean, boolean enable) {
+        if (btnStateListener != null) {
+            //关闭文本按钮
+            if (dataBean == null || !enable) {
+                btnStateListener.onStateChange(OnBtnStateListener.XSL_WORD_BTN_STATE, enable,null);
+                return;
+            }
+            //打开文本按钮
+            if (dataBean.getText() != null &&
+                    dataBean.getText().getImgUrl() != null &&
+                    !dataBean.getText().getImgUrl().isEmpty())
+                btnStateListener.onStateChange(OnBtnStateListener.XSL_WORD_BTN_STATE,
+                                                enable, dataBean.getText().getImgUrl());
+        }
+    }
 
     //当前中间播放的是第几个小窗口的视频
     int centerVideoViewIndex = -1;
@@ -339,22 +388,50 @@ public class PlayersController extends Thread implements IPlayerCtrl{
             }
 
             int type;
+            boolean enableApplience = false;
+            boolean enableAction = false;
+            boolean enableWord = false;
+            boolean enableChapter = false;
             for (TimeLineInfo.DataBean dataBean : timeLineInfo.getData()) {
                 if (dataBean.getStartTime() <= currentPlayTime
                         && dataBean.getStartTime() + dataBean.getDuration() > currentPlayTime) {
                     type = dataBean.getType();
+                    //这个循环里面有任何一个需要激活的按钮我们都把他激活，
+                    //就算激活多次也无所谓，如果轮询完成，有的按钮没有被激活
+                    //那么enableXXX变量肯定是false,在for循环之后关闭即可
                     if (type == DataType.XSL_VIDEO) {
+                        //关联视频以及中间视频播放处理
                         videoProc(dataBean);
                     } else if (type == DataType.XSL_CHAPTER) {
-                        chapterProc(dataBean);
+                        chapterProc(dataBean, true);
+                        enableChapter = true;
                     } else if (type == DataType.XSL_APPLIANCES) {
                         applienceProc(dataBean, true);
-                    } else if (type == DataType.XSL_TEXT) {
-
+                        enableApplience = true;
+                    } else if (type == DataType.XSL_WORD) {
+                        enableWord = true;
+                        wordProc(dataBean, true);
                     } else if (type == DataType.XSL_ACTION) {
-
+                        enableAction = true;
+                        chapterProc(dataBean, true);
                     }
                 }
+            }
+
+            if (!enableAction) {
+                actionProc(null, false);
+            }
+
+            if (!enableApplience) {
+                applienceProc(null, false);
+            }
+
+            if (!enableWord) {
+                wordProc(null, false);
+            }
+
+            if (!enableChapter) {
+                chapterProc(null, false);
             }
 
             //线程睡眠，避免cpu过高
@@ -366,5 +443,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                 }
             }
         }
+
+        Log.w(TAG,"exit controller thread");
     }
 }

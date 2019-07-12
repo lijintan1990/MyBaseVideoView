@@ -345,8 +345,17 @@ public class MainActivity extends AppCompatActivity {
         subVideoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, SubFilmActivity.class);
-                startActivity(intent);
+                String url = null;
+                if (pageInfo != null && pageInfo.getStatus() == 0) {
+                    url = pageInfo.getData().getExcerpts().getVideoUrl();
+                    if (url != null && url != "") {
+                        Intent intent = new Intent(MainActivity.this, SubFilmActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable(String.valueOf(R.string.subFile_url), url);
+                        intent.putExtras(bundle);
+                        startActivity(intent);
+                    }
+                }
             }
         });
 

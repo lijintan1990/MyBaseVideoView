@@ -9,10 +9,9 @@
     tools:context=".SubFilmActivity">
 
     <Button
-        android:minWidth="0dp"
-        android:minHeight="0dp"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:id="@+id/back_btn"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginTop="15dp"
         android:layout_marginHorizontal="20dp"
         android:background="@mipmap/back"/>
@@ -24,6 +23,7 @@
         android:orientation="vertical"
         android:layout_weight="1">
         <com.kk.taurus.playerbase.widget.BaseVideoView
+            android:id="@+id/one"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="#000000"
@@ -40,7 +40,7 @@
         <Button
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:id="@+id/introduce_btn"
+            android:id="@+id/about_btn"
             android:layout_marginTop="21dp"
             android:layout_marginBottom="15dp"
             android:background="@drawable/xsl_about"/>

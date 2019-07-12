@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.example.mybasevideoview.R;
 import com.example.mybasevideoview.model.HomePageInfo;
+import com.example.mybasevideoview.model.RequestCode;
 import com.example.mybasevideoview.utils.XslUtils;
 import com.kk.taurus.playerbase.entity.DataSource;
 import com.kk.taurus.playerbase.event.EventKey;
@@ -21,6 +22,7 @@ import com.kk.taurus.playerbase.widget.BaseVideoView;
 import java.lang.ref.WeakReference;
 
 import static com.kk.taurus.playerbase.player.IPlayer.STATE_PAUSED;
+import static com.kk.taurus.playerbase.player.IPlayer.STATE_PLAYBACK_COMPLETE;
 import static com.kk.taurus.playerbase.player.IPlayer.STATE_STARTED;
 
 public class ActionActivity extends Activity {
@@ -36,11 +38,6 @@ public class ActionActivity extends Activity {
     // 就变成false,false状态下，禁止更新进度条，直到收到底层
     // seek finish回调在设置成true，继续更新进度条
     boolean bNativeSeekFinish = true;
-
-    //视频时间总长度
-    int videoDuration;
-
-    private static final String KEY_URL = "url";
     private String playUrl = null;
 
     @Override
@@ -48,10 +45,10 @@ public class ActionActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_action);
-        XslUtils.hideStausbar(new WeakReference<>(this), true);
 
+        XslUtils.hideStausbar(new WeakReference<>(this), true);
         Intent intent = getIntent();
-        playUrl = (String) intent.getSerializableExtra(String.valueOf(R.string.applience_url));
+        playUrl = (String) intent.getSerializableExtra(String.valueOf(R.string.action_url));
         if (playUrl != null) {
             init();
             videoPlay();
@@ -62,14 +59,17 @@ public class ActionActivity extends Activity {
             public void onClick(View v) {
                 if (videoView != null) {
                     videoView.stopPlayback();
-                    finish();
                 }
+                finish();
             }
         });
     }
 
     @Override
     protected void onDestroy() {
+        Intent intent = new Intent();
+        intent.putExtra(RequestCode.Key_ret_code, RequestCode.Action_req);
+        setResult(RESULT_OK, intent);
         super.onDestroy();
     }
 
@@ -89,6 +89,9 @@ public class ActionActivity extends Activity {
                 } else if (videoView.getState() == STATE_STARTED) {
                     videoView.pause();
                     playCtrView.setSelected(true);
+                } else if (videoView.getState() == STATE_PLAYBACK_COMPLETE) {
+                    videoView.start();
+                    playCtrView.setSelected(false);
                 }
             }
         });
@@ -108,8 +111,8 @@ public class ActionActivity extends Activity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 Log.d(TAG, "seekBar stop touch:"+seekBar.getProgress());
-                int sec = seekBar.getProgress() * videoDuration / 1000;
-                Log.d(TAG, "realSeek:" + seekBar.getProgress());
+                int sec = seekBar.getProgress() * videoView.getDuration() / 1000;
+                Log.d(TAG, "seek time:" + sec);
                 videoView.seekTo(sec);
             }
         });
@@ -117,10 +120,24 @@ public class ActionActivity extends Activity {
         OnPlayerEventListener playerEventListener = new OnPlayerEventListener() {
             @Override
             public void onPlayerEvent(int eventCode, Bundle bundle) {
-                if (eventCode == PLAYER_EVENT_ON_TIMER_UPDATE)
-                    updateUI(bundle.getInt(EventKey.INT_ARG1), bundle.getInt(EventKey.INT_ARG2));
-                if (eventCode == PLAYER_EVENT_ON_SEEK_COMPLETE) {
+                if (eventCode == PLAYER_EVENT_ON_TIMER_UPDATE) {
+                    if (bNativeSeekFinish) {
+                        updateUI(bundle.getInt(EventKey.INT_ARG1), bundle.getInt(EventKey.INT_ARG2));
+                        long pos = videoView.getCurrentPosition();
+                        Log.d(TAG, "get pos:" + pos);
+                    }
+                } else if (eventCode == PLAYER_EVENT_ON_SEEK_COMPLETE) {
+                    Log.d(TAG, "after seek, get pos:" + videoView.getCurrentPosition());
                     bNativeSeekFinish = true;
+                } else if (eventCode == PLAYER_EVENT_ON_PLAY_COMPLETE) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            playCtrView.setSelected(false);
+                            seekBar.setProgress(0);
+                            curTimeTextView.setText("00:00:00");
+                        }
+                    });
                 }
             }
         };

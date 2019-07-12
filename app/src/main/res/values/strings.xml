@@ -40,5 +40,8 @@
     </string>
 
     <string name="applience_url"> applience_url </string>
+    <string name="action_url"> action_url </string>
+    <string name="subFile_url"> sub_file_url </string>
+
 
 </resources>

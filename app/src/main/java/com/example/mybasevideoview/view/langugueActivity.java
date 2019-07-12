@@ -2,6 +2,7 @@ package com.example.mybasevideoview.view;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -37,12 +38,28 @@ public class langugueActivity extends Activity {
         ButterKnife.bind(this);
         XslUtils.hideStausbar(new WeakReference<>(this), true);
         intent = new Intent();
+
+        Drawable drawable = getResources().getDrawable(R.mipmap.xsl_langugue_simple);
+        drawable.setBounds(0,0,65,65);
+        buttonList.get(1).setCompoundDrawablePadding(10);
+        buttonList.get(1).setCompoundDrawables(drawable,null,null,null);
+
+        Drawable drawable1 = getResources().getDrawable(R.mipmap.xsl_langugue_complex);
+        drawable1.setBounds(0,0,65,65);
+        buttonList.get(2).setCompoundDrawablePadding(10);
+        buttonList.get(2).setCompoundDrawables(drawable1,null,null,null);
+
+        Drawable drawable2 = getResources().getDrawable(R.mipmap.xsl_langugue_english);
+        drawable2.setBounds(0,0,65,65);
+        buttonList.get(3).setCompoundDrawablePadding(10);
+        buttonList.get(3).setCompoundDrawables(drawable2,null,null,null);
     }
 
     @OnClick({R.id.close_btn, R.id.chinese_btn, R.id.cantonese_btn, R.id.english_btn})
     void click(View view) {
         switch (view.getId()) {
             case R.id.close_btn:
+                intent.putExtra(langugue_key, chinese);
                 setResult(RequestCode.Languge_req, intent);
                 finish();
                 break;

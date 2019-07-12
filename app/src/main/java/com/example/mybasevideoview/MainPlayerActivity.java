@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,27 +11,20 @@ import android.os.Message;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.mybasevideoview.controller.OnBtnStateListener;
 import com.example.mybasevideoview.controller.OnPlayCtrlEventListener;
 import com.example.mybasevideoview.controller.PlayersController;
 import com.example.mybasevideoview.model.ChapterListInfo;
-import com.example.mybasevideoview.model.DataType;
-import com.example.mybasevideoview.model.HomePageInfo;
 import com.example.mybasevideoview.model.ObtainNetWorkData;
-import com.example.mybasevideoview.model.PlayData;
 import com.example.mybasevideoview.model.RequestCode;
 import com.example.mybasevideoview.model.TimeLineInfo;
 import com.example.mybasevideoview.model.VideoListInfo;
 import com.example.mybasevideoview.play.DataInter;
-
 import com.example.mybasevideoview.utils.XslUtils;
 import com.example.mybasevideoview.view.AboutActivity;
 import com.example.mybasevideoview.view.AppliancesActivity;
@@ -52,7 +43,6 @@ import com.kk.taurus.playerbase.receiver.OnReceiverEventListener;
 import com.kk.taurus.playerbase.receiver.ReceiverGroup;
 import com.kk.taurus.playerbase.widget.BaseVideoView;
 
-import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,9 +98,10 @@ public class MainPlayerActivity extends Activity {
             XslUtils.hideStausbar(new WeakReference<Activity>(this), true);
         }
 
-        //buttonList.get(2).getBackground().setAlpha(50);
-
+        //这个一定要在createPlayCtrl之前调用，不然重复进入主面板之后就会内存泄漏或者崩溃，
+        // 因为设置的videolist为空，_stop实际上无法调用videoView的stop函数
         init();
+        //buttonList.get(2).getBackground().setAlpha(50);
         if (mNeedStartTransactAty) {
             Log.d(TAG, "start transactActivity");
             createActivity(TransactActivity.class, RequestCode.Transact_req);
@@ -118,6 +109,15 @@ public class MainPlayerActivity extends Activity {
         } else {
             createPlayCtrl();
         }
+
+
+    }
+
+    @Override
+    public void setRequestedOrientation(int requestedOrientation) {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O)
+            return;
+        super.setRequestedOrientation(requestedOrientation);
     }
 
     @OnClick({R.id.about_btn, R.id.langugue_btn, R.id.appliances_btn, R.id.action_btn, R.id.chapter_btn, R.id.word_btn, R.id.back_btn})
@@ -186,7 +186,7 @@ public class MainPlayerActivity extends Activity {
      * 使所有按钮变灰并且不可点击
      */
     private void disableAllBtn() {
-        for (int i=0; i!= 6; i++) {
+        for (int i=2; i!= 6; i++) {
             buttonList.get(i).getBackground().setAlpha(50);
             buttonList.get(i).setClickable(false);
         }
@@ -242,20 +242,26 @@ public class MainPlayerActivity extends Activity {
 
         playersController.setBtnStateListener(new OnBtnStateListener() {
             @Override
-            public void onStateChange(int action, String url) {
+            public void onStateChange(int action, boolean enable, String url) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         switch (action) {
-                            case OnBtnStateListener.XSL_APPLIANCE_ENABLE:
-                                buttonList.get(2).setClickable(true);
-                                buttonList.get(2).getBackground().setAlpha(255);
+                            case OnBtnStateListener.XSL_APPLIANCE_BTN_STATE:
+                                setBtnState(enable, 2);
                                 mApplienceUrl = url;
                                 break;
-                            case OnBtnStateListener.XSL_ACTION_ENABLE:
-                                buttonList.get(3).setClickable(true);
-                                buttonList.get(3).getBackground().setAlpha(255);
+                            case OnBtnStateListener.XSL_ACTION_BTN_STATE:
+                                setBtnState(enable, 3);
                                 mActionUrl = url;
+                                break;
+                            case OnBtnStateListener.XSL_WORD_BTN_STATE:
+                                setBtnState(enable, 5);
+                                mActionUrl = url;
+                                break;
+                            case OnBtnStateListener.XSL_CHAPTER_BTN_STATE:
+                                setBtnState(enable, 5);
+                                break;
                         }
                     }
                 });
@@ -263,6 +269,24 @@ public class MainPlayerActivity extends Activity {
         });
 
         playersController.startPlay_();
+        int duration = playersController.getDuration();
+        if (duration != 0 && chapterListInfo != null) {
+            mySeekBar.setChapterListInfo(chapterListInfo, duration);
+        }
+    }
+
+    /**
+     * 设置单个按钮状态
+     * @param state
+     * @param index 按钮在butterKnife buttonList中的位置
+     */
+    private void setBtnState(boolean state, int index)  {
+        buttonList.get(index).setClickable(state);
+        if (state) {
+            buttonList.get(index).getBackground().setAlpha(255);
+        } else {
+            buttonList.get(index).getBackground().setAlpha(50);
+        }
     }
 
     public void createActivity(Class<?> cls, int requestCode) {
@@ -294,7 +318,7 @@ public class MainPlayerActivity extends Activity {
             int langugueSelector = 0;
             Bundle bd = data.getExtras();
             langugueSelector = bd.getInt(langugueActivity.langugue_key);
-
+            buttonList.get(1).setSelected(false);
             switch (langugueSelector) {
                 case langugueActivity.chinese:
                     break;
@@ -303,6 +327,8 @@ public class MainPlayerActivity extends Activity {
                 case langugueActivity.english:
                     break;
             }
+        } else if (requestCode == RequestCode.Appliance_req) {
+            buttonList.get(2).setSelected(false);
         }
     }
 
@@ -325,8 +351,8 @@ public class MainPlayerActivity extends Activity {
 
     @Override
     protected void onStop() {
-        super.onStop();
         closeAllPlayers();
+        super.onStop();
     }
 
     @Override
@@ -414,9 +440,11 @@ public class MainPlayerActivity extends Activity {
                 Log.d(TAG, "get homepage data success");
                 mTimelineInfo = response.body();
                 Log.d(TAG, "onResponse thread id:"+Thread.currentThread().getId());
-
-                if (playersController != null)
-                {
+                if (mTimelineInfo.getData() == null) {
+                    Log.e(TAG, "Service Error. "+ mTimelineInfo.getMsg());
+                    mTimelineInfo = null;
+                }
+                if (playersController != null) {
                     int duration = playersController.getDuration();
                     if (duration != 0) {
                         mySeekBar.setChapterListInfo(chapterListInfo, duration);
@@ -463,14 +491,6 @@ public class MainPlayerActivity extends Activity {
                 Log.d(TAG, "get homepage data success");
                 mVideolst = response.body();
                 Log.d(TAG, "onResponse thread id:"+Thread.currentThread().getId());
-
-                if (playersController != null)
-                {
-                    int duration = playersController.getDuration();
-                    if (duration != 0) {
-                        mySeekBar.setChapterListInfo(chapterListInfo, duration);
-                    }
-                }
             }
 
             @Override
