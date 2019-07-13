@@ -52,7 +52,7 @@ public class MySeekBar extends AppCompatSeekBar {
         }
         int w = getWidth();
         int h = getHeight();
-        Log.d("MyseekBar", "w:"+w+"  h:" + h);
+        //Log.d("MyseekBar", "w:"+w+"  h:" + h);
         for (ChapterListInfo.DataBean data : chapterListInfo.getData()) {
             if (data.getStartTime() > mDuration)
                 break;
@@ -64,4 +64,5 @@ public class MySeekBar extends AppCompatSeekBar {
             canvas.drawCircle(posX, 36, 12, whitePaint);
         }
     }
+
 }

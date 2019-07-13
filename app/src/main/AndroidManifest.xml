@@ -25,15 +25,12 @@
             android:theme="@style/translucent"></activity>
         <activity
             android:name=".view.AppliancesActivity"
-            android:screenOrientation="landscape"
             android:theme="@style/translucent" />
         <activity
             android:name=".view.TextAboutActivity"
-            android:screenOrientation="landscape"
             android:theme="@style/translucent" />
         <activity
             android:name=".view.AboutActivity"
-            android:screenOrientation="landscape"
             android:theme="@style/translucent" />
         <activity
             android:name=".view.RelateVerticalActivity"

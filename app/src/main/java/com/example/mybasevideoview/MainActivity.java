@@ -4,8 +4,10 @@ package com.example.mybasevideoview;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -31,6 +33,7 @@ import com.example.mybasevideoview.model.HomePageInfo;
 import com.example.mybasevideoview.model.ObtainNetWorkData;
 import com.example.mybasevideoview.utils.NetworkCheck;
 import com.example.mybasevideoview.utils.XslUtils;
+import com.example.mybasevideoview.utils.ZipUtils;
 import com.kk.taurus.playerbase.entity.DataSource;
 import com.kk.taurus.playerbase.event.OnPlayerEventListener;
 import com.kk.taurus.playerbase.widget.BaseVideoView;
@@ -44,7 +47,9 @@ import com.kk.taurus.playerbase.widget.BaseVideoView;
 //import java.util.ArrayList;
 //import java.util.List;
 //
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.security.Permission;
 
@@ -333,7 +338,24 @@ public class MainActivity extends AppCompatActivity {
         bPermissionCheck = false;
     }
 
+    void unZipRes() {
+        File outDir = getExternalFilesDir("");
+        XslUtils.deleteFile(new File(outDir.getAbsolutePath() + "/defaultData"));
+        String path = "file://android_asset/defaultData.zip";
+
+        AssetManager assetManager = getResources().getAssets();
+        try {
+            InputStream inputStream = assetManager.open("defaultData.zip");
+            ZipUtils.UnZipFolder(inputStream, outDir.getAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     void init() {
+        unZipRes();
         videoView = findViewById(R.id.one);
         subVideoView = findViewById(R.id.subMovie);
         wholeVideoView = findViewById(R.id.wholeMovie);

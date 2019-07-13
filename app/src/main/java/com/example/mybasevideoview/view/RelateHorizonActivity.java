@@ -17,6 +17,7 @@ import com.kk.taurus.playerbase.entity.DataSource;
 import com.kk.taurus.playerbase.widget.BaseVideoView;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindViews;
@@ -48,11 +49,13 @@ public class RelateHorizonActivity extends Activity {
     }
 
     void playVideos() {
-        VideoListInfo videoListInfo = MainPlayerActivity.getVideoLstInfo();
+        ArrayList<String> videoUrls = MainPlayerActivity.smallVideoUrls;
+        if (videoUrls == null)
+            return;
         leftVideoView = findViewById(R.id.leftVideoView);
         rightVideoView = findViewById(R.id.rightVideoView);
-        leftVideoView.setDataSource(new DataSource(videoListInfo.getData().get(videoIndex1).getVideoUrl360()));
-        rightVideoView.setDataSource(new DataSource(videoListInfo.getData().get(videoIndex2).getVideoUrl360()));
+        leftVideoView.setDataSource(new DataSource(videoUrls.get(videoIndex1)));
+        rightVideoView.setDataSource(new DataSource(videoUrls.get(videoIndex2)));
         leftVideoView.start();
         rightVideoView.start();
     }
