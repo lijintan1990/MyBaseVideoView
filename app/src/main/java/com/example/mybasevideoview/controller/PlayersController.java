@@ -115,6 +115,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
         for (int i = dataBeanList.size()-1; i >= 0; i--) {
             if (dataBeanList.get(i).getType() == DataType.XSL_VIDEO) {
                 totalDuration = dataBeanList.get(i).getStartTime() + dataBeanList.get(i).getDuration();
+                break;
             }
         }
         return totalDuration;
