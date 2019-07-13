@@ -18,7 +18,7 @@
         android:layout_marginBottom="60dp"
         />
     <LinearLayout
-        android:layout_width="150dp"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_centerInParent="true">
@@ -27,19 +27,22 @@
             android:layout_height="wrap_content"
             android:id="@+id/chinese_btn"
             android:background="@drawable/xsl_langugue_btn_color"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:paddingLeft="@dimen/padding_left_size"
+            android:paddingRight="@dimen/padding_right_size"
+            android:textColor="@color/white"
             android:text="中文简体"/>
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="0dp"
             android:id="@+id/cantonese_btn"
             android:background="@color/translucent_background"
             android:drawableLeft="@mipmap/xsl_langugue_complex"
             android:drawablePadding="@dimen/draw_padding_text"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:paddingLeft="@dimen/padding_left_size"
+            android:paddingRight="@dimen/padding_right_size"
+            android:textColor="@color/white"
             android:text="中文繁体"/>
         <Button
             android:layout_width="match_parent"
@@ -48,9 +51,11 @@
             android:background="@color/translucent_background"
             android:drawableLeft="@mipmap/xsl_langugue_english"
             android:drawablePadding="@dimen/draw_padding_text"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:paddingLeft="@dimen/padding_left_size"
+            android:paddingRight="@dimen/padding_right_size"
             android:layout_gravity="center"
+            android:textColor="@color/white"
             android:text="ENGLISH"/>
     </LinearLayout>
 
@@ -62,6 +67,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginRight="134dp"
         android:layout_marginTop="30dp"
+        android:textColor="@color/white"
         android:background="@mipmap/icon_close"/>
 
 
