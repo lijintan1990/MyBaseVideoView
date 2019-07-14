@@ -161,13 +161,14 @@ public class PlayersController extends Thread implements IPlayerCtrl{
         }
     }
 
+
     @Override
     public void pause_() {
         synchronized (lockObj) {
             if (videoViewList.get() != null) {
                 List<BaseVideoView> lst = videoViewList.get();
-                for (BaseVideoView videoView : lst) {
-                    videoView.pause();
+                for (int i=0; i!=12; i++) {
+                    lst.get(i).pause();
                 }
             }
         }
@@ -179,8 +180,8 @@ public class PlayersController extends Thread implements IPlayerCtrl{
             if (videoViewList.get() != null) {
                 List<BaseVideoView> lst = videoViewList.get();
 
-                for (BaseVideoView videoView : lst) {
-                    videoView.resume();
+                for (int i=0; i!=12; i++) {
+                    lst.get(i).resume();
                 }
             }
         }
@@ -189,20 +190,18 @@ public class PlayersController extends Thread implements IPlayerCtrl{
     @Override
     public void seekTo_(int msc) {
         synchronized (lockObj) {
-            bSeeking = false;
-            msc = currentPlayTime;
+            msc = currentPlayTime + 3;
             if (videoViewList.get() != null) {
                 List<BaseVideoView> lst = videoViewList.get();
                 Log.d(TAG, "mySeek to:" + msc);
 
-                int i = 0;
-                for (BaseVideoView videoView : lst) {
-                    Log.d(TAG, "player status:"+videoView.getState());
-                    videoView.seekTo(msc * 1000);
-                    if (++i == 12)
-                        break;
+                for (int i=0; i!=12; i++) {
+                    Log.d(TAG, "player status:"+lst.get(i).getState());
+                    lst.get(i).seekTo(msc * 1000);
                 }
             }
+
+            bSeeking = false;
         }
     }
 
@@ -224,9 +223,14 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                 //查找合适的视频进行播放
                 //重新设置
                 centerVideoViewIndex = -1;
+
+
+                //老的播放已经结束
+                bSeeking = false;
             }
 
             currentPlayTime = msc;
+            Log.d(TAG, "seekNotify currentPlayTime: "+currentPlayTime);
         }
     }
 
@@ -377,13 +381,13 @@ public class PlayersController extends Thread implements IPlayerCtrl{
         //中间播放窗口和当前轮询到的id不一致，那么通知界面播放这个id
         if (centerVideoViewIndex != windowIndex && dataBean.getScale() == 2) {
             //int startPlayTime = currentPlayTime - dataBean.getStartTime();
-            playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL, currentPlayTime, windowIndex);
+            playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL, currentPlayTime+3, windowIndex);
             //这里是有隐藏的bug，如果中间的因为某种原因导致播放失败，那需要继续播放，
             centerVideoViewIndex = windowIndex;
 
             centerStartTime = dataBean.getStartTime();
             centerDuration = dataBean.getDuration();
-            Log.d(TAG, "change play id:"+windowIndex + " startTime:"+centerStartTime+" duration:"+centerDuration);
+            Log.d(TAG, "change play id:"+windowIndex + " startTime:"+centerStartTime+" duration:"+centerDuration + " currentPlayTime:"+currentPlayTime);
         }
 
         int relateId = -1;
@@ -468,6 +472,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
 
     @Override
     public void run() {
+        int syncVideoTime = 0;
         List<BaseVideoView> lst = videoViewList.get();
 
         while (running) {
@@ -484,22 +489,29 @@ public class PlayersController extends Thread implements IPlayerCtrl{
             // bSeeking 和currentPlayTime必须加锁
             synchronized (lockObj) {
                 if (bSeeking) {
-//                    //这里可能会发送很多个seek
-//                    playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.SEEK_CTRL,0, currentPlayTime);
-//                    Log.d(TAG, "mySeek notify mainPlayer seek to:" + currentPlayTime);
-//                    try {
-//                        sleep(100);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-                    //continue;
-                    //bSeeking = false;
+                    continue;
                 } else {
                     //中间窗口有视频播放，那么开始计时
                     if (centerVideoViewIndex != -1 && lst.get(12).getState() == IPlayer.STATE_STARTED) {
                         currentPlayTime = lst.get(12).getCurrentPosition() / 1000;
+                        //Log.d(TAG, "play currentPlayTime: " + currentPlayTime);
                         //通知更新进度条
                         playCtrlEventListener.onPlayTimeCallback(OnPlayCtrlEventListener.PLAY_TIME_SET_CTRL, totalDuration, currentPlayTime);
+
+
+                         int subTime = lst.get(centerVideoViewIndex).getCurrentPosition()  - lst.get(12).getCurrentPosition();
+                         //快速seek多次，这里存在bug
+                         if (subTime > 1200) {
+                             for (int i=0; i!=12; i++) {
+                                 lst.get(i).pause();
+                             }
+                         } else {
+
+                             for (int i=0; i!=12; i++) {
+                                 lst.get(i).resume();
+                             }
+                         }
+
                     } else {
                         Log.d(TAG, "-1");
                     }
@@ -519,7 +531,8 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                         //那么enableXXX变量肯定是false,在for循环之后关闭即可
                         if (type == DataType.XSL_VIDEO) {
                             //关联视频以及中间视频播放处理
-                            videoProc(dataBean);
+                            if (!bSeeking)
+                                videoProc(dataBean);
                         } else if (type == DataType.XSL_CHAPTER) {
                             chapterProc(dataBean, true);
                             enableChapter = true;

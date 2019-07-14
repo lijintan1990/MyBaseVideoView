@@ -183,9 +183,12 @@ public class MainPlayerActivity extends Activity {
     void playCtrlClick() {
         if (videoViewArrayList.get(12).isPlaying()) {
             ctrlImageView.setSelected(true);
+
             playersController.pause_();
+            videoViewArrayList.get(12).pause();
         } else {
             playersController.resume_();
+            videoViewArrayList.get(12).resume();
             ctrlImageView.setSelected(false);
         }
     }
@@ -212,7 +215,7 @@ public class MainPlayerActivity extends Activity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                bNativeSeekFinish = false;
             }
 
             @Override
@@ -221,12 +224,11 @@ public class MainPlayerActivity extends Activity {
                 if (playersController == null)
                     return;
 
-                if (bNativeSeekFinish) {
-                    int sec = seekBar.getProgress() * playersController.getDuration() / 1000;
-                    Log.d(TAG, "mySeek time:" + sec);
-                    playersController.seekNotify(sec);
-                    //playersController.seekTo_(sec);
-                }
+                 int sec = seekBar.getProgress() * playersController.getDuration() / 1000;
+                 Log.d(TAG, "mySeek time:" + sec);
+                 playersController.seekNotify(sec);
+                 //playersController.seekTo_(sec);
+
             }
         });
     }
@@ -242,7 +244,6 @@ public class MainPlayerActivity extends Activity {
             }
         }
     }
-
 
     void init() {
         initSeekBar();
@@ -585,12 +586,12 @@ public class MainPlayerActivity extends Activity {
         BaseVideoView p11 = findViewById(R.id.p11);
         BaseVideoView p5 = findViewById(R.id.p5);
         linearParams = (LinearLayout.LayoutParams)p11.getLayoutParams();
-        //28+20+10是左边返回控件64dp和右边介绍按钮30dp + 20dp
-        linearParams.width = (dm.widthPixels - convertDpToPixel(108))/5 - convertDpToPixel(1);
+        //28+28+10是左边返回控件64dp和右边介绍按钮30dp + 20dp
+        linearParams.width = (dm.widthPixels - convertDpToPixel(116))/5 - convertDpToPixel(1);
         p11.setLayoutParams(linearParams);
 
         linearParams = (LinearLayout.LayoutParams)p5.getLayoutParams();
-        linearParams.width = (dm.widthPixels - convertDpToPixel(60))/5;
+        linearParams.width = (dm.widthPixels - convertDpToPixel(60))/5 - convertDpToPixel(7);
         p5.setLayoutParams(linearParams);
     }
 
@@ -655,10 +656,10 @@ public class MainPlayerActivity extends Activity {
 
     void setVideoViewBoard(int id) {
         for (int i=0; i!=12; i++) {
-            videoViewArrayList.get(i).setBoardColor(Color.BLACK, true);
+            videoViewArrayList.get(i).setBoardColor(false);
         }
 
-        videoViewArrayList.get(id).setBoardColor(Color.RED, true);
+        videoViewArrayList.get(id).setBoardColor(true);
         Log.d(TAG, "set videoView red board id: "+ id);
     }
 
@@ -681,11 +682,13 @@ public class MainPlayerActivity extends Activity {
                     }
                 } else if (eventCode == OnPlayerEventListener.PLAYER_EVENT_ON_SEEK_COMPLETE) {
                     Log.d(TAG, "mySeek finish, get pos:" + videoView.getCurrentPosition());
+                    if (!bNativeSeekFinish) {
+                        //playersController.seekFinish();
+                        //这里进行小窗口的seek，也就是说等大窗口seek成功之后再进行小窗口的seek
+                        //参数直接忽略
+                        playersController.seekTo_(0);
+                    }
                     bNativeSeekFinish = true;
-                    playersController.seekFinish();
-                    //这里进行小窗口的seek，也就是说等大窗口seek成功之后再进行小窗口的seek
-                    //参数直接忽略
-                    playersController.seekTo_(0);
                 } else if (eventCode == OnPlayerEventListener.PLAYER_EVENT_ON_PLAY_COMPLETE) {
                     Log.d(TAG, "PLAYER_EVENT_ON_PLAY_COMPLETE");
                 } else if (eventCode == OnPlayerEventListener.PLAYER_EVENT_ON_START) {
