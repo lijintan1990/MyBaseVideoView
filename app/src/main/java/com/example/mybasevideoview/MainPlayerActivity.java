@@ -12,6 +12,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -78,7 +79,7 @@ public class MainPlayerActivity extends Activity {
     public static final String RELATE_ID_TWO = "RELATE_ID_TWO";
 
     @BindViews({R.id.about_btn, R.id.langugue_btn, R.id.appliances_btn, R.id.action_btn, R.id.chapter_btn, R.id.word_btn, R.id.back_btn})
-    List<ImageButton> buttonList;
+    List<Button> buttonList;
     @BindViews({R.id.main_controller_text_view_curr_time, R.id.main_controller_text_view_total_time})
     List<TextView> textViews;
     @BindView(R.id.main_controller_image_view_play_state)
@@ -201,6 +202,8 @@ public class MainPlayerActivity extends Activity {
             buttonList.get(i).getBackground().setAlpha(50);
             buttonList.get(i).setClickable(false);
         }
+
+        setBtnState(true, 4);
     }
 
     private void initSeekBar() {
@@ -385,6 +388,14 @@ public class MainPlayerActivity extends Activity {
             }
         } else if (requestCode == RequestCode.Appliance_req) {
             buttonList.get(2).setSelected(false);
+        } else if (requestCode == RequestCode.Chapter_req) {
+            Bundle bd = data.getExtras();
+            int chapterIndex = bd.getInt(ChapterActivity.chapter_key);
+            int seekTime = chapterListInfo.getData().get(chapterIndex).getStartTime();
+//            videoViewArrayList.get(12).seekTo(seekTime);
+//            playersController.seekTo_(seekTime);
+            bNativeSeekFinish = false;
+            playersController.seekNotify(seekTime);
         }
     }
 
@@ -515,7 +526,7 @@ public class MainPlayerActivity extends Activity {
         return mTimelineInfo;
     }
 
-    ChapterListInfo chapterListInfo = null;
+    public static ChapterListInfo chapterListInfo = null;
     private void getChapter() {
         ObtainNetWorkData.getChapterListData(new Callback<ChapterListInfo>() {
             @Override

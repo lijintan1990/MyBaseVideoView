@@ -6,6 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".view.ChapterActivity">
 
+    <Button
+        android:layout_width="@dimen/close_btn_size"
+        android:layout_height="@dimen/close_btn_size"
+        android:id="@+id/close_btn"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="125dp"
+        android:layout_marginTop="30dp"
+        android:background="@mipmap/icon_close"/>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
