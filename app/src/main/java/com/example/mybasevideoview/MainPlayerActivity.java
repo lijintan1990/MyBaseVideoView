@@ -36,6 +36,7 @@ import com.example.mybasevideoview.view.MySeekBar;
 import com.example.mybasevideoview.view.RelateHorizonActivity;
 import com.example.mybasevideoview.view.RelateVerticalActivity;
 import com.example.mybasevideoview.view.TransactActivity;
+import com.example.mybasevideoview.view.WordActivity;
 import com.example.mybasevideoview.view.langugueActivity;
 import com.kk.taurus.playerbase.assist.InterEvent;
 import com.kk.taurus.playerbase.assist.OnVideoViewEventHandler;
@@ -91,6 +92,10 @@ public class MainPlayerActivity extends Activity {
     String mApplienceUrl = null;
     // 動作視頻的地址
     String mActionUrl = null;
+
+    String mWordTitle = null;
+    String mWordImageUrl = null;
+    String mWordContent = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,6 +162,7 @@ public class MainPlayerActivity extends Activity {
                 createActivity(ChapterActivity.class, RequestCode.Chapter_req);
                 break;
             case R.id.word_btn:
+                createWordActivity(WordActivity.class, RequestCode.Word_req);
                 break;
             case R.id.langugue_btn:
                 if (buttonList.get(1).isSelected()) {
@@ -314,16 +320,20 @@ public class MainPlayerActivity extends Activity {
                                 setBtnState(enable, 3);
                                 mActionUrl = url;
                                 break;
-                            case OnBtnStateListener.XSL_WORD_BTN_STATE:
-                                setBtnState(enable, 5);
-                                mActionUrl = url;
-                                break;
                             case OnBtnStateListener.XSL_CHAPTER_BTN_STATE:
-                                setBtnState(enable, 5);
+                                setBtnState(enable, 4);
                                 break;
                         }
                     }
                 });
+            }
+
+            @Override
+            public void onWordStateChange(int action, boolean enable, String name, String imageUri, String content) {
+                setBtnState(enable, 5);
+                mWordTitle = name;
+                mWordImageUrl = imageUri;
+                mWordContent = content;
             }
         });
 
@@ -361,6 +371,16 @@ public class MainPlayerActivity extends Activity {
         startActivityForResult(intent, requestCode);
     }
 
+    private void createWordActivity(Class<?> cls, int requestCode) {
+        Intent intent = new Intent(MainPlayerActivity.this, cls);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(String.valueOf(R.string.word_name), mWordTitle);
+        bundle.putSerializable(String.valueOf(R.string.word_image_url), mWordImageUrl);
+        bundle.putSerializable(String.valueOf(R.string.word_content), mWordContent);
+        intent.putExtras(bundle);
+        startActivityForResult(intent, requestCode);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
@@ -394,6 +414,13 @@ public class MainPlayerActivity extends Activity {
             int seekTime = chapterListInfo.getData().get(chapterIndex).getStartTime();
 //            videoViewArrayList.get(12).seekTo(seekTime);
 //            playersController.seekTo_(seekTime);
+            String text;
+            if (chapterIndex < 10) {
+                text = "0" + chapterIndex;
+            } else {
+                text = "" + chapterIndex;
+            }
+            buttonList.get(4).setText(text);
             bNativeSeekFinish = false;
             playersController.seekNotify(seekTime);
         }

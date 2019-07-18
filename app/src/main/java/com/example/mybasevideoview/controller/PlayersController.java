@@ -458,8 +458,9 @@ public class PlayersController extends Thread implements IPlayerCtrl{
             if (dataBean.getText() != null &&
                     dataBean.getText().getImgUrl() != null &&
                     !dataBean.getText().getImgUrl().isEmpty())
-                btnStateListener.onStateChange(OnBtnStateListener.XSL_WORD_BTN_STATE,
-                                                enable, dataBean.getText().getImgUrl());
+                btnStateListener.onWordStateChange(OnBtnStateListener.XSL_WORD_BTN_STATE,
+                                                enable, dataBean.getText().getName(),
+                                                dataBean.getText().getImgUrl(), dataBean.getText().getContent());
         }
     }
 
