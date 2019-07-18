@@ -28,7 +28,7 @@
         原计划。\n
             \t\t\t\t2013 年，乡射礼研究团队正式确立。\n
             \t\t\t\t2014 年，国家社科基金重大项目《〈仪礼〉复原与当代日常礼仪重建研究》
-                获批，“乡射礼复原”为课题子项。\n\r
+                获批，“乡射礼复原”为课题子项。\n
             \t\t\t\t2015 年，乡射礼研究阶段性成果以展演形式在北京孔庙展出。\n
             \t\t\t\t2016 年，团队完成乡射礼复原及拍摄工作。\n
             \t\t\t\t2017 年，国家艺术基金《〈仪礼·乡射礼〉交互数据平台建设》项目获批，\n
@@ -43,5 +43,8 @@
     <string name="action_url"> action_url </string>
     <string name="subFile_url"> sub_file_url </string>
 
+    <string name="word_name"> word_name </string>
+    <string name="word_image_url"> word_image_url </string>
+    <string name="word_content"> word_content_url </string>
 
 </resources>

@@ -17,6 +17,7 @@ import com.kk.taurus.playerbase.entity.DataSource;
 import com.kk.taurus.playerbase.widget.BaseVideoView;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindViews;
@@ -47,13 +48,13 @@ public class RelateVerticalActivity extends Activity {
     }
 
     void playVideos() {
-        VideoListInfo videoListInfo = MainPlayerActivity.getVideoLstInfo();
+        ArrayList<String> videoUrls = MainPlayerActivity.smallVideoUrls;
         topVideoView = findViewById(R.id.topVideoView);
         bottomVideoView = findViewById(R.id.bottomVideoView);
 //        topVideoView.setDataSource(new DataSource(relateVideoInfo.getUri_1()));
 //        bottomVideoView.setDataSource(new DataSource(relateVideoInfo.getUri_2()));
-        topVideoView.setDataSource(new DataSource(videoListInfo.getData().get(videoIndex1).getVideoUrl360()));
-        bottomVideoView.setDataSource(new DataSource(videoListInfo.getData().get(videoIndex2).getVideoUrl360()));
+        topVideoView.setDataSource(new DataSource(videoUrls.get(videoIndex1)));
+        bottomVideoView.setDataSource(new DataSource(videoUrls.get(videoIndex2)));
         topVideoView.start();
         bottomVideoView.start();
     }

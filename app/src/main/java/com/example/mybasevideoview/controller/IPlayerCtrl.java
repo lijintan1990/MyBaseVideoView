@@ -22,10 +22,13 @@ public interface IPlayerCtrl {
     int getBufferPercentage();
     int getPlayerState();
 
-    void startPlay_();
+    void start_();
     void pause_();
     void resume_();
     void seekTo_(int msc);
+    // 通知controller进行seek, controller在通知
+    // mainPlayerActivity去调用seekTo_进行seek
+    void seekNotify(int msc);
     void stop_();
     void stopPlayback_();
 }

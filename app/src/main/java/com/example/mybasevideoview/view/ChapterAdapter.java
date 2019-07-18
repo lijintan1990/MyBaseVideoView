@@ -9,9 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.mybasevideoview.MainPlayerActivity;
 import com.example.mybasevideoview.R;
+import com.example.mybasevideoview.model.ChapterListInfo;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterVideoHolder> {
     private int clickPos;
@@ -48,10 +51,22 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
     public int getItemCount() {
         if (mDatas == null) {
             mDatas = new ArrayList<String>();
-            mDatas.add("第一章    大神出山");
-            mDatas.add("第二章    劈山杀妖");
-            mDatas.add("第三章    山中遇宝");
-            mDatas.add("第四章    宝剑复活");
+
+            List<ChapterListInfo.DataBean> data  = MainPlayerActivity.chapterListInfo.getData();
+            if (data != null) {
+
+                for (int i=0; i!=data.size(); i++) {
+                    String str = "第";
+                    if(i < 10) {
+                        str = str + "0" + i+ "章   ";
+                    } else {
+                        str = str + i + "章   ";
+                    }
+
+                    str = str + data.get(i).getName();
+                    mDatas.add(str);
+                }
+            }
         }
 
         return mDatas.size();

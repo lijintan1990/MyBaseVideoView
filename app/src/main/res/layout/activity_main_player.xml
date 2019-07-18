@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:id="@+id/left_layout">
-        <ImageButton
+        <Button
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:layout_marginLeft="20dp"
@@ -238,42 +238,43 @@
         android:visibility="visible"
         android:layout_marginRight="20dp"
         android:id="@+id/rightButtons">
-        <ImageButton
+        <Button
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="10dp"
             android:id="@+id/about_btn"
             android:background="@drawable/xsl_about"/>
-        <ImageButton
+        <Button
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginVertical="10dp"
             android:id="@+id/langugue_btn"
             android:background="@drawable/xsl_langugue"/>
-        <ImageButton
+        <Button
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginVertical="10dp"
             android:id="@+id/appliances_btn"
             android:background="@drawable/xsl_appliances"/>
-        <ImageButton
+        <Button
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:id="@+id/action_btn"
             android:layout_marginVertical="10dp"
             android:background="@drawable/xsl_action"/>
-        <ImageButton
+        <Button
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:id="@+id/word_btn"
             android:layout_marginVertical="10dp"
             android:background="@drawable/xsl_word"/>
-        <ImageButton
+        <Button
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:id="@+id/chapter_btn"
             android:layout_marginVertical="10dp"
+            android:text="01"
             android:background="@drawable/xsl_chapter"/>
 
     </LinearLayout>

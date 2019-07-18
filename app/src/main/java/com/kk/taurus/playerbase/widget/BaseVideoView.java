@@ -85,7 +85,8 @@ public class BaseVideoView extends FrameLayout implements IVideoView, IStyleSett
     private int mVideoSarNum;
     private int mVideoSarDen;
     private int mVideoRotation;
-    private Paint mVideoBoardPaint = null;
+    private Paint mVideoBoardBlackPaint = null;
+    private Paint mVideoBoardRedPaint = null;
     // 播放的video在DataBean中的位置
     private int mIndexInDataBeanLst;
 
@@ -577,28 +578,33 @@ public class BaseVideoView extends FrameLayout implements IVideoView, IStyleSett
         }
     };
 
+    boolean bRedPaint = false;
+
     //----------------------------set video view style--------------------------
-    private boolean mOpenBoard = false;
-    private int mBoardColor = Color.BLACK;
-    public void setBoardColor(int color, boolean openBoard) {
-        mOpenBoard = openBoard;
-        mBoardColor = color;
-        initPaint();
+
+    public void setBoardColor(boolean bRed) {
+        bRedPaint = bRed;
     }
 
     void initPaint() {
-        mVideoBoardPaint = new Paint();
-        mVideoBoardPaint.setStrokeWidth(2);
-        mVideoBoardPaint.setColor(mBoardColor);
+        if (mVideoBoardRedPaint == null && mVideoBoardBlackPaint == null) {
+            mVideoBoardBlackPaint = new Paint();
+            mVideoBoardBlackPaint.setStrokeWidth(2);
+            mVideoBoardBlackPaint.setColor(Color.BLACK);
+            mVideoBoardRedPaint = new Paint();
+            mVideoBoardRedPaint.setStrokeWidth(2);
+            mVideoBoardRedPaint.setColor(Color.RED);
+        }
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (mOpenBoard) {
-            canvas.drawLine(0, 0, this.getWidth(), 0, mVideoBoardPaint);
-            canvas.drawLine(0, 0, 0, this.getHeight(), mVideoBoardPaint);
-            canvas.drawLine(this.getWidth(), 0, this.getWidth(), this.getHeight(), mVideoBoardPaint);
-            canvas.drawLine(0, this.getHeight(), this.getWidth(), this.getHeight(), mVideoBoardPaint);
+        if (mVideoBoardBlackPaint != null && mVideoBoardRedPaint != null) {
+            Paint paint = bRedPaint ? mVideoBoardRedPaint : mVideoBoardBlackPaint;
+            canvas.drawLine(0, 0, this.getWidth(), 0, paint);
+            canvas.drawLine(0, 0, 0, this.getHeight(), paint);
+            canvas.drawLine(this.getWidth(), 0, this.getWidth(), this.getHeight(), paint);
+            canvas.drawLine(0, this.getHeight(), this.getWidth(), this.getHeight(), paint);
             canvas.save();
         }
 

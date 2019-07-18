@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.WordActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/title"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        android:text="文本介绍"
+        android:textColor="@color/white"
+        android:textSize="18sp"/>
+    <Button
+        android:layout_width="@dimen/close_btn_size"
+        android:layout_height="@dimen/close_btn_size"
+        android:id="@+id/close_btn"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="125dp"
+        android:layout_marginTop="30dp"
+        android:background="@mipmap/icon_close"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:layout_below="@+id/title"
+        android:layout_marginHorizontal="140dp">
+        <ImageView
+            android:id="@+id/introduce_image"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/introduce_text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:layout_weight="0.6"/>
+
+    </LinearLayout>
+
+
+</RelativeLayout>
