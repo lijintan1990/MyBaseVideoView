@@ -526,6 +526,8 @@ public class MainPlayerActivity extends Activity {
         int seekbarHeight = 24;
         LinearLayout.LayoutParams linearParams = (LinearLayout.LayoutParams)p1.getLayoutParams();
         linearParams.height = (dm.heightPixels - seekbarHeight)/5;
+        linearParams.width = linearParams.height * 16 / 9;
+
         p1.setLayoutParams(linearParams);
         p8.setLayoutParams(linearParams);
 
@@ -539,6 +541,7 @@ public class MainPlayerActivity extends Activity {
 
         linearParams = (LinearLayout.LayoutParams)p5.getLayoutParams();
         linearParams.width = (dm.widthPixels - convertDpToPixel(60))/5;
+        linearParams.height = linearParams.width * 9 / 16;
         p5.setLayoutParams(linearParams);
     }
 
