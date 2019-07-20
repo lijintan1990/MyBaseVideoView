@@ -581,7 +581,6 @@ public class BaseVideoView extends FrameLayout implements IVideoView, IStyleSett
     boolean bRedPaint = false;
 
     //----------------------------set video view style--------------------------
-
     public void setBoardColor(boolean bRed) {
         bRedPaint = bRed;
     }

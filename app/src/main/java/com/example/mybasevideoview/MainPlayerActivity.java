@@ -2,7 +2,6 @@ package com.example.mybasevideoview;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -27,7 +27,6 @@ import com.example.mybasevideoview.model.ObtainNetWorkData;
 import com.example.mybasevideoview.model.RequestCode;
 import com.example.mybasevideoview.model.TimeLineInfo;
 import com.example.mybasevideoview.model.VideoListInfo;
-import com.example.mybasevideoview.play.DataInter;
 import com.example.mybasevideoview.utils.XslUtils;
 import com.example.mybasevideoview.view.AboutActivity;
 import com.example.mybasevideoview.view.AppliancesActivity;
@@ -38,14 +37,10 @@ import com.example.mybasevideoview.view.RelateVerticalActivity;
 import com.example.mybasevideoview.view.TransactActivity;
 import com.example.mybasevideoview.view.WordActivity;
 import com.example.mybasevideoview.view.langugueActivity;
-import com.kk.taurus.playerbase.assist.InterEvent;
-import com.kk.taurus.playerbase.assist.OnVideoViewEventHandler;
 import com.kk.taurus.playerbase.entity.DataSource;
-import com.kk.taurus.playerbase.event.EventKey;
 import com.kk.taurus.playerbase.event.OnErrorEventListener;
 import com.kk.taurus.playerbase.event.OnPlayerEventListener;
 import com.kk.taurus.playerbase.player.IPlayer;
-import com.kk.taurus.playerbase.receiver.OnReceiverEventListener;
 import com.kk.taurus.playerbase.receiver.ReceiverGroup;
 import com.kk.taurus.playerbase.widget.BaseVideoView;
 
@@ -190,7 +185,6 @@ public class MainPlayerActivity extends Activity {
     void playCtrlClick() {
         if (videoViewArrayList.get(12).isPlaying()) {
             ctrlImageView.setSelected(true);
-
             playersController.pause_();
             videoViewArrayList.get(12).pause();
         } else {
@@ -610,14 +604,55 @@ public class MainPlayerActivity extends Activity {
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         System.out.println("width-display :" + dm.widthPixels);
         System.out.println("heigth-display :" + dm.heightPixels);
+        int backBtnWidth = convertDpToPixel(28+10);
+        int cotrollerHeight = convertDpToPixel(24);
+        //30是width 20是marginRight
+        int defaultRightBtnWidth = convertDpToPixel(30+20);
+        int w, h;
+        w = dm.widthPixels - backBtnWidth - defaultRightBtnWidth;
+        h = dm.heightPixels - cotrollerHeight;
+        int needWidth = w;
+        int needHeight = h;
+        //和16/9进行比较
+        if (w * 9 > h * 16) {
+            //比例比16/9还大，说明太宽了，则增加右侧按钮的marginLeft
+            needWidth = h * 16 / 9;
+            int tempWidth = needWidth / 5 >> 1 << 1;
+            tempWidth = tempWidth / 16 * 16;
+            needWidth = tempWidth * 5;
+            needHeight = needWidth * 9 / 16;
+        } else if (w * 9 < h * 16) {
+            //宽度不够，只能缩小高度，计算进度条的marginTop
+            needHeight = w * 9 /16;
+            //避免奇数，把needHeight换算成偶数,重新计算宽高
+            int tempHeight = needHeight / 5 >> 1 << 1;
+            //保证高度是9的倍数
+            tempHeight = tempHeight / 9 * 9;
+            needHeight = tempHeight * 5;
+            needWidth = needHeight * 16 / 9;
+        }
+
+        int rightBtnMarginLeft = w - needWidth;
+        LinearLayout ln = findViewById(R.id.rightButtons);
+        LinearLayout.LayoutParams linearParams = (LinearLayout.LayoutParams)ln.getLayoutParams();
+        linearParams.leftMargin = rightBtnMarginLeft;
+        ln.setLayoutParams(linearParams);
+
+
+        int controllerMarginTop = h - needHeight + 8;
+        LinearLayout ln1 = findViewById(R.id.controller);
+        RelativeLayout.LayoutParams relativeParams = (RelativeLayout.LayoutParams)ln1.getLayoutParams();
+        relativeParams.topMargin = controllerMarginTop;
+        ln1.setLayoutParams(relativeParams);
+
         //设置顶层和底层的播放空间的高度
         BaseVideoView p1 = findViewById(R.id.p1);
         BaseVideoView p8 = findViewById(R.id.p8);
 
-        int seekbarHeight = 24;
-        LinearLayout.LayoutParams linearParams = (LinearLayout.LayoutParams)p1.getLayoutParams();
-        linearParams.height = (dm.heightPixels - seekbarHeight)/5;
-        linearParams.width = linearParams.height * 16 / 9;
+        linearParams = (LinearLayout.LayoutParams)p1.getLayoutParams();
+        linearParams.height = needHeight / 5;
+        Log.d(TAG, "height:"+ linearParams.height);
+        //linearParams.width = linearParams.height * 16 / 9;
 
         p1.setLayoutParams(linearParams);
         p8.setLayoutParams(linearParams);
@@ -627,12 +662,18 @@ public class MainPlayerActivity extends Activity {
         BaseVideoView p5 = findViewById(R.id.p5);
         linearParams = (LinearLayout.LayoutParams)p11.getLayoutParams();
         //28+28+10是左边返回控件64dp和右边介绍按钮30dp + 20dp
-        linearParams.width = (dm.widthPixels - convertDpToPixel(116))/5 - convertDpToPixel(1);
+        //linearParams.width = (dm.widthPixels - convertDpToPixel(116))/5 - convertDpToPixel(1);
+        linearParams.width = needWidth / 5 - 12;
+        Log.d(TAG, "width:"+ linearParams.width);
+
         p11.setLayoutParams(linearParams);
 
         linearParams = (LinearLayout.LayoutParams)p5.getLayoutParams();
-        linearParams.width = (dm.widthPixels - convertDpToPixel(60))/5;
-        linearParams.height = linearParams.width * 9 / 16;
+        //linearParams.width = (dm.widthPixels - convertDpToPixel(60))/5;
+        linearParams.width = needWidth / 5 - 12;
+        Log.d(TAG, "width:"+ linearParams.width);
+
+        //linearParams.height = linearParams.width * 9 / 16;
         p5.setLayoutParams(linearParams);
     }
 
