@@ -130,7 +130,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/xsl_video_shape"
-                android:id="@+id/p9" />
+                android:id="@+id/p7" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -142,7 +142,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/xsl_video_shape"
-                android:id="@+id/p7" />
+                android:id="@+id/p9" />
             <View
                 android:id="@+id/fill_unit_four"
                 android:layout_width="match_parent"
@@ -164,7 +164,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/xsl_video_shape"
-                android:id="@+id/p12" />
+                android:id="@+id/p10" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -176,7 +176,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/xsl_video_shape"
-                android:id="@+id/p10" />
+                android:id="@+id/p12" />
         </LinearLayout>
 
         <LinearLayout

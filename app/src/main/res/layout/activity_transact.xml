@@ -29,6 +29,7 @@
         android:layout_height="30dp"
         android:gravity="center"
         android:textSize="16sp"
+        android:textColor="@color/white"
         android:text="返回首页"
         android:layout_toRightOf="@id/left_indicate"
         android:layout_alignBottom="@+id/left_indicate"/>
@@ -58,6 +59,7 @@
         android:layout_width="@dimen/instructor_len"
         android:layout_height="wrap_content"
         android:id="@+id/in1"
+        android:textColor="@color/white"
         android:src="@mipmap/xsl_right_instructor"
         android:layout_alignBottom="@+id/about_btn"
         android:layout_toLeftOf="@+id/about_btn"/>
@@ -67,6 +69,7 @@
         android:gravity="center"
         android:textSize="16sp"
         android:text="团队介绍"
+        android:textColor="@color/white"
         android:layout_toLeftOf="@+id/in1"
         android:layout_alignBottom="@+id/in1"
         />
@@ -85,6 +88,7 @@
         android:layout_width="@dimen/instructor_len"
         android:layout_height="wrap_content"
         android:id="@+id/in2"
+        android:textColor="@color/white"
         android:src="@mipmap/xsl_right_instructor"
         android:layout_toLeftOf="@+id/langugue_btn"
         android:layout_alignBottom="@+id/langugue_btn"/>
@@ -93,6 +97,7 @@
         android:layout_height="30dp"
         android:gravity="center"
         android:textSize="16sp"
+        android:textColor="@color/white"
         android:text="字幕选择"
         android:layout_toLeftOf="@+id/in2"
         android:layout_alignBottom="@+id/in2"/>
@@ -120,6 +125,7 @@
         android:gravity="center"
         android:textSize="16sp"
         android:text="名物介绍"
+        android:textColor="@color/white"
         android:layout_toLeftOf="@+id/in3"
         android:layout_alignBottom="@+id/in3"
         />
@@ -147,6 +153,7 @@
         android:gravity="center"
         android:textSize="16sp"
         android:text="动作介绍"
+        android:textColor="@color/white"
         android:layout_toLeftOf="@+id/in4"
         android:layout_alignBottom="@+id/in4"
         />
@@ -174,6 +181,7 @@
         android:gravity="center"
         android:textSize="16sp"
         android:text="文字介绍"
+        android:textColor="@color/white"
         android:layout_toLeftOf="@+id/in5"
         android:layout_alignBottom="@+id/in5"
         />
@@ -201,6 +209,7 @@
         android:gravity="center"
         android:textSize="16sp"
         android:text="章节节选"
+        android:textColor="@color/white"
         android:layout_toLeftOf="@+id/in6"
         android:layout_alignBottom="@+id/in6"
         />
