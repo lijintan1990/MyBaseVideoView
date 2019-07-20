@@ -175,10 +175,10 @@ public class IjkPlayer extends BaseInternalPlayer {
 
             mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "skip_loop_filter", 48);
 
-            mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "analyzemaxduration", 100L);
+            //mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "analyzemaxduration", 100L);
             mMediaPlayer.setOption(1, "probesize", 10240L);
             mMediaPlayer.setOption(1, "flush_packets", 1L);
-            mMediaPlayer.setOption(4, "packet-buffering", 0L);
+            mMediaPlayer.setOption(4, "packet-buffering", 1L);
 
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setScreenOnWhilePlaying(true);

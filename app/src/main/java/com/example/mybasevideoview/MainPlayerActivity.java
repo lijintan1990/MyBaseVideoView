@@ -60,7 +60,7 @@ import retrofit2.Response;
 public class MainPlayerActivity extends Activity {
     private static final String TAG = "AIVideo";
     BaseVideoView videoView[];
-    ArrayList<BaseVideoView> videoViewArrayList;
+    //ArrayList<BaseVideoView> videoViewArrayList;
     private boolean userPause;
     private boolean isLandscape;
     PlayersController playersController = null;
@@ -73,6 +73,9 @@ public class MainPlayerActivity extends Activity {
     //public static final String sRelateInfo = "relateInfo";
     public static final String RELATE_ID_ONE = "RELATE_ID_ONE";
     public static final String RELATE_ID_TWO = "RELATE_ID_TWO";
+
+    @BindViews({R.id.p1, R.id.p2, R.id.p3, R.id.p4, R.id.p5, R.id.p6, R.id.p7, R.id.p8, R.id.p9, R.id.p10, R.id.p11, R.id.p12, R.id.p13})
+    List<BaseVideoView> videoViewArrayList;
 
     @BindViews({R.id.about_btn, R.id.langugue_btn, R.id.appliances_btn, R.id.action_btn, R.id.chapter_btn, R.id.word_btn, R.id.back_btn})
     List<Button> buttonList;
@@ -256,24 +259,26 @@ public class MainPlayerActivity extends Activity {
 
         Log.d(TAG, "init thread id:%d" + Thread.currentThread().getId());
 
-        videoViewArrayList = new ArrayList<>();
-        videoViewArrayList.add(findViewById(R.id.p1));
-        videoViewArrayList.add(findViewById(R.id.p2));
-        videoViewArrayList.add(findViewById(R.id.p3));
-        videoViewArrayList.add(findViewById(R.id.p4));
-        videoViewArrayList.add(findViewById(R.id.p5));
-        videoViewArrayList.add(findViewById(R.id.p6));
-        videoViewArrayList.add(findViewById(R.id.p7));
-        videoViewArrayList.add(findViewById(R.id.p8));
-        videoViewArrayList.add(findViewById(R.id.p9));
-        videoViewArrayList.add(findViewById(R.id.p10));
-        videoViewArrayList.add(findViewById(R.id.p11));
-        videoViewArrayList.add(findViewById(R.id.p12));
-        videoViewArrayList.add(findViewById(R.id.p13));
+//        for (BaseVideoView v : videoViewArrayList) {
+//            v.setWillNotDraw(false);
+//            v.setBoardColor(false);
+//        }
+
 
         getVideoList();
         getTimeLine();
         getChapter();
+    }
+
+    boolean black = false;
+    @OnClick({R.id.p1, R.id.p2, R.id.p3, R.id.p4, R.id.p5, R.id.p6, R.id.p7, R.id.p8, R.id.p9, R.id.p10, R.id.p11, R.id.p12})
+    void videoViewOnClick(View view) {
+        for (BaseVideoView v : videoViewArrayList) {
+            v.setBackgroundResource(R.drawable.xsl_video_shape);
+        }
+
+        BaseVideoView videoView = (BaseVideoView) view;
+        videoView.setBackgroundResource(R.drawable.xsl_video_shape_white);
     }
 
     private void createPlayCtrl() {
@@ -825,12 +830,12 @@ public class MainPlayerActivity extends Activity {
     }
 
     public static class PlayControlHandler extends Handler {
-        WeakReference<ArrayList<BaseVideoView>> videoViewLst;
+        WeakReference<List<BaseVideoView>> videoViewLst;
         WeakReference<MainPlayerActivity> mainPlayerActivityWeakReference;
 
-        public PlayControlHandler(ArrayList<BaseVideoView> lst, MainPlayerActivity mainPlayerActivity) {
-            videoViewLst = new WeakReference<ArrayList<BaseVideoView>>(lst);
-            mainPlayerActivityWeakReference = new WeakReference<MainPlayerActivity>(mainPlayerActivity);
+        public PlayControlHandler(List<BaseVideoView> lst, MainPlayerActivity mainPlayerActivity) {
+            videoViewLst = new WeakReference<>(lst);
+            mainPlayerActivityWeakReference = new WeakReference<>(mainPlayerActivity);
         }
 
         @Override
@@ -846,7 +851,8 @@ public class MainPlayerActivity extends Activity {
                         videoViewLst.get().get(12).setDataSource(new DataSource(mVideolst.getData().get(msg.arg2).getVideoUrl360()));
                         videoViewLst.get().get(12).start(msg.arg1 * 1000);
                         mainPlayerActivityWeakReference.get().setListenVideoView(videoViewLst.get().get(12));
-                        mainPlayerActivityWeakReference.get().setVideoViewBoard(msg.arg2);
+                        //mainPlayerActivityWeakReference.get().setVideoViewBoard(msg.arg2);
+                        videoViewLst.get().get(msg.arg2).setBackgroundResource(R.drawable.xsl_video_shape_white);
                         Log.d(TAG, "play main url: "+mVideolst.getData().get(msg.arg2).getVideoUrl360());
                     }
                     break;

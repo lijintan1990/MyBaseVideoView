@@ -108,6 +108,7 @@ public class BaseVideoView extends FrameLayout implements IVideoView, IStyleSett
     public BaseVideoView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs, defStyleAttr);
+        //setWillNotDraw(false);
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr) {

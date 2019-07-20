@@ -85,7 +85,7 @@ public class SuperContainer extends FrameLayout implements OnTouchGestureListene
 
     protected void initGesture(Context context){
         mTouchHelper = new ContainerTouchHelper(context,getGestureCallBackHandler());
-        setGestureEnable(true);
+        setGestureEnable(false);
     }
 
     @Override

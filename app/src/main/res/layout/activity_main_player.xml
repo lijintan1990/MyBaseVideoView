@@ -51,12 +51,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:clickable="true"
                 android:background="@drawable/xsl_video_shape"
                 android:id="@+id/p2" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:clickable="true"
                 android:background="@drawable/xsl_video_shape"
                 android:id="@+id/p3" />
             <View
@@ -129,18 +131,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:clickable="true"
                 android:background="@drawable/xsl_video_shape"
                 android:id="@+id/p7" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:clickable="true"
                 android:background="@drawable/xsl_video_shape"
                 android:id="@+id/p8" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:clickable="true"
                 android:background="@drawable/xsl_video_shape"
                 android:id="@+id/p9" />
             <View
@@ -163,18 +168,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:clickable="true"
                 android:background="@drawable/xsl_video_shape"
                 android:id="@+id/p10" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:clickable="true"
                 android:background="@drawable/xsl_video_shape"
                 android:id="@+id/p11" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:clickable="true"
                 android:background="@drawable/xsl_video_shape"
                 android:id="@+id/p12" />
         </LinearLayout>
@@ -191,18 +199,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:clickable="true"
                 android:background="@drawable/xsl_video_shape"
                 android:id="@+id/p4" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:clickable="true"
                 android:background="@drawable/xsl_video_shape"
                 android:id="@+id/p5" />
             <com.kk.taurus.playerbase.widget.BaseVideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:clickable="true"
                 android:background="@drawable/xsl_video_shape"
                 android:id="@+id/p6" />
         </LinearLayout>
@@ -210,7 +221,6 @@
         <com.kk.taurus.playerbase.widget.BaseVideoView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_centerInParent="true"
             android:layout_below="@+id/top"
             android:layout_above="@+id/bottom"
             android:layout_toRightOf="@+id/left"
