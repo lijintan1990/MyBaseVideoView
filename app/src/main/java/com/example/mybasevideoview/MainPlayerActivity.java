@@ -1,6 +1,5 @@
 package com.example.mybasevideoview;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
@@ -52,6 +51,7 @@ import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.BindViews;
@@ -63,18 +63,11 @@ import retrofit2.Response;
 
 public class MainPlayerActivity extends Activity {
     private static final String TAG = "AIVideo";
-    BaseVideoView videoView[];
-    //ArrayList<BaseVideoView> videoViewArrayList;
-    private boolean userPause;
-    private boolean isLandscape;
+    ArrayList<RelateButton> relateBtns = null;
     PlayersController playersController = null;
     PlayControlHandler playControlHandler = null;
 
-    ImageButton appliances = null;
-    ImageButton langugueBtn = null;
     static boolean mNeedStartTransactAty = true;
-    private ReceiverGroup mReceiverGroup;
-    //public static final String sRelateInfo = "relateInfo";
     public static final String RELATE_INFO = "RELATE_IHFO";
 
     @BindViews({R.id.p1, R.id.p2, R.id.p3, R.id.p4, R.id.p5, R.id.p6, R.id.p7, R.id.p8, R.id.p9, R.id.p10, R.id.p11, R.id.p12, R.id.p13})
@@ -296,6 +289,12 @@ public class MainPlayerActivity extends Activity {
                 Message msg = playControlHandler.obtainMessage(action, duration, curTime);
                 playControlHandler.sendMessage(msg);
             }
+
+            @Override
+            public void onRelateUIClose(int action, int id1, int id2) {
+                Message msg = playControlHandler.obtainMessage(action, id1, id2);
+                playControlHandler.sendMessage(msg);
+            }
         });
 
         playersController.setBtnStateListener(new OnBtnStateListener() {
@@ -416,18 +415,18 @@ public class MainPlayerActivity extends Activity {
                 return;
             Bundle bd = data.getExtras();
             int time = bd.getInt(RelateVerticalActivity.Relate_key_time);
-            int id = bd.getInt(RelateVerticalActivity.Relate_key_ret_id);
+            int willPlayInCenterId = bd.getInt(RelateVerticalActivity.Relate_key_play_id);
+            int relateId = bd.getInt(RelateVerticalActivity.Relate_key_relate_id);
             playersController.relateViewNotify();
             playersController.resume_();
 
-            if (id != -1) {
-//                videoViewArrayList.get(12).stop();
-//                videoViewArrayList.get(12).setDataSource(new DataSource(mVideolst.getData().get(id).getVideoUrl360()));
-//                videoViewArrayList.get(12).start(time * 1000 + 3000);
-//                playersController.seekNotify(time);
-                Message msg = playControlHandler.obtainMessage(OnPlayCtrlEventListener.PLAY_CTRL, time, id);
-                playControlHandler.sendMessage(msg);
-            }
+            Message msg = playControlHandler.obtainMessage(OnPlayCtrlEventListener.PLAY_CTRL, time, willPlayInCenterId);
+            playControlHandler.sendMessage(msg);
+
+//            relateBtns.get(willPlayInCenterId).setImageResource(R.mipmap.relate_playing);
+//            relateBtns.get(relateId).setImageResource(R.mipmap.relate_video);
+//            relateBtns.get(willPlayInCenterId).setVisibility(View.VISIBLE);
+//            relateBtns.get(relateId).setVisibility(View.VISIBLE);
         }
     }
 
@@ -445,12 +444,13 @@ public class MainPlayerActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        closeAllPlayers();
         super.onDestroy();
     }
 
     @Override
     protected void onStop() {
-        closeAllPlayers();
+
         super.onStop();
     }
 
@@ -668,7 +668,6 @@ public class MainPlayerActivity extends Activity {
         linearParams.leftMargin = rightBtnMarginLeft;
         ln.setLayoutParams(linearParams);
 
-
         int controllerMarginTop = h - needHeight + 8;
         LinearLayout ln1 = findViewById(R.id.controller);
         RelativeLayout.LayoutParams relativeParams = (RelativeLayout.LayoutParams)ln1.getLayoutParams();
@@ -705,30 +704,54 @@ public class MainPlayerActivity extends Activity {
 
         //linearParams.height = linearParams.width * 9 / 16;
         p5.setLayoutParams(linearParams);
-        //addRelateBtn(p1, R.mipmap.relate_playing);
+        addRelateBtns();
     }
 
-    private void addRelateBtn(BaseVideoView videoView, int resId) {
-        RelateButton button = new RelateButton(videoView.getContext(), videoView, resId);
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(200, 100, 0, 0);
-        button.setLayoutParams(layoutParams);
-        button.setImageResource(resId);//(R.mipmap.relate_playing);
-        button.getBackground().setAlpha(0);
+    private void addRelateBtns() {
+        if (relateBtns == null)
+            relateBtns = new ArrayList<>();
+        for (int i=0; i!=12; i++) {
+            RelateButton button = new RelateButton(videoViewArrayList.get(i).getContext());
+            relateBtns.add(button);
+            //布局
+            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT);
+            layoutParams.setMargins(200, 100, 0, 0);
+            button.setLayoutParams(layoutParams);
+            button.setVisibility(View.GONE);//隐藏
+            button.getBackground().setAlpha(0);
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //setBackgroundResource(R.drawable.xsl_video_shape_white);
-                Log.d(TAG, "click button");
-                if (button.mFatherView.get() != null) {
-                    if (button.mResId == R.mipmap.relate_video)
-                        videoViewOnClick(button.mFatherView.get());
+            //和videoView关联
+            button.setmFatherView(new WeakReference<>(videoViewArrayList.get(i)));
+            videoViewArrayList.get(i).addView(button);
+
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (button.getmResId() == R.mipmap.relate_video) {
+                        videoViewOnClick(button.getmFatherView().get());
+                        //取消对关联视频的禁闭
+                        playersController.removeRelateDataInLst();
+                    }
                 }
-            }
-        });
-        videoView.addView(button);
+            });
+        }
+    }
+
+    /**
+     * 改变关联按钮的状态
+     * @param id
+     * @param resId
+     * @param visible false情况下，resId忽略
+     */
+    void changeRelateBtnStatus(int id, int resId, boolean visible) {
+        if (visible) {
+            relateBtns.get(id).setVisibility(View.VISIBLE);
+        } else {
+            relateBtns.get(id).setVisibility(View.GONE);
+            return;
+        }
+        relateBtns.get(id).setImageResource(resId);
     }
 
     private int convertDpToPixel(int dp) {
@@ -876,7 +899,8 @@ public class MainPlayerActivity extends Activity {
                         videoViewLst.get().get(12).setDataSource(new DataSource(mVideolst.getData().get(msg.arg2).getVideoUrl360()));
                         videoViewLst.get().get(12).start(msg.arg1);
                         mainPlayerActivityWeakReference.get().setListenVideoView(videoViewLst.get().get(12));
-                        videoViewLst.get().get(msg.arg2).setBackgroundResource(R.drawable.xsl_video_shape_white);
+                        //videoViewLst.get().get(msg.arg2).setBackgroundResource(R.drawable.xsl_video_shape_white);
+                        mainPlayerActivityWeakReference.get().videoViewOnClick(videoViewLst.get().get(msg.arg2));
                         Log.d(TAG, "play main url: "+mVideolst.getData().get(msg.arg2).getVideoUrl360());
                     }
                     break;
@@ -891,6 +915,11 @@ public class MainPlayerActivity extends Activity {
                     Intent intent = new Intent(mainPlayerActivityWeakReference.get(), RelateVerticalActivity.class);
                     intent.putExtra(RELATE_INFO, (Serializable) msg.obj);
                     mainPlayerActivityWeakReference.get().startActivityForResult(intent, RequestCode.Relate_req);
+
+                    //修改关联视频UI
+                    RelateVideoInfo info = (RelateVideoInfo)msg.obj;
+                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(info.id_1, R.mipmap.relate_playing, true);
+                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(info.id_2, R.mipmap.relate_video, true);
                     break;
                 case OnPlayCtrlEventListener.PLAY_RELATE_HORIZON_CTRL:
                     mainPlayerActivityWeakReference.get().playersController.pauseNoLock();
@@ -898,6 +927,15 @@ public class MainPlayerActivity extends Activity {
                     Intent intent1 = new Intent(mainPlayerActivityWeakReference.get(), RelateHorizonActivity.class);
                     intent1.putExtra(RELATE_INFO, (Serializable) msg.obj);
                     mainPlayerActivityWeakReference.get().startActivityForResult(intent1, RequestCode.Relate_req);
+                    //修改关联视频UI
+                    RelateVideoInfo videoInfo = (RelateVideoInfo)msg.obj;
+                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(videoInfo.id_1, R.mipmap.relate_playing, true);
+                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(videoInfo.id_2, R.mipmap.relate_video, true);
+                    break;
+                case OnPlayCtrlEventListener.PLAY_TELATE_CLOSE_UI:
+                    Log.d(TAG, "close relate UI. id1:" + msg.arg1 + " id2:" + msg.arg2);
+                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(msg.arg1, 0, false);
+                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(msg.arg2, 0, false);
                     break;
                 case OnPlayCtrlEventListener.PLAY_TIME_SET_CTRL:
                     mainPlayerActivityWeakReference.get().updatePlayCtroller(msg.arg1, msg.arg2);

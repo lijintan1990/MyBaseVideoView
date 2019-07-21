@@ -31,7 +31,8 @@ public class RelateVerticalActivity extends Activity {
     private BaseVideoView topVideoView = null;
     private BaseVideoView bottomVideoView = null;
     public static final String Relate_key_time = "Relate_ret";
-    public static final String Relate_key_ret_id = "Relate_id";//返回的视频id
+    public static final String Relate_key_play_id = "Relate_play_id";//返回需要在中间播放的id
+    public static final String Relate_key_relate_id = "Relate_id";//返回的视频id
     //MainPlayerActivity.RelateVideoInfo relateVideoInfo = null;
     //@BindViews({R.id.back_btn, R.id.top_close, R.id.bottom_close})
     List<Button> buttonList;
@@ -93,17 +94,20 @@ public class RelateVerticalActivity extends Activity {
             int time = topVideoView.getCurrentPosition() / 1000;
             intent = new Intent();
             intent.putExtra(Relate_key_time, time);
-            intent.putExtra(Relate_key_ret_id, -1);
+            intent.putExtra(Relate_key_relate_id, relateVideoInfo.getId_2());
+            intent.putExtra(Relate_key_play_id, relateVideoInfo.getId_1());
         } else if (view.getId() == R.id.top_close) {
             int time = bottomVideoView.getCurrentPosition() / 1000;
             intent = new Intent();
             intent.putExtra(Relate_key_time, time);
-            intent.putExtra(Relate_key_ret_id, relateVideoInfo.getId_2());
+            intent.putExtra(Relate_key_relate_id, relateVideoInfo.getId_1());
+            intent.putExtra(Relate_key_play_id, relateVideoInfo.getId_2());
         } else if (view.getId() == R.id.back_btn) {
             int time = topVideoView.getCurrentPosition() / 1000;
             intent = new Intent();
             intent.putExtra(Relate_key_time, time);
-            intent.putExtra(Relate_key_ret_id, -1);
+            intent.putExtra(Relate_key_relate_id, relateVideoInfo.getId_2());
+            intent.putExtra(Relate_key_play_id, relateVideoInfo.getId_1());
         }
         closeVideo();
         finish();

@@ -11,13 +11,11 @@ import com.kk.taurus.playerbase.widget.BaseVideoView;
 import java.lang.ref.WeakReference;
 
 public class RelateButton extends android.support.v7.widget.AppCompatImageButton {
-    public WeakReference<BaseVideoView> mFatherView;
-    public int mResId; //设置的mimap的id
+    private WeakReference<BaseVideoView> mFatherView = null;
+    private int mResId = -1; //设置的mimap的id
 
-    public RelateButton(Context context, BaseVideoView videoView, int resId) {
+    public RelateButton(Context context) {
         super(context);
-        mFatherView = new WeakReference<>(videoView);
-        mResId = resId;
     }
 
     public RelateButton(Context context, AttributeSet attrs) {
@@ -26,5 +24,21 @@ public class RelateButton extends android.support.v7.widget.AppCompatImageButton
 
     public RelateButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+    }
+
+    public WeakReference<BaseVideoView> getmFatherView() {
+        return mFatherView;
+    }
+
+    public void setmFatherView(WeakReference<BaseVideoView> mFatherView) {
+        this.mFatherView = mFatherView;
+    }
+
+    public int getmResId() {
+        return mResId;
+    }
+
+    public void setmResId(int mResId) {
+        this.mResId = mResId;
     }
 }

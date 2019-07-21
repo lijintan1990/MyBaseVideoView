@@ -22,7 +22,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity android:name=".view.WordActivity"
-            android:theme="@style/translucent"></activity>
+            android:theme="@style/translucent">
+        </activity>
         <activity
             android:name=".view.ActionActivity"
             android:theme="@style/translucent" />

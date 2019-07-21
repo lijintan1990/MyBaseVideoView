@@ -11,8 +11,9 @@ public interface OnPlayCtrlEventListener {
     int SEEK_CTRL = 5;
     int PLAY_RELATE_HORIZON_CTRL = 10;
     int PLAY_RELATE_VERTICAL_CTRL = 11;
-    int PLAY_TIME_SET_CTRL = 12;
-    int PLAY_ALL_CTRL = 13;
+    int PLAY_TELATE_CLOSE_UI = 12;
+    int PLAY_TIME_SET_CTRL = 13;
+    int PLAY_ALL_CTRL = 14;
 
 
 //    //在中间显示的标识号
@@ -28,10 +29,16 @@ public interface OnPlayCtrlEventListener {
     int RELATIVE_HORIZON = 2;
     int RELATIVE_VERTICAL = 1;
 
-
-
     void onPlayCtrlCallback(int action, int startTime, int id);
     void onPlayRelateVideos(int action, int id1, int id2, int startTime, int duration);
     void onPlayTimeCallback(int action, int duration, int curTime);
+
+    /**
+     * 关闭关联视频UI
+     * @param action
+     * @param id1
+     * @param id2
+     */
+    void onRelateUIClose(int action, int id1,int id2);
 }
 
