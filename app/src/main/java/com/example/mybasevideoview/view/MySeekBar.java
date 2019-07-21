@@ -12,6 +12,7 @@ import com.example.mybasevideoview.model.ChapterListInfo;
 
 public class MySeekBar extends AppCompatSeekBar {
     private Paint whitePaint;
+    //单位是秒
     private int mDuration;
     ChapterListInfo chapterListInfo = null;
 
@@ -32,7 +33,7 @@ public class MySeekBar extends AppCompatSeekBar {
 
     public void setChapterListInfo(ChapterListInfo info, int totalDuration) {
         chapterListInfo = info;
-        mDuration = totalDuration;
+        mDuration = totalDuration / 1000;
     }
 
     void initPaint() {
@@ -50,14 +51,14 @@ public class MySeekBar extends AppCompatSeekBar {
         if (mDuration <= 0) {
             return;
         }
-        int w = getWidth();
-        int h = getHeight();
+//        int w = getWidth();
+//        int h = getHeight();
         //Log.d("MyseekBar", "w:"+w+"  h:" + h);
         for (ChapterListInfo.DataBean data : chapterListInfo.getData()) {
             if (data.getStartTime() > mDuration)
                 break;
 
-            int posX = data.getStartTime() * 1000 /mDuration;
+            int posX = data.getStartTime() * 1000 / mDuration;
             //seekBar左边总是会有预留空间，容错
             if (posX < 50)
                 posX = 50;

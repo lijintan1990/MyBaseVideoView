@@ -31,7 +31,7 @@ public interface OnPlayCtrlEventListener {
 
 
     void onPlayCtrlCallback(int action, int startTime, int id);
-    void onPlayRelateVideos(int action, int id1, int id2);
+    void onPlayRelateVideos(int action, int id1, int id2, int startTime, int duration);
     void onPlayTimeCallback(int action, int duration, int curTime);
 }
 

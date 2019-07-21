@@ -6,8 +6,8 @@ public class TimeLineInfo {
 
     /**
      * status : 0
-     * msg : string
-     * data : [{"id":0,"objId":0,"type":0,"startTime":0,"duration":0,"scale":0,"relevanceType":0,"video":{"duration":0,"videoUrl1080":"string","videoUrl360":"string","videoUrl720":"string","videoUrl90":"string","id":0,"index":0,"thumbnailUrl":"string","name":"string"},"chapter":{"id":0,"code":"string","objId":0,"name":"string","type":0,"startTime":0,"duration":0,"scale":0,"relevanceType":0},"text":{"content":"string","imgUrl":"string","id":0,"name":"string"}}]
+     * msg : success
+     * data : [{"id":0,"objId":0,"type":0,"startTime":0,"duration":0,"scale":0,"relevanceType":0,"relevanceVideoId":11,"video":{"duration":0,"videoUrl1080":"string","videoUrl360":"string","videoUrl720":"string","videoUrl90":"string","id":0,"index":0,"thumbnailUrl":"string","name":"string"},"chapter":{"id":0,"code":"string","objId":0,"name":"string","type":0,"startTime":0,"duration":0,"scale":0,"relevanceType":0},"text":{"content":"string","imgUrl":"string","id":0,"name":"string"}}]
      */
 
     private int status;
@@ -47,6 +47,7 @@ public class TimeLineInfo {
          * duration : 0
          * scale : 0
          * relevanceType : 0
+         * relevanceVideoId : 11
          * video : {"duration":0,"videoUrl1080":"string","videoUrl360":"string","videoUrl720":"string","videoUrl90":"string","id":0,"index":0,"thumbnailUrl":"string","name":"string"}
          * chapter : {"id":0,"code":"string","objId":0,"name":"string","type":0,"startTime":0,"duration":0,"scale":0,"relevanceType":0}
          * text : {"content":"string","imgUrl":"string","id":0,"name":"string"}
@@ -59,6 +60,7 @@ public class TimeLineInfo {
         private int duration;
         private int scale;
         private int relevanceType;
+        private int relevanceVideoId;
         private VideoBean video;
         private ChapterBean chapter;
         private TextBean text;
@@ -117,6 +119,14 @@ public class TimeLineInfo {
 
         public void setRelevanceType(int relevanceType) {
             this.relevanceType = relevanceType;
+        }
+
+        public int getRelevanceVideoId() {
+            return relevanceVideoId;
+        }
+
+        public void setRelevanceVideoId(int relevanceVideoId) {
+            this.relevanceVideoId = relevanceVideoId;
         }
 
         public VideoBean getVideo() {

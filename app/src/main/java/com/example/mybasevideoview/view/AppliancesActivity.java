@@ -132,8 +132,6 @@ public class AppliancesActivity extends Activity {
                 if (eventCode == PLAYER_EVENT_ON_TIMER_UPDATE) {
                     if (bNativeSeekFinish) {
                         updateUI(bundle.getInt(EventKey.INT_ARG1), bundle.getInt(EventKey.INT_ARG2));
-                        long pos = videoView.getCurrentPosition();
-                        Log.d(TAG, "get pos:" + pos);
                     }
                 } else if (eventCode == PLAYER_EVENT_ON_SEEK_COMPLETE) {
                     Log.d(TAG, "after seek, get pos:" + videoView.getCurrentPosition());

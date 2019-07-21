@@ -1,5 +1,6 @@
 package com.example.mybasevideoview;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,6 +38,7 @@ import com.example.mybasevideoview.view.RelateHorizonActivity;
 import com.example.mybasevideoview.view.RelateVerticalActivity;
 import com.example.mybasevideoview.view.TransactActivity;
 import com.example.mybasevideoview.view.WordActivity;
+import com.example.mybasevideoview.view.dummy.RelateButton;
 import com.example.mybasevideoview.view.langugueActivity;
 import com.kk.taurus.playerbase.entity.DataSource;
 import com.kk.taurus.playerbase.event.OnErrorEventListener;
@@ -45,6 +48,7 @@ import com.kk.taurus.playerbase.receiver.ReceiverGroup;
 import com.kk.taurus.playerbase.widget.BaseVideoView;
 
 import java.io.File;
+import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,8 +75,7 @@ public class MainPlayerActivity extends Activity {
     static boolean mNeedStartTransactAty = true;
     private ReceiverGroup mReceiverGroup;
     //public static final String sRelateInfo = "relateInfo";
-    public static final String RELATE_ID_ONE = "RELATE_ID_ONE";
-    public static final String RELATE_ID_TWO = "RELATE_ID_TWO";
+    public static final String RELATE_INFO = "RELATE_IHFO";
 
     @BindViews({R.id.p1, R.id.p2, R.id.p3, R.id.p4, R.id.p5, R.id.p6, R.id.p7, R.id.p8, R.id.p9, R.id.p10, R.id.p11, R.id.p12, R.id.p13})
     List<BaseVideoView> videoViewArrayList;
@@ -120,7 +123,6 @@ public class MainPlayerActivity extends Activity {
         } else {
             createPlayCtrl();
         }
-
     }
 
     @Override
@@ -179,8 +181,6 @@ public class MainPlayerActivity extends Activity {
         }
     }
 
-
-
     /**
      * 暂停 继续按钮
      */
@@ -230,11 +230,10 @@ public class MainPlayerActivity extends Activity {
                 if (playersController == null)
                     return;
 
+                //1000是进度条总共1000等份
                  int sec = seekBar.getProgress() * playersController.getDuration() / 1000;
                  Log.d(TAG, "mySeek time:" + sec);
                  playersController.seekNotify(sec);
-                 //playersController.seekTo_(sec);
-
             }
         });
     }
@@ -256,21 +255,13 @@ public class MainPlayerActivity extends Activity {
         reLayout();
         disableAllBtn();
         initLocal90Videos();
-
         Log.d(TAG, "init thread id:%d" + Thread.currentThread().getId());
-
-//        for (BaseVideoView v : videoViewArrayList) {
-//            v.setWillNotDraw(false);
-//            v.setBoardColor(false);
-//        }
-
 
         getVideoList();
         getTimeLine();
         getChapter();
     }
 
-    boolean black = false;
     @OnClick({R.id.p1, R.id.p2, R.id.p3, R.id.p4, R.id.p5, R.id.p6, R.id.p7, R.id.p8, R.id.p9, R.id.p10, R.id.p11, R.id.p12})
     void videoViewOnClick(View view) {
         for (BaseVideoView v : videoViewArrayList) {
@@ -292,8 +283,11 @@ public class MainPlayerActivity extends Activity {
             }
 
             @Override
-            public void onPlayRelateVideos(int action, int id1, int id2) {
-                Message msg = playControlHandler.obtainMessage(action, id1, id2);
+            public void onPlayRelateVideos(int action, int id1, int id2, int startTime, int duration) {
+                RelateVideoInfo info = new RelateVideoInfo(startTime,
+                        duration, mVideolst.getData().get(id1).getVideoUrl360(),
+                        mVideolst.getData().get(id2).getVideoUrl360(), id1, id2);
+                Message msg = playControlHandler.obtainMessage(action, info);
                 playControlHandler.sendMessage(msg);
             }
 
@@ -388,10 +382,6 @@ public class MainPlayerActivity extends Activity {
             createPlayCtrl();
         } else if (requestCode == RequestCode.About_req) {
             buttonList.get(0).setSelected(false);
-        } else if (requestCode == RequestCode.Relate_req) {
-            for (BaseVideoView videoView : videoViewArrayList) {
-                videoView.resume();
-            }
         } else if (requestCode == RequestCode.Languge_req) {
             int langugueSelector = 0;
             Bundle bd = data.getExtras();
@@ -411,8 +401,7 @@ public class MainPlayerActivity extends Activity {
             Bundle bd = data.getExtras();
             int chapterIndex = bd.getInt(ChapterActivity.chapter_key);
             int seekTime = chapterListInfo.getData().get(chapterIndex).getStartTime();
-//            videoViewArrayList.get(12).seekTo(seekTime);
-//            playersController.seekTo_(seekTime);
+
             String text;
             if (chapterIndex < 10) {
                 text = "0" + chapterIndex;
@@ -421,7 +410,24 @@ public class MainPlayerActivity extends Activity {
             }
             buttonList.get(4).setText(text);
             bNativeSeekFinish = false;
-            playersController.seekNotify(seekTime);
+            playersController.seekNotify(seekTime * 1000);
+        } else if (requestCode == RequestCode.Relate_req) {
+            if (data == null)
+                return;
+            Bundle bd = data.getExtras();
+            int time = bd.getInt(RelateVerticalActivity.Relate_key_time);
+            int id = bd.getInt(RelateVerticalActivity.Relate_key_ret_id);
+            playersController.relateViewNotify();
+            playersController.resume_();
+
+            if (id != -1) {
+//                videoViewArrayList.get(12).stop();
+//                videoViewArrayList.get(12).setDataSource(new DataSource(mVideolst.getData().get(id).getVideoUrl360()));
+//                videoViewArrayList.get(12).start(time * 1000 + 3000);
+//                playersController.seekNotify(time);
+                Message msg = playControlHandler.obtainMessage(OnPlayCtrlEventListener.PLAY_CTRL, time, id);
+                playControlHandler.sendMessage(msg);
+            }
         }
     }
 
@@ -453,52 +459,71 @@ public class MainPlayerActivity extends Activity {
         super.onPause();
     }
 
+    public static class RelateVideoInfo implements Serializable {
+        private int startTime;
+        private int duration;
+        private String uri_1;
+        private String uri_2;
+        private int id_1;
+        private int id_2;
 
-//    public static class RelateVideoInfo implements Serializable {
-//        private int id1;
-//        private int id2;
-//        private String uri_1;
-//        private String uri_2;
-//
-//        public RelateVideoInfo(int id1, int id2, String uri_1, String uri_2) {
-//            this.id1 = id1;
-//            this.id2 = id2;
-//            this.uri_1 = uri_1;
-//            this.uri_2 = uri_2;
-//        }
-//
-//        public int getId1() {
-//            return id1;
-//        }
-//
-//        public void setId1(int id1) {
-//            this.id1 = id1;
-//        }
-//
-//        public int getId2() {
-//            return id2;
-//        }
-//
-//        public void setId2(int id2) {
-//            this.id2 = id2;
-//        }
-//
-//        public String getUri_1() {
-//            return uri_1;
-//        }
-//
-//        public void setUri_1(String uri_1) {
-//            this.uri_1 = uri_1;
-//        }
-//
-//        public String getUri_2() {
-//            return uri_2;
-//        }
-//
-//        public void setUri_2(String uri_2) {
-//            this.uri_2 = uri_2;
-//        }
-//    }
+        public RelateVideoInfo(int startTime, int duration, String uri_1, String uri_2, int id1, int id2) {
+            this.startTime = startTime;
+            this.duration = duration;
+            this.uri_1 = uri_1;
+            this.uri_2 = uri_2;
+            id_1 = id1;
+            id_2 = id2;
+        }
+
+        public String getUri_1() {
+            return uri_1;
+        }
+
+        public void setUri_1(String uri_1) {
+            this.uri_1 = uri_1;
+        }
+
+        public String getUri_2() {
+            return uri_2;
+        }
+
+        public void setUri_2(String uri_2) {
+            this.uri_2 = uri_2;
+        }
+
+        public int getStartTime() {
+            return startTime;
+        }
+
+        public void setStartTime(int startTime) {
+            this.startTime = startTime;
+        }
+
+        public int getDuration() {
+            return duration;
+        }
+
+        public void setDuration(int duration) {
+            this.duration = duration;
+        }
+
+        public int getId_1() {
+            return id_1;
+        }
+
+        public void setId_1(int id_1) {
+            this.id_1 = id_1;
+        }
+
+        public int getId_2() {
+            return id_2;
+        }
+
+        public void setId_2(int id_2) {
+            this.id_2 = id_2;
+        }
+    }
 
 //    private void seekAll(int sec) {
 //        playersController.seekTo_(sec);
@@ -680,6 +705,30 @@ public class MainPlayerActivity extends Activity {
 
         //linearParams.height = linearParams.width * 9 / 16;
         p5.setLayoutParams(linearParams);
+        //addRelateBtn(p1, R.mipmap.relate_playing);
+    }
+
+    private void addRelateBtn(BaseVideoView videoView, int resId) {
+        RelateButton button = new RelateButton(videoView.getContext(), videoView, resId);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(200, 100, 0, 0);
+        button.setLayoutParams(layoutParams);
+        button.setImageResource(resId);//(R.mipmap.relate_playing);
+        button.getBackground().setAlpha(0);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //setBackgroundResource(R.drawable.xsl_video_shape_white);
+                Log.d(TAG, "click button");
+                if (button.mFatherView.get() != null) {
+                    if (button.mResId == R.mipmap.relate_video)
+                        videoViewOnClick(button.mFatherView.get());
+                }
+            }
+        });
+        videoView.addView(button);
     }
 
     private int convertDpToPixel(int dp) {
@@ -713,33 +762,10 @@ public class MainPlayerActivity extends Activity {
             return;
         mySeekBar.setProgress(curTime * 1000 / duration);
         //当前时间设置
-        textViews.get(0).setText(XslUtils.convertSecToTimeString(curTime));
+        textViews.get(0).setText(XslUtils.convertSecToTimeString(curTime / 1000));
         //总时间设置
-        textViews.get(1).setText(XslUtils.convertSecToTimeString(duration));
+        textViews.get(1).setText(XslUtils.convertSecToTimeString(duration / 1000));
     }
-
-
-
-//    mySeekBar.setMax(1000);
-//        mySeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//        @Override
-//        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//        }
-//
-//        @Override
-//        public void onStartTrackingTouch(SeekBar seekBar) {
-//            Log.d(TAG, "seekBar start touch");
-//            bNativeSeekFinish = false;
-//        }
-//
-//        @Override
-//        public void onStopTrackingTouch(SeekBar seekBar) {
-//            Log.d(TAG, "seekBar stop touch:"+seekBar.getProgress());
-//            int sec = seekBar.getProgress() * videoView.getDuration() / 1000;
-//            Log.d(TAG, "seek time:" + sec);
-//            videoView.seekTo(sec);
-//        }
-//    });
 
     void setVideoViewBoard(int id) {
         for (int i=0; i!=12; i++) {
@@ -772,8 +798,8 @@ public class MainPlayerActivity extends Activity {
                     if (!bNativeSeekFinish) {
                         //playersController.seekFinish();
                         //这里进行小窗口的seek，也就是说等大窗口seek成功之后再进行小窗口的seek
-                        //参数直接忽略
-                        playersController.seekTo_(0);
+                        //参数直接忽略,所有小窗口seek到當前的播放時間
+                        playersController.seekTo_(playersController.getCurrentPosition());
                     }
                     bNativeSeekFinish = true;
                 } else if (eventCode == OnPlayerEventListener.PLAYER_EVENT_ON_PLAY_COMPLETE) {
@@ -845,13 +871,11 @@ public class MainPlayerActivity extends Activity {
                 //action, centerType, videoViewIndex, playDataList.get(playDataIndex)
                 case OnPlayCtrlEventListener.PLAY_CTRL:
                     if (videoViewLst.get() != null) {
-                        //videoViewLst.get().get(12).stop();
                         if (videoViewLst.get().get(12).getState() == IPlayer.STATE_STARTED)
                             videoViewLst.get().get(12).stop();
                         videoViewLst.get().get(12).setDataSource(new DataSource(mVideolst.getData().get(msg.arg2).getVideoUrl360()));
-                        videoViewLst.get().get(12).start(msg.arg1 * 1000);
+                        videoViewLst.get().get(12).start(msg.arg1);
                         mainPlayerActivityWeakReference.get().setListenVideoView(videoViewLst.get().get(12));
-                        //mainPlayerActivityWeakReference.get().setVideoViewBoard(msg.arg2);
                         videoViewLst.get().get(msg.arg2).setBackgroundResource(R.drawable.xsl_video_shape_white);
                         Log.d(TAG, "play main url: "+mVideolst.getData().get(msg.arg2).getVideoUrl360());
                     }
@@ -862,20 +886,18 @@ public class MainPlayerActivity extends Activity {
 //                    mainPlayerActivityWeakReference.get().seekAll(msg.arg2);
 //                    break;
                 case OnPlayCtrlEventListener.PLAY_RELATE_VERTICAL_CTRL:
-                    mainPlayerActivityWeakReference.get().playersController.pause_();
+                    mainPlayerActivityWeakReference.get().playersController.pauseNoLock();
+                    mainPlayerActivityWeakReference.get().videoViewArrayList.get(12).pause();
                     Intent intent = new Intent(mainPlayerActivityWeakReference.get(), RelateVerticalActivity.class);
-                    intent.putExtra(RELATE_ID_ONE, msg.arg1);
-                    intent.putExtra(RELATE_ID_TWO, msg.arg2);
+                    intent.putExtra(RELATE_INFO, (Serializable) msg.obj);
                     mainPlayerActivityWeakReference.get().startActivityForResult(intent, RequestCode.Relate_req);
                     break;
                 case OnPlayCtrlEventListener.PLAY_RELATE_HORIZON_CTRL:
-                    mainPlayerActivityWeakReference.get().playersController.pause_();
+                    mainPlayerActivityWeakReference.get().playersController.pauseNoLock();
+                    mainPlayerActivityWeakReference.get().videoViewArrayList.get(12).pause();
                     Intent intent1 = new Intent(mainPlayerActivityWeakReference.get(), RelateHorizonActivity.class);
-                    intent1.putExtra(RELATE_ID_ONE, msg.arg1);
-                    intent1.putExtra(RELATE_ID_TWO, msg.arg2);
-                    //intent1.putExtra(RELATE_ID_ONE, videoViewLst.get());
+                    intent1.putExtra(RELATE_INFO, (Serializable) msg.obj);
                     mainPlayerActivityWeakReference.get().startActivityForResult(intent1, RequestCode.Relate_req);
-                    //mainPlayerActivityWeakReference.get().createActivity(RelateHorizonActivity.class, 2);
                     break;
                 case OnPlayCtrlEventListener.PLAY_TIME_SET_CTRL:
                     mainPlayerActivityWeakReference.get().updatePlayCtroller(msg.arg1, msg.arg2);

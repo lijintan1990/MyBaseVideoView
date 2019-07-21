@@ -16,7 +16,9 @@ public interface IPlayerCtrl {
 
     boolean isInPlaybackState();
     boolean isPlaying();
+    //单位毫秒
     int getCurrentPosition();
+    //单位毫秒
     int getDuration();
     int getAudioSessionId();
     int getBufferPercentage();
