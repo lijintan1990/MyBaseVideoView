@@ -356,6 +356,15 @@ public class PlayersController extends Thread implements IPlayerCtrl{
         Log.d(TAG, "after add relate data");
     }
 
+    //被点击的小窗口的id, -1是默认值，表示不需要做任何处理
+    private int clickedWindowIdex = -1;
+
+    public void setClickedWindowIndex(int windowIndex) {
+        synchronized (lockObj) {
+            clickedWindowIdex = windowIndex;
+        }
+    }
+
     /**
      {
      "id": 56,
@@ -401,9 +410,15 @@ public class PlayersController extends Thread implements IPlayerCtrl{
         List<BaseVideoView> lst = videoViewList.get();
         if (lst == null)
             return;
+        //首先要判断是否需要关闭当前播放的中间窗口
+        if (centerVideoViewIndex >= 0 && currentPlayTime > centerStartTime + centerDuration) {
+            playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.STOP_CTRL, 0, centerVideoViewIndex);
+            centerVideoViewIndex = -1;
+        }
+
         int windowIndex = dataBean.getObjId() - 1;
         //中间播放窗口和当前轮询到的id不一致，那么通知界面播放这个id
-        if (centerVideoViewIndex != windowIndex && dataBean.getScale() == 2) {
+        if (centerVideoViewIndex == -1 && dataBean.getScale() == 2) {
             //这里是有隐藏的bug，如果中间的因为某种原因导致播放失败，那需要继续播放，
             centerVideoViewIndex = windowIndex;
             centerStartTime = dataBean.getStartTime() * 1000;
@@ -425,6 +440,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
             if (relateType == OnPlayCtrlEventListener.RELATIVE_VERTICAL) {
                 playCtrlEventListener.onPlayRelateVideos(OnPlayCtrlEventListener.PLAY_RELATE_VERTICAL_CTRL,
                         windowIndex, relateId, dataBean.getStartTime(), dataBean.getDuration());
+                Log.d(TAG, "will play relate video. playId: "+windowIndex + " relateId:"+relateId);
                 Log.d(TAG, "0 before wait");
                 relateVideoWait();
                 Log.d(TAG, "0 after wait");
@@ -432,6 +448,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                 addRelateDataToLst(dataBean);
                 playCtrlEventListener.onPlayRelateVideos(OnPlayCtrlEventListener.PLAY_RELATE_HORIZON_CTRL,
                         windowIndex, relateId, dataBean.getStartTime(), dataBean.getDuration());
+                Log.d(TAG, "will play relate video. playId: "+windowIndex + " relateId:"+relateId);
                 Log.d(TAG, "1 before wait");
                 relateVideoWait();
                 Log.d(TAG, "1 after wait");
@@ -523,8 +540,10 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                 //那么enableXXX变量肯定是false,在for循环之后关闭即可
                 if (type == DataType.XSL_VIDEO) {
                     //关联视频以及中间视频播放处理
-                    if (!bSeeking)
+                    if (!bSeeking) {
+
                         videoProc(dataBean);
+                    }
                 } else if (type == DataType.XSL_CHAPTER) {
                     chapterProc(dataBean, true);
                     enableChapter = true;

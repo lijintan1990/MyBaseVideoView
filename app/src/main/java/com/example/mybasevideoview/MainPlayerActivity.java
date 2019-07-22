@@ -62,7 +62,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainPlayerActivity extends Activity {
-    private static final String TAG = "AIVideo";
+    public static final String TAG = "AIVideo";
     ArrayList<RelateButton> relateBtns = null;
     PlayersController playersController = null;
     PlayControlHandler playControlHandler = null;
@@ -417,11 +417,15 @@ public class MainPlayerActivity extends Activity {
             int time = bd.getInt(RelateVerticalActivity.Relate_key_time);
             int willPlayInCenterId = bd.getInt(RelateVerticalActivity.Relate_key_play_id);
             int relateId = bd.getInt(RelateVerticalActivity.Relate_key_relate_id);
+            Log.d(TAG, "relateid:" + relateId + " willPlayId:"+willPlayInCenterId);
             playersController.relateViewNotify();
             playersController.resume_();
 
             Message msg = playControlHandler.obtainMessage(OnPlayCtrlEventListener.PLAY_CTRL, time, willPlayInCenterId);
             playControlHandler.sendMessage(msg);
+
+            changeRelateBtnStatus(willPlayInCenterId, R.mipmap.relate_playing, true);
+            changeRelateBtnStatus(relateId, R.mipmap.relate_video, true);
 
 //            relateBtns.get(willPlayInCenterId).setImageResource(R.mipmap.relate_playing);
 //            relateBtns.get(relateId).setImageResource(R.mipmap.relate_video);
@@ -720,6 +724,7 @@ public class MainPlayerActivity extends Activity {
             button.setLayoutParams(layoutParams);
             button.setVisibility(View.GONE);//隐藏
             button.getBackground().setAlpha(0);
+            button.setWindowIndex(i);
 
             //和videoView关联
             button.setmFatherView(new WeakReference<>(videoViewArrayList.get(i)));
@@ -728,8 +733,10 @@ public class MainPlayerActivity extends Activity {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (button.getmResId() == R.mipmap.relate_video) {
+                    //在可见的情况下才存在需要取消关联禁闭
+                    if (button.getmResId() == R.mipmap.relate_video && button.getVisibility() == View.VISIBLE) {
                         videoViewOnClick(button.getmFatherView().get());
+                        Log.d(TAG, "click window: " + button.getWindowIndex());
                         //取消对关联视频的禁闭
                         playersController.removeRelateDataInLst();
                     }
@@ -752,6 +759,7 @@ public class MainPlayerActivity extends Activity {
             return;
         }
         relateBtns.get(id).setImageResource(resId);
+        relateBtns.get(id).setmResId(resId);
     }
 
     private int convertDpToPixel(int dp) {
@@ -905,6 +913,7 @@ public class MainPlayerActivity extends Activity {
                     }
                     break;
                 case OnPlayCtrlEventListener.STOP_CTRL:
+                    videoViewLst.get().get(12).stop();
                     break;
 //                case OnPlayCtrlEventListener.SEEK_CTRL:
 //                    mainPlayerActivityWeakReference.get().seekAll(msg.arg2);

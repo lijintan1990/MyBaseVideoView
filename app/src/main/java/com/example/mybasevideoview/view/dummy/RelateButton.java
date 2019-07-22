@@ -12,6 +12,7 @@ import java.lang.ref.WeakReference;
 
 public class RelateButton extends android.support.v7.widget.AppCompatImageButton {
     private WeakReference<BaseVideoView> mFatherView = null;
+    private int windowIndex = -1;
     private int mResId = -1; //设置的mimap的id
 
     public RelateButton(Context context) {
@@ -40,5 +41,13 @@ public class RelateButton extends android.support.v7.widget.AppCompatImageButton
 
     public void setmResId(int mResId) {
         this.mResId = mResId;
+    }
+
+    public int getWindowIndex() {
+        return windowIndex;
+    }
+
+    public void setWindowIndex(int windowIndex) {
+        this.windowIndex = windowIndex;
     }
 }

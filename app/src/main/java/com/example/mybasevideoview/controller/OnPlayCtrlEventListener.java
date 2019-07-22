@@ -4,7 +4,9 @@ import com.example.mybasevideoview.model.TimeLineInfo;
 
 public interface OnPlayCtrlEventListener {
     int SET_DATA_SOURCE_CTRL = 0;
+    //中间窗口开始播放
     int PLAY_CTRL = 1;
+    //中间窗口结束播放
     int STOP_CTRL = 2;
     int PAUSE_CTRL = 3;
     int RESUME_CTRL = 4;
