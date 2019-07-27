@@ -26,6 +26,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:id="@+id/topVideoView"
+            android:layout_marginBottom="2dp"
             >
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -36,6 +37,8 @@
                     android:layout_alignParentRight="true"
                     android:layout_alignParentTop="true"
                     android:background="@mipmap/icon_close"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginRight="10dp"
                     android:id="@+id/top_close"/>
             </RelativeLayout>
         </com.kk.taurus.playerbase.widget.BaseVideoView>
@@ -55,6 +58,8 @@
                     android:layout_alignParentRight="true"
                     android:layout_alignParentTop="true"
                     android:background="@mipmap/icon_close"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginRight="10dp"
                     android:id="@+id/bottom_close"/>
             </RelativeLayout>
         </com.kk.taurus.playerbase.widget.BaseVideoView>

@@ -21,6 +21,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.mybasevideoview.controller.OnBtnStateListener;
+import com.example.mybasevideoview.controller.OnMaskViewListener;
 import com.example.mybasevideoview.controller.OnPlayCtrlEventListener;
 import com.example.mybasevideoview.controller.PlayersController;
 import com.example.mybasevideoview.model.ChapterListInfo;
@@ -64,6 +65,7 @@ import retrofit2.Response;
 public class MainPlayerActivity extends Activity {
     public static final String TAG = "AIVideo";
     ArrayList<RelateButton> relateBtns = null;
+    ArrayList<View> maskViews = null;
     PlayersController playersController = null;
     PlayControlHandler playControlHandler = null;
 
@@ -255,14 +257,87 @@ public class MainPlayerActivity extends Activity {
         getChapter();
     }
 
+    /**
+     * 如果是点击事件，我们就更加严格一些，有遮罩的就不能让他点击
+     * @param view
+     */
     @OnClick({R.id.p1, R.id.p2, R.id.p3, R.id.p4, R.id.p5, R.id.p6, R.id.p7, R.id.p8, R.id.p9, R.id.p10, R.id.p11, R.id.p12})
     void videoViewOnClick(View view) {
-        for (BaseVideoView v : videoViewArrayList) {
-            v.setBackgroundResource(R.drawable.xsl_video_shape);
+        BaseVideoView videoView = (BaseVideoView) view;
+        boolean clickAble = false;
+        switch (view.getId()) {
+            case R.id.p1:
+                if (maskViews.get(0).getVisibility() == View.VISIBLE)
+                    clickAble = true;
+                break;
+            case R.id.p2:
+                if (maskViews.get(1).getVisibility() == View.VISIBLE)
+                    clickAble = true;
+                break;
+            case R.id.p3:
+                if (maskViews.get(2).getVisibility() == View.VISIBLE)
+                    clickAble = true;
+                break;
+            case R.id.p4:
+                if (maskViews.get(3).getVisibility() == View.VISIBLE)
+                    clickAble = true;
+                break;
+            case R.id.p5:
+                if (maskViews.get(4).getVisibility() == View.VISIBLE)
+                    clickAble = true;
+                break;
+            case R.id.p6:
+                if (maskViews.get(5).getVisibility() == View.VISIBLE)
+                    clickAble = true;
+                break;
+            case R.id.p7:
+                if (maskViews.get(6).getVisibility() == View.VISIBLE)
+                    clickAble = true;
+                break;
+            case R.id.p8:
+                if (maskViews.get(7).getVisibility() == View.VISIBLE)
+                    clickAble = true;
+                break;
+            case R.id.p9:
+                if (maskViews.get(8).getVisibility() == View.VISIBLE)
+                    clickAble = true;
+                break;
+            case R.id.p10:
+                if (maskViews.get(9).getVisibility() == View.VISIBLE)
+                    clickAble = true;
+                break;
+            case R.id.p11:
+                if (maskViews.get(10).getVisibility() == View.VISIBLE)
+                    clickAble = true;
+                break;
+            case R.id.p12:
+                if (maskViews.get(11).getVisibility() == View.VISIBLE)
+                    clickAble = true;
+                break;
         }
 
-        BaseVideoView videoView = (BaseVideoView) view;
-        videoView.setBackgroundResource(R.drawable.xsl_video_shape_white);
+        if (!clickAble) {
+            return;
+        }
+
+        for (BaseVideoView v : videoViewArrayList) {
+            if (videoView == v) {
+                videoView.setBackgroundResource(R.drawable.xsl_video_shape_white);
+            } else {
+                v.setBackgroundResource(R.drawable.xsl_video_shape);
+            }
+        }
+    }
+
+    //这个是程序自动触发的，因为seek导致时间不准，不得不把这个拆开写
+    void videoViewOnClick_1(BaseVideoView videoView) {
+        for (BaseVideoView v : videoViewArrayList) {
+            if (videoView == v) {
+                videoView.setBackgroundResource(R.drawable.xsl_video_shape_white);
+            } else {
+                v.setBackgroundResource(R.drawable.xsl_video_shape);
+            }
+        }
     }
 
     private void createPlayCtrl() {
@@ -326,6 +401,14 @@ public class MainPlayerActivity extends Activity {
                 mWordTitle = name;
                 mWordImageUrl = imageUri;
                 mWordContent = content;
+            }
+        });
+
+        playersController.setMaskViewListener(new OnMaskViewListener() {
+            @Override
+            public void setMaskViewStatus(int action, int index, int id) {
+                Message msg = playControlHandler.obtainMessage(action, index, id);
+                playControlHandler.sendMessage(msg);
             }
         });
 
@@ -454,7 +537,6 @@ public class MainPlayerActivity extends Activity {
 
     @Override
     protected void onStop() {
-
         super.onStop();
     }
 
@@ -708,7 +790,11 @@ public class MainPlayerActivity extends Activity {
 
         //linearParams.height = linearParams.width * 9 / 16;
         p5.setLayoutParams(linearParams);
+
+        //添加按钮
         addRelateBtns();
+        //添加遮罩
+        addMaskView();
     }
 
     private void addRelateBtns() {
@@ -735,7 +821,7 @@ public class MainPlayerActivity extends Activity {
                 public void onClick(View v) {
                     //在可见的情况下才存在需要取消关联禁闭
                     if (button.getmResId() == R.mipmap.relate_video && button.getVisibility() == View.VISIBLE) {
-                        videoViewOnClick(button.getmFatherView().get());
+                        videoViewOnClick_1(button.getmFatherView().get());
                         Log.d(TAG, "click window: " + button.getWindowIndex());
                         //取消对关联视频的禁闭
                         playersController.removeRelateDataInLst();
@@ -746,10 +832,40 @@ public class MainPlayerActivity extends Activity {
     }
 
     /**
+     * 给小窗口添加遮罩
+     */
+    private void addMaskView() {
+        if (maskViews == null) {
+            maskViews = new ArrayList<>();
+        }
+
+        for (int i = 0; i != 12; i++) {
+            View view = new View(videoViewArrayList.get(i).getContext());
+            maskViews.add(view);
+            //布局
+            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.MATCH_PARENT);
+            view.setLayoutParams(layoutParams);
+            view.setVisibility(View.VISIBLE);
+
+            view.setBackgroundColor(Color.BLACK);
+            view.getBackground().setAlpha(130);
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+            //和videoView关联
+            videoViewArrayList.get(i).addView(view);
+        }
+    }
+
+    /**
      * 改变关联按钮的状态
      * @param id
      * @param resId
-     * @param visible false情况下，resId忽略
+     * @param visible false情况下忽略resId
      */
     void changeRelateBtnStatus(int id, int resId, boolean visible) {
         if (visible) {
@@ -844,46 +960,12 @@ public class MainPlayerActivity extends Activity {
             }
         });
 
-//        videoView.setOnReceiverEventListener(new OnReceiverEventListener() {
-//            @Override
-//            public void onReceiverEvent(int eventCode, Bundle bundle) {
-//                //...
-//            }
-//        });
         videoView.setOnErrorEventListener(new OnErrorEventListener() {
             @Override
             public void onErrorEvent(int eventCode, Bundle bundle) {
 
             }
         });
-
-//        videoView.setEventHandler(new OnVideoViewEventHandler(){
-//            @Override
-//            public void onAssistHandle(BaseVideoView assist, int eventCode, Bundle bundle) {
-//                super.onAssistHandle(assist, eventCode, bundle);
-//                switch (eventCode){
-//                    case InterEvent.CODE_REQUEST_PAUSE:
-//                        userPause = true;
-//                        break;
-//                    case DataInter.Event.EVENT_CODE_REQUEST_BACK:
-//                        if(isLandscape){
-//                            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-//                        }else{
-//                            finish();
-//                        }
-//                        break;
-//                    case DataInter.Event.EVENT_CODE_REQUEST_TOGGLE_SCREEN:
-//                        setRequestedOrientation(isLandscape ?
-//                                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
-//                                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-//                        break;
-//                    case DataInter.Event.EVENT_CODE_ERROR_SHOW:
-//                        //videoViewArrayList.get(17).stop();
-//                        break;
-//                }
-//            }
-//
-//        });
     }
 
     public static class PlayControlHandler extends Handler {
@@ -908,7 +990,7 @@ public class MainPlayerActivity extends Activity {
                         videoViewLst.get().get(12).start(msg.arg1);
                         mainPlayerActivityWeakReference.get().setListenVideoView(videoViewLst.get().get(12));
                         //videoViewLst.get().get(msg.arg2).setBackgroundResource(R.drawable.xsl_video_shape_white);
-                        mainPlayerActivityWeakReference.get().videoViewOnClick(videoViewLst.get().get(msg.arg2));
+                        mainPlayerActivityWeakReference.get().videoViewOnClick_1(videoViewLst.get().get(msg.arg2));
                         Log.d(TAG, "play main url: "+mVideolst.getData().get(msg.arg2).getVideoUrl360());
                     }
                     break;
@@ -948,6 +1030,19 @@ public class MainPlayerActivity extends Activity {
                     break;
                 case OnPlayCtrlEventListener.PLAY_TIME_SET_CTRL:
                     mainPlayerActivityWeakReference.get().updatePlayCtroller(msg.arg1, msg.arg2);
+                    break;
+                case OnMaskViewListener.ACTION_MASK_GONE:
+                    if (mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).getVisibility() == View.VISIBLE) {
+                        mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).setVisibility(View.GONE);
+                        Log.d(TAG, "gone index:"+msg.arg1 + "id:"+msg.arg2);
+                    }
+                    break;
+                case OnMaskViewListener.ACTION_MASK_VISIABLE:
+                    if (mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).getVisibility() == View.GONE) {
+                        mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).setVisibility(View.VISIBLE);
+                        Log.d(TAG, "visible index:"+msg.arg1 + "id:"+msg.arg2);
+                    }
+                     break;
             }
         }
     }

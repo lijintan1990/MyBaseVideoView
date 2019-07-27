@@ -55,7 +55,9 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
             List<ChapterListInfo.DataBean> data  = MainPlayerActivity.chapterListInfo.getData();
             if (data != null) {
 
-                for (int i=0; i!=data.size(); i++) {
+                int mid = (data.size() + 1) / 2;
+                int right;
+                for (int i=0; i!=mid; i++) {
                     String str = "第";
                     if(i < 10) {
                         str = str + "0" + i+ "章   ";
@@ -65,6 +67,19 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
 
                     str = str + data.get(i).getName();
                     mDatas.add(str);
+
+                    String strRight = "第";
+                    right = mid + i;
+                    if (right >= data.size())
+                        break;
+
+                    if (right < 10) {
+                        strRight = strRight + "0" + right + "章   ";
+                    } else {
+                        strRight = strRight + right + "章   ";
+                    }
+                    strRight = strRight + data.get(right).getName();
+                    mDatas.add(strRight);
                 }
             }
         }

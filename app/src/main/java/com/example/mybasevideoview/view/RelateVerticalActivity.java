@@ -30,13 +30,14 @@ import butterknife.OnClick;
 public class RelateVerticalActivity extends Activity {
     private BaseVideoView topVideoView = null;
     private BaseVideoView bottomVideoView = null;
+    MainPlayerActivity.RelateVideoInfo relateVideoInfo = null;
     public static final String Relate_key_time = "Relate_ret";
     public static final String Relate_key_play_id = "Relate_play_id";//返回需要在中间播放的id
     public static final String Relate_key_relate_id = "Relate_id";//返回的视频id
     //MainPlayerActivity.RelateVideoInfo relateVideoInfo = null;
     //@BindViews({R.id.back_btn, R.id.top_close, R.id.bottom_close})
     List<Button> buttonList;
-    MainPlayerActivity.RelateVideoInfo relateVideoInfo;
+    boolean hadSendResult = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,12 +52,15 @@ public class RelateVerticalActivity extends Activity {
     }
 
     void playVideos() {
+        ArrayList<String> videoUrls = MainPlayerActivity.smallVideoUrls;
+        if (videoUrls == null)
+            return;
         topVideoView = findViewById(R.id.topVideoView);
         bottomVideoView = findViewById(R.id.bottomVideoView);
         topVideoView.setDataSource(new DataSource(relateVideoInfo.getUri_1()));
         bottomVideoView.setDataSource(new DataSource(relateVideoInfo.getUri_2()));
-        topVideoView.start();
-        bottomVideoView.start();
+        topVideoView.start(relateVideoInfo.getStartTime() * 1000);
+        bottomVideoView.start(relateVideoInfo.getStartTime() * 1000);
 
         OnPlayerEventListener playerEventListener = new OnPlayerEventListener() {
             @Override
@@ -68,7 +72,10 @@ public class RelateVerticalActivity extends Activity {
                         bottomVideoView.stopPlayback();
                         Intent intent = new Intent();
                         intent.putExtra(Relate_key_time, time);
+                        intent.putExtra(Relate_key_relate_id, relateVideoInfo.getId_2());
+                        intent.putExtra(Relate_key_play_id, relateVideoInfo.getId_1());
                         setResult(RequestCode.Relate_req, intent);
+                        hadSendResult = true;
                         finish();
                     }
                 } else if (eventCode == PLAYER_EVENT_ON_PLAY_COMPLETE) {
@@ -91,31 +98,34 @@ public class RelateVerticalActivity extends Activity {
     @OnClick({R.id.bottom_close, R.id.top_close, R.id.back_btn})
     public void onClick(View view) {
         if (view.getId() == R.id.bottom_close) {
-            int time = topVideoView.getCurrentPosition() / 1000;
+            int time = topVideoView.getCurrentPosition();
             intent = new Intent();
             intent.putExtra(Relate_key_time, time);
             intent.putExtra(Relate_key_relate_id, relateVideoInfo.getId_2());
             intent.putExtra(Relate_key_play_id, relateVideoInfo.getId_1());
         } else if (view.getId() == R.id.top_close) {
-            int time = bottomVideoView.getCurrentPosition() / 1000;
+            int time = bottomVideoView.getCurrentPosition();
             intent = new Intent();
             intent.putExtra(Relate_key_time, time);
             intent.putExtra(Relate_key_relate_id, relateVideoInfo.getId_1());
             intent.putExtra(Relate_key_play_id, relateVideoInfo.getId_2());
         } else if (view.getId() == R.id.back_btn) {
-            int time = topVideoView.getCurrentPosition() / 1000;
+            int time = topVideoView.getCurrentPosition();
             intent = new Intent();
             intent.putExtra(Relate_key_time, time);
             intent.putExtra(Relate_key_relate_id, relateVideoInfo.getId_2());
             intent.putExtra(Relate_key_play_id, relateVideoInfo.getId_1());
         }
         closeVideo();
+        hadSendResult = true;
+        setResult(RequestCode.Relate_req, intent);
         finish();
     }
 
     @Override
     protected void onDestroy() {
-        setResult(RequestCode.Relate_req, intent);
+        if (!hadSendResult)
+            setResult(RequestCode.Relate_req, intent);
         super.onDestroy();
     }
 }

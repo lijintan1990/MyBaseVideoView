@@ -46,6 +46,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
     private WeakReference<List<BaseVideoView>> videoViewList;
     OnPlayCtrlEventListener playCtrlEventListener;
     OnBtnStateListener btnStateListener;
+    OnMaskViewListener maskViewListener;
 
     //操作所有view的锁
     private Object lockObj;
@@ -68,6 +69,10 @@ public class PlayersController extends Thread implements IPlayerCtrl{
 
     public void setBtnStateListener(OnBtnStateListener listener) {
         btnStateListener = listener;
+    }
+
+    public void setMaskViewListener(OnMaskViewListener listener) {
+        maskViewListener = listener;
     }
 
     @Override
@@ -416,6 +421,10 @@ public class PlayersController extends Thread implements IPlayerCtrl{
             centerVideoViewIndex = -1;
         }
 
+        //通知去掉遮罩
+        maskViewListener.setMaskViewStatus(OnMaskViewListener.ACTION_MASK_GONE, dataBean.getObjId() - 1, dataBean.getId());
+
+
         int windowIndex = dataBean.getObjId() - 1;
         //中间播放窗口和当前轮询到的id不一致，那么通知界面播放这个id
         if (centerVideoViewIndex == -1 && dataBean.getScale() == 2) {
@@ -541,7 +550,6 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                 if (type == DataType.XSL_VIDEO) {
                     //关联视频以及中间视频播放处理
                     if (!bSeeking) {
-
                         videoProc(dataBean);
                     }
                 } else if (type == DataType.XSL_CHAPTER) {
@@ -561,14 +569,22 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                     (dataBean.getStartTime() + dataBean.getDuration() + 3) * 1000 < currentPlayTime &&
                     (dataBean.getStartTime() + dataBean.getDuration() + 4) * 1000 > currentPlayTime &&
                     dataBean.getRelevanceVideoId() > 0) {
-                //处理被关禁闭的关联视频，在关联视频结束时间之后3-4s之间，将关联视频取消禁闭
-                //还有就是可以通过UI，用户手动取消禁闭
-                removeRelateDataInLst();
-                Log.d(TAG, "will close id:"+dataBean.getId() + " ");
-                //通知关闭UI上面的关联按钮
-                playCtrlEventListener.onRelateUIClose(OnPlayCtrlEventListener.PLAY_TELATE_CLOSE_UI,
-                        dataBean.getObjId() - 1, dataBean.getRelevanceVideoId() - 1);
+                    //处理被关禁闭的关联视频，在关联视频结束时间之后3-4s之间，将关联视频取消禁闭
+                    //还有就是可以通过UI，用户手动取消禁闭
+                    removeRelateDataInLst();
+                    Log.d(TAG, "will close id:"+dataBean.getId() + " ");
+                    //通知关闭UI上面的关联按钮
+                    playCtrlEventListener.onRelateUIClose(OnPlayCtrlEventListener.PLAY_TELATE_CLOSE_UI,
+                            dataBean.getObjId() - 1, dataBean.getRelevanceVideoId() - 1);
+            } else if(dataBean.getType() == DataType.XSL_VIDEO && currentPlayTime > (dataBean.getStartTime() + dataBean.getDuration()) * 1000 &&
+                        currentPlayTime < (dataBean.getStartTime() + dataBean.getDuration() + 1) * 1000) {
+                //播放完一秒内加上遮罩
+                maskViewListener.setMaskViewStatus(OnMaskViewListener.ACTION_MASK_VISIABLE, dataBean.getObjId() - 1, dataBean.getId());
             }
+
+            //当前时间还没轮询到开始，直接跳出循环
+            if (dataBean.getStartTime() * 1000 > currentPlayTime)
+                break;
         }
 
         if (!enableAction) {
