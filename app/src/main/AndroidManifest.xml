@@ -31,9 +31,6 @@
             android:name=".view.AppliancesActivity"
             android:theme="@style/translucent" />
         <activity
-            android:name=".view.TextAboutActivity"
-            android:theme="@style/translucent" />
-        <activity
             android:name=".view.AboutActivity"
             android:theme="@style/translucent" />
         <activity

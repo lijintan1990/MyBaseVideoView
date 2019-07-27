@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MyBaseVideoView</string>
+    <string name="app_name">乡射礼</string>
     <string name="home_title">PlayerBase</string>
 
     <string name="decoderSelectTitle">选择解码器</string>

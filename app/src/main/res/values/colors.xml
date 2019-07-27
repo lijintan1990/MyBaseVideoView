@@ -13,7 +13,9 @@
     <color name="edit_base_line_color">#77ffffff</color>
     <color name="grew">#77ffffff</color>
 
-    <color name="translucent_background">#80000000</color>
+    <!--白色透明-->
+    <!--color name="translucent_background">#80000000</color-->
+    <color name="translucent_background">#98000000</color>
     <color name="black">#000000</color>
     <color name="white">#ffffff</color>
     <color name="red">#ff0000</color>

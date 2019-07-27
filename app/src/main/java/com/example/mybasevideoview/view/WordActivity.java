@@ -14,8 +14,10 @@ import android.widget.TextView;
 
 import com.example.mybasevideoview.R;
 import com.example.mybasevideoview.model.ObtainNetWorkData;
+import com.example.mybasevideoview.utils.XslUtils;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,7 +37,7 @@ public class WordActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_word);
-
+        XslUtils.hideStausbar(new WeakReference<>(this), true);
         ButterKnife.bind(this);
 
         Intent intent = getIntent();

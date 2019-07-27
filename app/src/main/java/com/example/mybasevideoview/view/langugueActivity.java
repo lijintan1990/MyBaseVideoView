@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.example.mybasevideoview.R;
 import com.example.mybasevideoview.model.RequestCode;
@@ -16,6 +17,7 @@ import com.example.mybasevideoview.utils.XslUtils;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import butterknife.BindView;
 import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -30,6 +32,9 @@ public class langugueActivity extends Activity {
     @BindViews({R.id.close_btn, R.id.chinese_btn, R.id.cantonese_btn, R.id.english_btn})
     List<Button> buttonList;
 
+    @BindView(R.id.linear_layout)
+    LinearLayout linearLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +43,8 @@ public class langugueActivity extends Activity {
         ButterKnife.bind(this);
         XslUtils.hideStausbar(new WeakReference<>(this), true);
         intent = new Intent();
+
+        //linearLayout.setAlpha(0.5f);
 
         Drawable drawable = getResources().getDrawable(R.mipmap.xsl_langugue_simple);
         drawable.setBounds(0,0,65,65);

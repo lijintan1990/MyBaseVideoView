@@ -28,6 +28,7 @@
         android:text="@string/xsl_about"
         android:textColor="@color/white"
         android:textSize="14sp"
+        android:fadeScrollbars="false"
         android:id="@+id/text_content"
         android:layout_below="@id/about_text"/>
     <Button

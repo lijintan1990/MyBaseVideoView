@@ -36,8 +36,7 @@ public class ChapterActivity extends Activity {
         recyclerView.setHasFixedSize(true);
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
-        //recyclerView.getBackground().setAlpha(150);
-        recyclerView.setAlpha(0.5f);
+        //recyclerView.setAlpha(0.5f);
         ChapterAdapter chapterAdapter = new ChapterAdapter();
         chapterAdapter.setOnItemClickListenner(new ChapterAdapter.OnItemClickListenner() {
             @Override
