@@ -458,9 +458,9 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                 playCtrlEventListener.onPlayRelateVideos(OnPlayCtrlEventListener.PLAY_RELATE_HORIZON_CTRL,
                         windowIndex, relateId, dataBean.getStartTime(), dataBean.getDuration());
                 Log.d(TAG, "will play relate video. playId: "+windowIndex + " relateId:"+relateId);
-                Log.d(TAG, "1 before wait");
-                relateVideoWait();
-                Log.d(TAG, "1 after wait");
+//                Log.d(TAG, "1 before wait");
+//                relateVideoWait();
+//                Log.d(TAG, "1 after wait");
             }
         }
     }
@@ -574,7 +574,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                     removeRelateDataInLst();
                     Log.d(TAG, "will close id:"+dataBean.getId() + " ");
                     //通知关闭UI上面的关联按钮
-                    playCtrlEventListener.onRelateUIClose(OnPlayCtrlEventListener.PLAY_TELATE_CLOSE_UI,
+                    playCtrlEventListener.onRelateUIClose(OnPlayCtrlEventListener.PLAY_RELATE_CLOSE_UI,
                             dataBean.getObjId() - 1, dataBean.getRelevanceVideoId() - 1);
             } else if(dataBean.getType() == DataType.XSL_VIDEO && currentPlayTime > (dataBean.getStartTime() + dataBean.getDuration()) * 1000 &&
                         currentPlayTime < (dataBean.getStartTime() + dataBean.getDuration() + 1) * 1000) {

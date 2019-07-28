@@ -84,6 +84,11 @@ public class MainPlayerActivity extends Activity {
 
     private MySeekBar mySeekBar;
 
+    private BaseVideoView leftVideoView = null;
+    private BaseVideoView rightVideoView = null;
+    private BaseVideoView topVideoView = null;
+    private BaseVideoView bottomVideoView = null;
+
     // 名物視頻的地址
     String mApplienceUrl = null;
     // 動作視頻的地址
@@ -185,10 +190,26 @@ public class MainPlayerActivity extends Activity {
             ctrlImageView.setSelected(true);
             playersController.pause_();
             videoViewArrayList.get(12).pause();
+
+            if (leftVideoView.isPlaying()) {
+                leftVideoView.pause();
+                rightVideoView.pause();
+            } else if(rightVideoView.isPlaying()) {
+                topVideoView.pause();
+                bottomVideoView.pause();
+            }
         } else {
             playersController.resume_();
             videoViewArrayList.get(12).resume();
             ctrlImageView.setSelected(false);
+
+            if (leftVideoView.getState() == IPlayer.STATE_PAUSED) {
+                leftVideoView.resume();
+                rightVideoView.resume();
+            } else if(rightVideoView.getState() == IPlayer.STATE_PAUSED) {
+                topVideoView.resume();
+                bottomVideoView.resume();
+            }
         }
     }
 
@@ -229,6 +250,14 @@ public class MainPlayerActivity extends Activity {
                  int sec = seekBar.getProgress() * playersController.getDuration() / 1000;
                  Log.d(TAG, "mySeek time:" + sec);
                  playersController.seekNotify(sec);
+
+                 if (leftVideoView.getState() == IPlayer.STATE_STARTED) {
+                     leftVideoView.seekTo(sec);
+                     rightVideoView.seekTo(sec);
+                 } else if(rightVideoView.getState() == IPlayer.STATE_STARTED) {
+                     topVideoView.seekTo(sec);
+                     bottomVideoView.seekTo(sec);
+                 }
             }
         });
     }
@@ -795,6 +824,116 @@ public class MainPlayerActivity extends Activity {
         addRelateBtns();
         //添加遮罩
         addMaskView();
+
+        addVideoLayer();
+    }
+
+    View horizonView;
+    View verticalView;
+    int relateId1;//主播放的id
+    int relateId2;//关联视频的id
+    /**
+     * 添加视频弹层
+     */
+    private void addVideoLayer() {
+        FrameLayout frameLayout = findViewById(R.id.frame_layout);
+        //左右关联界面添加
+        horizonView = View.inflate(this, R.layout.horizon_video_layer, null);
+        frameLayout.addView(horizonView);
+        leftVideoView = findViewById(R.id.leftVideoView);
+        rightVideoView = findViewById(R.id.rightVideoView);
+        findViewById(R.id.left_close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                leftVideoView.stop();
+                rightVideoView.stop();
+                horizonView.setVisibility(View.GONE);
+
+                changeRelateBtnStatus(relateId2, R.mipmap.relate_playing, true);
+                changeRelateBtnStatus(relateId1, R.mipmap.relate_video, true);
+            }
+        });
+        findViewById(R.id.right_close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                leftVideoView.stop();
+                rightVideoView.stop();
+                horizonView.setVisibility(View.GONE);
+
+                changeRelateBtnStatus(relateId1, R.mipmap.relate_playing, true);
+                changeRelateBtnStatus(relateId2, R.mipmap.relate_video, true);
+            }
+        });
+
+        //上下关联界面添加
+        verticalView = View.inflate(this, R.layout.vertical_video_layer, null);
+        frameLayout.addView(verticalView);
+        topVideoView = findViewById(R.id.topVideoView);
+        bottomVideoView = findViewById(R.id.bottomVideoView);
+
+        findViewById(R.id.top_close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                topVideoView.stop();
+                topVideoView.stop();
+                verticalView.setVisibility(View.GONE);
+                changeRelateBtnStatus(relateId2, R.mipmap.relate_playing, true);
+                changeRelateBtnStatus(relateId1, R.mipmap.relate_video, true);
+            }
+        });
+
+        findViewById(R.id.bottom_close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bottomVideoView.stop();
+                bottomVideoView.stop();
+                verticalView.setVisibility(View.GONE);
+                changeRelateBtnStatus(relateId1, R.mipmap.relate_playing, true);
+                changeRelateBtnStatus(relateId2, R.mipmap.relate_video, true);
+            }
+        });
+
+        horizonView.setVisibility(View.GONE);
+        verticalView.setVisibility(View.GONE);
+
+//        leftVideoView.setDataSource(new DataSource("http://cdn.hongmingyuan.net/video/360/V08-1080-0702-360pw25.mp4"));
+//        rightVideoView.setDataSource(new DataSource("http://cdn.hongmingyuan.net/video/360/V08-1080-0702-360pw25.mp4"));
+//        leftVideoView.start();
+//        rightVideoView.start();
+
+//        leftVideoView = new BaseVideoView(this);
+//        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+//                FrameLayout.LayoutParams.MATCH_PARENT);
+//
+//        //创建线性布局
+//        LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+//        LinearLayout linearLayout = new LinearLayout(this);
+//        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+//        linearLayout.setLayoutParams(layoutParams1);
+//
+//
+//        leftVideoView = new BaseVideoView(this);
+//        rightVideoView = new BaseVideoView(this);
+//        topVideoView = new BaseVideoView(this);
+//        bottomVideoView = new BaseVideoView(this);
+//
+//        LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
+//        layoutParams2.weight = 1;
+//        leftVideoView.setLayoutParams(layoutParams2);
+//        layoutParams2.rightMargin = 2;
+//        LinearLayout.LayoutParams layoutParams3 = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
+//        layoutParams3.weight = 1;
+//        rightVideoView.setLayoutParams(layoutParams3);
+//        linearLayout.addView(leftVideoView);
+//        linearLayout.addView(rightVideoView);
+//
+//        FrameLayout layout = findViewById(R.id.frame_layout);
+//        layout.addView(linearLayout);
+//
+//        leftVideoView.setDataSource(new DataSource("http://cdn.hongmingyuan.net/video/360/V08-1080-0702-360pw25.mp4"));
+//        rightVideoView.setDataSource(new DataSource("http://cdn.hongmingyuan.net/video/360/V08-1080-0702-360pw25.mp4"));
+//        leftVideoView.start();
+//        rightVideoView.start();
     }
 
     private void addRelateBtns() {
@@ -1001,11 +1140,20 @@ public class MainPlayerActivity extends Activity {
 //                    mainPlayerActivityWeakReference.get().seekAll(msg.arg2);
 //                    break;
                 case OnPlayCtrlEventListener.PLAY_RELATE_VERTICAL_CTRL:
-                    mainPlayerActivityWeakReference.get().playersController.pauseNoLock();
-                    mainPlayerActivityWeakReference.get().videoViewArrayList.get(12).pause();
-                    Intent intent = new Intent(mainPlayerActivityWeakReference.get(), RelateVerticalActivity.class);
-                    intent.putExtra(RELATE_INFO, (Serializable) msg.obj);
-                    mainPlayerActivityWeakReference.get().startActivityForResult(intent, RequestCode.Relate_req);
+//                    mainPlayerActivityWeakReference.get().playersController.pauseNoLock();
+//                    mainPlayerActivityWeakReference.get().videoViewArrayList.get(12).pause();
+//                    Intent intent = new Intent(mainPlayerActivityWeakReference.get(), RelateVerticalActivity.class);
+//                    intent.putExtra(RELATE_INFO, (Serializable) msg.obj);
+//                    mainPlayerActivityWeakReference.get().startActivityForResult(intent, RequestCode.Relate_req);
+                    //播放关联视频
+                    mainPlayerActivityWeakReference.get().verticalView.setVisibility(View.VISIBLE);
+                    RelateVideoInfo videoInfo = (RelateVideoInfo)msg.obj;
+                    mainPlayerActivityWeakReference.get().topVideoView.setDataSource(new DataSource(videoInfo.getUri_1()));
+                    mainPlayerActivityWeakReference.get().topVideoView.start(videoInfo.getStartTime() * 1000);
+                    mainPlayerActivityWeakReference.get().bottomVideoView.setDataSource(new DataSource(videoInfo.getUri_2()));
+                    mainPlayerActivityWeakReference.get().bottomVideoView.start(videoInfo.getStartTime() * 1000);
+                    mainPlayerActivityWeakReference.get().relateId1 = videoInfo.id_1;
+                    mainPlayerActivityWeakReference.get().relateId2 = videoInfo.id_2;
 
                     //修改关联视频UI
                     RelateVideoInfo info = (RelateVideoInfo)msg.obj;
@@ -1013,17 +1161,26 @@ public class MainPlayerActivity extends Activity {
                     mainPlayerActivityWeakReference.get().changeRelateBtnStatus(info.id_2, R.mipmap.relate_video, true);
                     break;
                 case OnPlayCtrlEventListener.PLAY_RELATE_HORIZON_CTRL:
-                    mainPlayerActivityWeakReference.get().playersController.pauseNoLock();
-                    mainPlayerActivityWeakReference.get().videoViewArrayList.get(12).pause();
-                    Intent intent1 = new Intent(mainPlayerActivityWeakReference.get(), RelateHorizonActivity.class);
-                    intent1.putExtra(RELATE_INFO, (Serializable) msg.obj);
-                    mainPlayerActivityWeakReference.get().startActivityForResult(intent1, RequestCode.Relate_req);
+//                    mainPlayerActivityWeakReference.get().playersController.pauseNoLock();
+//                    mainPlayerActivityWeakReference.get().videoViewArrayList.get(12).pause();
+//                    Intent intent1 = new Intent(mainPlayerActivityWeakReference.get(), RelateHorizonActivity.class);
+//                    intent1.putExtra(RELATE_INFO, (Serializable) msg.obj);
+//                    mainPlayerActivityWeakReference.get().startActivityForResult(intent1, RequestCode.Relate_req);
+                    //播放关联视频
+                    mainPlayerActivityWeakReference.get().horizonView.setVisibility(View.VISIBLE);
+                    RelateVideoInfo videoInfo1 = (RelateVideoInfo)msg.obj;
+                    mainPlayerActivityWeakReference.get().leftVideoView.setDataSource(new DataSource(videoInfo1.getUri_1()));
+                    mainPlayerActivityWeakReference.get().leftVideoView.start(videoInfo1.getStartTime() * 1000);
+                    mainPlayerActivityWeakReference.get().rightVideoView.setDataSource(new DataSource(videoInfo1.getUri_2()));
+                    mainPlayerActivityWeakReference.get().rightVideoView.start(videoInfo1.getStartTime() * 1000);
+                    mainPlayerActivityWeakReference.get().relateId1 = videoInfo1.id_1;
+                    mainPlayerActivityWeakReference.get().relateId2 = videoInfo1.id_2;
+
                     //修改关联视频UI
-                    RelateVideoInfo videoInfo = (RelateVideoInfo)msg.obj;
-                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(videoInfo.id_1, R.mipmap.relate_playing, true);
-                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(videoInfo.id_2, R.mipmap.relate_video, true);
+                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(videoInfo1.id_1, R.mipmap.relate_playing, true);
+                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(videoInfo1.id_2, R.mipmap.relate_video, true);
                     break;
-                case OnPlayCtrlEventListener.PLAY_TELATE_CLOSE_UI:
+                case OnPlayCtrlEventListener.PLAY_RELATE_CLOSE_UI:
                     Log.d(TAG, "close relate UI. id1:" + msg.arg1 + " id2:" + msg.arg2);
                     mainPlayerActivityWeakReference.get().changeRelateBtnStatus(msg.arg1, 0, false);
                     mainPlayerActivityWeakReference.get().changeRelateBtnStatus(msg.arg2, 0, false);

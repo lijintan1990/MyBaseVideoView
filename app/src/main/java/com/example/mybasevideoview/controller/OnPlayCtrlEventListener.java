@@ -13,7 +13,7 @@ public interface OnPlayCtrlEventListener {
     int SEEK_CTRL = 5;
     int PLAY_RELATE_HORIZON_CTRL = 10;
     int PLAY_RELATE_VERTICAL_CTRL = 11;
-    int PLAY_TELATE_CLOSE_UI = 12;
+    int PLAY_RELATE_CLOSE_UI = 12;
     int PLAY_TIME_SET_CTRL = 13;
     int PLAY_ALL_CTRL = 14;
 
