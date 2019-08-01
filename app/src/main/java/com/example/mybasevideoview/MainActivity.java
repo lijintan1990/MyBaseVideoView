@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -83,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
     TextView curTimeTextView = null;
     TextView durationTextView = null;
 
+    ImageButton playBtn = null;
+
     //更新seekBar时间进度线程
     PlayThread playThread = null;
     //wifi是否打开
@@ -120,6 +123,16 @@ public class MainActivity extends AppCompatActivity {
 //        } else {
             setImageViewBmp();
         //}
+
+        playBtn = findViewById(R.id.play_btn);
+        playBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //播放视频
+                videoPlay();
+                playBtn.setVisibility(View.GONE);
+            }
+        });
     }
 
     void setImageViewBmp() {
@@ -229,8 +242,6 @@ public class MainActivity extends AppCompatActivity {
                     videoPlay();
                 }
             });
-        } else {
-            videoPlay();
         }
     }
 
@@ -430,6 +441,8 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 if (eventCode == PLAYER_EVENT_ON_SEEK_COMPLETE) {
                     bNativeSeekFinish = true;
+                } else if (eventCode == PLAYER_EVENT_ON_PLAY_COMPLETE) {
+                    playBtn.setVisibility(View.VISIBLE);
                 }
 //                else if (eventCode == PLAYER_EVENT_ON_SEEK_TO) {
 //                    bNativeSeekFinish = false;

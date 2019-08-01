@@ -31,10 +31,23 @@
             android:background="#000000"
             android:layout_margin="1dp"
             android:id="@+id/one" >
-            <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/videoImageView"/>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/videoImageView"/>
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/play_btn"
+                    android:background="@mipmap/player_icon_start_play"
+                    android:layout_centerInParent="true"/>
+            </RelativeLayout>
+
+
         </com.kk.taurus.playerbase.widget.BaseVideoView>
 
         <include layout="@layout/layout_progress"></include>

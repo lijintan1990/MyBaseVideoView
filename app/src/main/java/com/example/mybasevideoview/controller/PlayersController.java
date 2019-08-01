@@ -465,8 +465,11 @@ public class PlayersController extends Thread implements IPlayerCtrl{
         }
     }
 
-    private void chapterProc(TimeLineInfo.DataBean dataBean, boolean enable) {
+    private void chapterProc(TimeLineInfo.DataBean dataBean) {
+        if (btnStateListener == null || dataBean == null)
+            return;
 
+        btnStateListener.onChapterBtnTextUpdate(dataBean.getChapter().getCode());
     }
 
     private void applienceProc(TimeLineInfo.DataBean dataBean, boolean enable) {
@@ -553,8 +556,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                         videoProc(dataBean);
                     }
                 } else if (type == DataType.XSL_CHAPTER) {
-                    chapterProc(dataBean, true);
-                    enableChapter = true;
+                    chapterProc(dataBean);
                 } else if (type == DataType.XSL_APPLIANCES) {
                     applienceProc(dataBean, true);
                     enableApplience = true;
@@ -563,7 +565,6 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                     wordProc(dataBean, true);
                 } else if (type == DataType.XSL_ACTION) {
                     enableAction = true;
-                    chapterProc(dataBean, true);
                 }
             } else if (dataBean.getType() == DataType.XSL_VIDEO &&
                     (dataBean.getStartTime() + dataBean.getDuration() + 3) * 1000 < currentPlayTime &&
@@ -597,10 +598,6 @@ public class PlayersController extends Thread implements IPlayerCtrl{
 
         if (!enableWord) {
             wordProc(null, false);
-        }
-
-        if (!enableChapter) {
-            chapterProc(null, false);
         }
     }
 

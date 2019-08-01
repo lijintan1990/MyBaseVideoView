@@ -58,12 +58,12 @@ public class MySeekBar extends AppCompatSeekBar {
             if (data.getStartTime() > mDuration)
                 break;
 
-            int posX = data.getStartTime() * 1000 / mDuration;
+            // 1000会不准，1200却是准的，懒得查了
+            int posX = data.getStartTime() * 1200 / mDuration;
             //seekBar左边总是会有预留空间，容错
             if (posX < 50)
                 posX = 50;
             canvas.drawCircle(posX, 36, 10, whitePaint);
         }
     }
-
 }

@@ -98,6 +98,9 @@ public class MainPlayerActivity extends Activity {
     String mWordImageUrl = null;
     String mWordContent = null;
 
+    //当前播放的章节
+    int curChapter = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -159,7 +162,18 @@ public class MainPlayerActivity extends Activity {
                 } else {
                     buttonList.get(4).setSelected(true);
                 }
-                createActivity(ChapterActivity.class, RequestCode.Chapter_req);
+
+                List<ChapterListInfo.DataBean> data  = MainPlayerActivity.chapterListInfo.getData();
+                int size = data.size();
+                int chapterInRecycleIndex = curChapter - 1;
+                if (chapterInRecycleIndex < (size+1) / 2) {
+                    chapterInRecycleIndex = chapterInRecycleIndex * 2;
+                } else {
+                    //计算右边的
+                    chapterInRecycleIndex = (chapterInRecycleIndex - (size + 1) / 2) * 2 + 1;
+                }
+                Log.d(TAG, "curChapter:"+curChapter + " index:"+chapterInRecycleIndex);
+                createActivity(ChapterActivity.class, RequestCode.Chapter_req, chapterInRecycleIndex);
                 break;
             case R.id.word_btn:
                 createWordActivity(WordActivity.class, RequestCode.Word_req);
@@ -431,6 +445,20 @@ public class MainPlayerActivity extends Activity {
                 mWordImageUrl = imageUri;
                 mWordContent = content;
             }
+
+            @Override
+            public void onChapterBtnTextUpdate(String text) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        int chapter = Integer.parseInt(text);
+                        if (chapter != curChapter) {
+                            buttonList.get(4).setText(text);
+                            curChapter = chapter;
+                        }
+                    }
+                });
+            }
         });
 
         playersController.setMaskViewListener(new OnMaskViewListener() {
@@ -462,12 +490,18 @@ public class MainPlayerActivity extends Activity {
         }
     }
 
-    public void createActivity(Class<?> cls, int requestCode) {
+    private void createActivity(Class<?> cls, int requestCode) {
         Intent intent = new Intent(MainPlayerActivity.this, cls);
         startActivityForResult(intent, requestCode);
     }
 
-    public void createActivity(Class<?> cls, int requestCode, String url) {
+    private void createActivity(Class<?> cls, int requestCode, int chapter) {
+        Intent intent = new Intent(MainPlayerActivity.this, cls);
+        intent.putExtra(String.valueOf(R.string.chapter_index), chapter);
+        startActivityForResult(intent, requestCode);
+    }
+
+    private void createActivity(Class<?> cls, int requestCode, String url) {
         Intent intent = new Intent(MainPlayerActivity.this, cls);
         Bundle bundle = new Bundle();
         bundle.putSerializable(String.valueOf(R.string.applience_url), url);
@@ -511,7 +545,7 @@ public class MainPlayerActivity extends Activity {
         } else if (requestCode == RequestCode.Chapter_req) {
             Bundle bd = data.getExtras();
             int chapterIndex = bd.getInt(ChapterActivity.chapter_key);
-            int seekTime = chapterListInfo.getData().get(chapterIndex).getStartTime();
+            int seekTime = chapterListInfo.getData().get(chapterIndex - 1).getStartTime();
 
             String text;
             if (chapterIndex < 10) {

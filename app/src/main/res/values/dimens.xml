@@ -8,4 +8,5 @@
     <!-- 语言选择界面，左侧图标距离按钮左边界的距离 -->
     <dimen name="padding_left_size">65dp</dimen>
     <dimen name="padding_right_size">65dp</dimen>
+    <dimen name="indicator_height">30dp</dimen>
 </resources>

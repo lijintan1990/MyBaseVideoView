@@ -57,7 +57,7 @@
         android:background="@drawable/xsl_about"/>
     <ImageView
         android:layout_width="@dimen/instructor_len"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/indicator_height"
         android:id="@+id/in1"
         android:textColor="@color/white"
         android:src="@mipmap/xsl_right_instructor"
@@ -86,7 +86,7 @@
         android:background="@drawable/xsl_langugue"/>
     <ImageView
         android:layout_width="@dimen/instructor_len"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/indicator_height"
         android:id="@+id/in2"
         android:textColor="@color/white"
         android:src="@mipmap/xsl_right_instructor"
@@ -114,7 +114,7 @@
         android:background="@drawable/xsl_appliances"/>
     <ImageView
         android:layout_width="@dimen/instructor_len"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/indicator_height"
         android:id="@+id/in3"
         android:src="@mipmap/xsl_right_instructor"
         android:layout_alignBottom="@id/appliances_btn"
@@ -142,7 +142,7 @@
         android:background="@drawable/xsl_action"/>
     <ImageView
         android:layout_width="@dimen/instructor_len"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/indicator_height"
         android:id="@+id/in4"
         android:src="@mipmap/xsl_right_instructor"
         android:layout_toLeftOf="@+id/action_btn"
@@ -170,7 +170,7 @@
         android:background="@drawable/xsl_word"/>
     <ImageView
         android:layout_width="@dimen/instructor_len"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/indicator_height"
         android:id="@+id/in5"
         android:src="@mipmap/xsl_right_instructor"
         android:layout_toLeftOf="@+id/action_btn"
@@ -187,7 +187,7 @@
         />
 
     <!--章节选择-->
-    <ImageButton
+    <Button
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginVertical="10dp"
@@ -195,10 +195,11 @@
         android:id="@+id/chapter_btn"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/word_btn"
+        android:text="01"
         android:background="@drawable/xsl_chapter"/>
     <ImageView
         android:layout_width="@dimen/instructor_len"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/indicator_height"
         android:id="@+id/in6"
         android:src="@mipmap/xsl_right_instructor"
         android:layout_toLeftOf="@+id/chapter_btn"

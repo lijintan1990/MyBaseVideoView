@@ -1,7 +1,5 @@
 package com.example.mybasevideoview.view;
 
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,6 +17,11 @@ import java.util.List;
 public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterVideoHolder> {
     private int clickPos;
     private ArrayList<String> mDatas = null;
+
+    ChapterAdapter(int curChapter) {
+        clickPos = curChapter;
+    }
+
     @NonNull
     @Override
     public ChapterVideoHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -54,15 +57,16 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
 
             List<ChapterListInfo.DataBean> data  = MainPlayerActivity.chapterListInfo.getData();
             if (data != null) {
-
                 int mid = (data.size() + 1) / 2;
                 int right;
+                int chapterNum;
                 for (int i=0; i!=mid; i++) {
                     String str = "第";
+                    chapterNum = i+1;
                     if(i < 10) {
-                        str = str + "0" + i+ "章   ";
+                        str = str + "0" + chapterNum+ "章   ";
                     } else {
-                        str = str + i + "章   ";
+                        str = str + chapterNum + "章   ";
                     }
 
                     str = str + data.get(i).getName();
@@ -72,11 +76,11 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
                     right = mid + i;
                     if (right >= data.size())
                         break;
-
+                    chapterNum = right + 1;
                     if (right < 10) {
-                        strRight = strRight + "0" + right + "章   ";
+                        strRight = strRight + "0" + chapterNum + "章   ";
                     } else {
-                        strRight = strRight + right + "章   ";
+                        strRight = strRight + chapterNum + "章   ";
                     }
                     strRight = strRight + data.get(right).getName();
                     mDatas.add(strRight);

@@ -9,6 +9,6 @@
         android:textSize="16sp"
         android:textColor="@color/white"
         android:paddingLeft="28dp"
-        android:gravity="center_vertical"
+        android:gravity="center"
         android:id="@+id/chapter_item"/>
 </LinearLayout>

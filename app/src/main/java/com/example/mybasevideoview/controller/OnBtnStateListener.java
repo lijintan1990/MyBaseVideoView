@@ -6,7 +6,9 @@ public interface OnBtnStateListener {
     int XSL_WORD_BTN_STATE = 0xfff2;
     int XSL_ACTION_BTN_STATE = 0xfff4;
     int XSL_CHAPTER_BTN_STATE = 0xfff6;
+
     //主面板右侧按钮状态更改
     void onStateChange(int action, boolean enable, String url);
     void onWordStateChange(int action, boolean enable, String name, String imageUri, String content);
+    void onChapterBtnTextUpdate(String text);
 }
