@@ -107,6 +107,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int UPDATE_PLAY_TIME = 4;
     private static final int UPDATE_PLAY_DURATION = 5;
 
+    View wifiNoticeView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //播放视频
                 videoPlay();
-                playBtn.setVisibility(View.GONE);
+                playBtn.setVisibility(View.INVISIBLE);
             }
         });
     }
@@ -234,12 +236,13 @@ public class MainActivity extends AppCompatActivity {
 //                        }
 //                    })
 //                    .show();
-            View inflateView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_wifi_notice, videoView, true);
-            Button playBtn = findViewById(R.id.play_continue_btn);
-            playBtn.setOnClickListener(new View.OnClickListener() {
+            wifiNoticeView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_wifi_notice, videoView, false);
+            videoView.addView(wifiNoticeView);
+            Button playContinueBtn = findViewById(R.id.play_continue_btn);
+            playContinueBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    videoPlay();
+                    videoView.removeView(wifiNoticeView);
                 }
             });
         }
@@ -478,7 +481,8 @@ public class MainActivity extends AppCompatActivity {
         videoView.stopPlayback();
 
         try {
-            playThread.join();
+            if (playThread != null)
+                playThread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

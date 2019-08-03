@@ -540,7 +540,7 @@ public class MainPlayerActivity extends Activity {
             mNeedStartTransactAty = false;
             createPlayCtrl();
         } else if (requestCode == RequestCode.About_req) {
-            buttonList.get(0).setSelected(false);
+            buttonList.get(5).setSelected(false);
         } else if (requestCode == RequestCode.Languge_req) {
             playersController.resume_();
             videoViewArrayList.get(12).resume();
@@ -572,8 +572,11 @@ public class MainPlayerActivity extends Activity {
                 text = "" + chapterIndex;
             }
             buttonList.get(4).setText(text);
+            buttonList.get(4).setSelected(false);
             bNativeSeekFinish = false;
             playersController.seekNotify(seekTime * 1000);
+        } else if (requestCode == RequestCode.Word_req) {
+            buttonList.get(5).setSelected(false);
         } else if (requestCode == RequestCode.Relate_req) {
             if (data == null)
                 return;

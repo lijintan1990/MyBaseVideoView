@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.example.mybasevideoview.R;
 import com.example.mybasevideoview.model.ObtainNetWorkData;
+import com.example.mybasevideoview.model.RequestCode;
 import com.example.mybasevideoview.utils.XslUtils;
 
 import java.io.IOException;
@@ -78,6 +79,7 @@ public class WordActivity extends Activity {
 
     @OnClick(R.id.close_btn)
     void close() {
+        setResult(RequestCode.Word_req);
         finish();
     }
 }
