@@ -54,6 +54,7 @@ public class MySeekBar extends AppCompatSeekBar {
 //        int w = getWidth();
 //        int h = getHeight();
         //Log.d("MyseekBar", "w:"+w+"  h:" + h);
+        int i = 0;
         for (ChapterListInfo.DataBean data : chapterListInfo.getData()) {
             if (data.getStartTime() > mDuration)
                 break;
@@ -63,7 +64,8 @@ public class MySeekBar extends AppCompatSeekBar {
             //seekBar左边总是会有预留空间，容错
             if (posX < 50)
                 posX = 50;
-            canvas.drawCircle(posX, 36, 10, whitePaint);
+
+            canvas.drawCircle(posX, 12, 8, whitePaint);
         }
     }
 }

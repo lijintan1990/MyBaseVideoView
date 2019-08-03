@@ -154,6 +154,9 @@ public class MainPlayerActivity extends Activity {
                 } else {
                     buttonList.get(2).setSelected(true);
                 }
+
+                playersController.pause_();
+                videoViewArrayList.get(12).pause();
                 createActivity(AppliancesActivity.class, RequestCode.Appliance_req, mApplienceUrl);
                 break;
             case R.id.chapter_btn:
@@ -172,10 +175,20 @@ public class MainPlayerActivity extends Activity {
                     //计算右边的
                     chapterInRecycleIndex = (chapterInRecycleIndex - (size + 1) / 2) * 2 + 1;
                 }
+
+//                playersController.pause_();
+//                videoViewArrayList.get(12).pause();
                 Log.d(TAG, "curChapter:"+curChapter + " index:"+chapterInRecycleIndex);
                 createActivity(ChapterActivity.class, RequestCode.Chapter_req, chapterInRecycleIndex);
                 break;
             case R.id.word_btn:
+                if (buttonList.get(5).isSelected()) {
+                    buttonList.get(5).setSelected(false);
+                } else {
+                    buttonList.get(5).setSelected(true);
+                }
+//                playersController.pause_();
+//                videoViewArrayList.get(12).pause();
                 createWordActivity(WordActivity.class, RequestCode.Word_req);
                 break;
             case R.id.langugue_btn:
@@ -185,6 +198,7 @@ public class MainPlayerActivity extends Activity {
                     buttonList.get(1).setSelected(true);
                 }
                 playersController.pause_();
+                videoViewArrayList.get(12).pause();
                 createActivity(langugueActivity.class, RequestCode.Languge_req);
                 break;
             case R.id.back_btn:
@@ -528,6 +542,8 @@ public class MainPlayerActivity extends Activity {
         } else if (requestCode == RequestCode.About_req) {
             buttonList.get(0).setSelected(false);
         } else if (requestCode == RequestCode.Languge_req) {
+            playersController.resume_();
+            videoViewArrayList.get(12).resume();
             int langugueSelector = 0;
             Bundle bd = data.getExtras();
             langugueSelector = bd.getInt(langugueActivity.langugue_key);
@@ -542,6 +558,8 @@ public class MainPlayerActivity extends Activity {
             }
         } else if (requestCode == RequestCode.Appliance_req) {
             buttonList.get(2).setSelected(false);
+            playersController.resume_();
+            videoViewArrayList.get(12).resume();
         } else if (requestCode == RequestCode.Chapter_req) {
             Bundle bd = data.getExtras();
             int chapterIndex = bd.getInt(ChapterActivity.chapter_key);

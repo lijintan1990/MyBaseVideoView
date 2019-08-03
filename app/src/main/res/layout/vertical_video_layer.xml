@@ -24,8 +24,8 @@
                     android:layout_height="@dimen/close_btn_size"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentTop="true"
-                    android:background="@mipmap/icon_close"
-                    android:layout_marginTop="30dp"
+                    android:background="@mipmap/relate_close"
+                    android:layout_marginTop="20dp"
                     android:layout_marginRight="10dp"
                     android:id="@+id/top_close"/>
             </RelativeLayout>
@@ -45,8 +45,8 @@
                     android:layout_height="@dimen/close_btn_size"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentTop="true"
-                    android:background="@mipmap/icon_close"
-                    android:layout_marginTop="30dp"
+                    android:background="@mipmap/relate_close"
+                    android:layout_marginTop="20dp"
                     android:layout_marginRight="10dp"
                     android:id="@+id/bottom_close"/>
             </RelativeLayout>
