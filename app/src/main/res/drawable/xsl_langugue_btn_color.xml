@@ -3,7 +3,7 @@
 
     <!--solid android:color="@android:color/transparent" /-->
     <gradient
-        android:startColor="#000"
+        android:startColor="#00000000"
         android:centerColor="#FE7000"
-        android:endColor="#000" />
+        android:endColor="#00000000" />
 </shape>

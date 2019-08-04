@@ -1,31 +1,46 @@
 package com.example.mybasevideoview.view;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.mybasevideoview.R;
+import com.example.mybasevideoview.model.WordNode;
+
+import java.util.List;
 
 public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordHolder>{
+    private List<WordNode> dataLst;
 
+    public WordAdapter(List<WordNode> list) {
+        dataLst = list;
+    }
 
     @NonNull
     @Override
     public WordHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        return null;
+        View view = LayoutInflater.from(viewGroup.getContext())
+                .inflate(R.layout.recycle_word_item, viewGroup, false);
+        return new WordHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull WordHolder wordHolder, int i) {
-
+        wordHolder.textView.setText(dataLst.get(i).getText());
+        if (dataLst.get(i).getBitmap() != null) {
+            wordHolder.imageView.setBackground(new BitmapDrawable(dataLst.get(i).getBitmap()));
+        }
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return dataLst.size();
     }
 
     public static class WordHolder extends RecyclerView.ViewHolder {

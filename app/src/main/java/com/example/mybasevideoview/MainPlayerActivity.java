@@ -2,6 +2,7 @@ package com.example.mybasevideoview;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,8 +28,11 @@ import com.example.mybasevideoview.controller.PlayersController;
 import com.example.mybasevideoview.model.ChapterListInfo;
 import com.example.mybasevideoview.model.ObtainNetWorkData;
 import com.example.mybasevideoview.model.RequestCode;
+import com.example.mybasevideoview.model.SubtitlesDataCoding;
+import com.example.mybasevideoview.model.SubtitlesModel;
 import com.example.mybasevideoview.model.TimeLineInfo;
 import com.example.mybasevideoview.model.VideoListInfo;
+import com.example.mybasevideoview.model.WordMsgs;
 import com.example.mybasevideoview.utils.XslUtils;
 import com.example.mybasevideoview.view.AboutActivity;
 import com.example.mybasevideoview.view.AppliancesActivity;
@@ -40,19 +44,21 @@ import com.example.mybasevideoview.view.TransactActivity;
 import com.example.mybasevideoview.view.WordActivity;
 import com.example.mybasevideoview.view.dummy.RelateButton;
 import com.example.mybasevideoview.view.langugueActivity;
+import com.example.mybasevideoview.view.subTitle.SubtitleTextView;
+import com.example.mybasevideoview.view.subTitle.SubtitleView;
 import com.kk.taurus.playerbase.entity.DataSource;
 import com.kk.taurus.playerbase.event.OnErrorEventListener;
 import com.kk.taurus.playerbase.event.OnPlayerEventListener;
 import com.kk.taurus.playerbase.player.IPlayer;
-import com.kk.taurus.playerbase.receiver.ReceiverGroup;
 import com.kk.taurus.playerbase.widget.BaseVideoView;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.BindViews;
@@ -94,12 +100,18 @@ public class MainPlayerActivity extends Activity {
     // 動作視頻的地址
     String mActionUrl = null;
 
-    String mWordTitle = null;
-    String mWordImageUrl = null;
-    String mWordContent = null;
+    //当前文本对应的ID
+    int mWordId = -1;
 
     //当前播放的章节
     int curChapter = 1;
+    //当前选择的语言
+    int curLangugue = langugueActivity.chinese;
+
+    //中间窗口的字幕
+    SubtitleView normalSubtitleView;
+    SubtitleView horizonRelateSubtitleView;
+    SubtitleView verticalRelateSubtitleView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -187,9 +199,9 @@ public class MainPlayerActivity extends Activity {
                 } else {
                     buttonList.get(5).setSelected(true);
                 }
-//                playersController.pause_();
-//                videoViewArrayList.get(12).pause();
-                createWordActivity(WordActivity.class, RequestCode.Word_req);
+                playersController.pause_();
+                videoViewArrayList.get(12).pause();
+                createActivity(WordActivity.class, RequestCode.Word_req, mWordId);
                 break;
             case R.id.langugue_btn:
                 if (buttonList.get(1).isSelected()) {
@@ -199,7 +211,7 @@ public class MainPlayerActivity extends Activity {
                 }
                 playersController.pause_();
                 videoViewArrayList.get(12).pause();
-                createActivity(langugueActivity.class, RequestCode.Languge_req);
+                createActivity(langugueActivity.class, RequestCode.Languge_req, curLangugue);
                 break;
             case R.id.back_btn:
                 if (playersController != null)
@@ -305,6 +317,7 @@ public class MainPlayerActivity extends Activity {
     void init() {
         initSeekBar();
         reLayout();
+        loadSubtitles();
         disableAllBtn();
         initLocal90Videos();
         Log.d(TAG, "init thread id:%d" + Thread.currentThread().getId());
@@ -427,6 +440,12 @@ public class MainPlayerActivity extends Activity {
                 Message msg = playControlHandler.obtainMessage(action, id1, id2);
                 playControlHandler.sendMessage(msg);
             }
+
+            @Override
+            public void onSubtitleUpdate(int pts) {
+                Message msg = playControlHandler.obtainMessage(SUBTITLE_UPDATE, pts, 0);
+                playControlHandler.sendMessage(msg);
+            }
         });
 
         playersController.setBtnStateListener(new OnBtnStateListener() {
@@ -453,11 +472,9 @@ public class MainPlayerActivity extends Activity {
             }
 
             @Override
-            public void onWordStateChange(int action, boolean enable, String name, String imageUri, String content) {
+            public void onWordStateChange(int action, boolean enable, int objId) {
                 setBtnState(enable, 5);
-                mWordTitle = name;
-                mWordImageUrl = imageUri;
-                mWordContent = content;
+                mWordId = objId;
             }
 
             @Override
@@ -509,9 +526,9 @@ public class MainPlayerActivity extends Activity {
         startActivityForResult(intent, requestCode);
     }
 
-    private void createActivity(Class<?> cls, int requestCode, int chapter) {
+    private void createActivity(Class<?> cls, int requestCode, int value) {
         Intent intent = new Intent(MainPlayerActivity.this, cls);
-        intent.putExtra(String.valueOf(R.string.chapter_index), chapter);
+        intent.putExtra(String.valueOf(R.string.activity_value), value);
         startActivityForResult(intent, requestCode);
     }
 
@@ -523,15 +540,16 @@ public class MainPlayerActivity extends Activity {
         startActivityForResult(intent, requestCode);
     }
 
-    private void createWordActivity(Class<?> cls, int requestCode) {
-        Intent intent = new Intent(MainPlayerActivity.this, cls);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable(String.valueOf(R.string.word_name), mWordTitle);
-        bundle.putSerializable(String.valueOf(R.string.word_image_url), mWordImageUrl);
-        bundle.putSerializable(String.valueOf(R.string.word_content), mWordContent);
-        intent.putExtras(bundle);
-        startActivityForResult(intent, requestCode);
-    }
+//    private void createWordActivity(Class<?> cls, int requestCode) {
+//        Intent intent = new Intent(MainPlayerActivity.this, cls);
+//
+////        Bundle bundle = new Bundle();
+////        bundle.putSerializable(String.valueOf(R.string.word_name), mWordTitle);
+////        bundle.putSerializable(String.valueOf(R.string.word_image_url), mWordImageUrl);
+////        bundle.putSerializable(String.valueOf(R.string.word_content), mWordContent);
+////        intent.putExtras(bundle);
+//        startActivityForResult(intent, requestCode);
+//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -547,13 +565,27 @@ public class MainPlayerActivity extends Activity {
             int langugueSelector = 0;
             Bundle bd = data.getExtras();
             langugueSelector = bd.getInt(langugueActivity.langugue_key);
+            curLangugue = langugueSelector;
             buttonList.get(1).setSelected(false);
+
             switch (langugueSelector) {
                 case langugueActivity.chinese:
+                    normalSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CHINA);
+                    verticalRelateSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CHINA);
+                    horizonRelateSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CHINA);
+                    buttonList.get(1).setBackgroundResource(R.mipmap.xsl_langugue_simple);
                     break;
                 case langugueActivity.cantonese:
+                    normalSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CANTONESE);
+                    verticalRelateSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CANTONESE);
+                    horizonRelateSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CANTONESE);
+                    buttonList.get(1).setBackgroundResource(R.mipmap.xsl_langugue_complex);
                     break;
                 case langugueActivity.english:
+                    normalSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_ENGLISH);
+                    verticalRelateSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_ENGLISH);
+                    horizonRelateSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_ENGLISH);
+                    buttonList.get(1).setBackgroundResource(R.mipmap.xsl_langugue_english);
                     break;
             }
         } else if (requestCode == RequestCode.Appliance_req) {
@@ -577,6 +609,8 @@ public class MainPlayerActivity extends Activity {
             playersController.seekNotify(seekTime * 1000);
         } else if (requestCode == RequestCode.Word_req) {
             buttonList.get(5).setSelected(false);
+            playersController.resume_();
+            videoViewArrayList.get(12).resume();
         } else if (requestCode == RequestCode.Relate_req) {
             if (data == null)
                 return;
@@ -591,13 +625,68 @@ public class MainPlayerActivity extends Activity {
             Message msg = playControlHandler.obtainMessage(OnPlayCtrlEventListener.PLAY_CTRL, time, willPlayInCenterId);
             playControlHandler.sendMessage(msg);
 
-            changeRelateBtnStatus(willPlayInCenterId, R.mipmap.relate_playing, true);
+            changeRelateBtnStatus(willPlayInCenterId, R.mipmap.relate_playing, false);
             changeRelateBtnStatus(relateId, R.mipmap.relate_video, true);
 
 //            relateBtns.get(willPlayInCenterId).setImageResource(R.mipmap.relate_playing);
 //            relateBtns.get(relateId).setImageResource(R.mipmap.relate_video);
 //            relateBtns.get(willPlayInCenterId).setVisibility(View.VISIBLE);
 //            relateBtns.get(relateId).setVisibility(View.VISIBLE);
+        }
+    }
+
+    private ArrayList<SubtitlesModel> subtitleLstCN;
+    private ArrayList<SubtitlesModel> subtitleLstCA;
+    private ArrayList<SubtitlesModel> subtitleLstEN;
+
+    //字幕加载
+    private void loadSubtitles() {
+        try {
+            AssetManager assetManager = getResources().getAssets();
+            InputStream inputStreamCN = assetManager.open("chinese.srt");
+            InputStream inputStreamCA = assetManager.open("cantonese.srt");
+            InputStream inputStreamEN = assetManager.open("english.srt");
+
+            SubtitlesDataCoding dataCodingCN = new SubtitlesDataCoding();
+            SubtitlesDataCoding dataCodingCA = new SubtitlesDataCoding();
+            SubtitlesDataCoding dataCodingEN = new SubtitlesDataCoding();
+            subtitleLstCN = dataCodingCN.readFileStream(inputStreamCN);
+            subtitleLstEN = dataCodingEN.readFileStream(inputStreamEN);
+            subtitleLstCA = dataCodingCA.readFileStream(inputStreamCA);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        horizonRelateSubtitleView = findViewById(R.id.horizon_subtitle);
+        verticalRelateSubtitleView = findViewById(R.id.vertical_subtitle);
+        normalSubtitleView = findViewById(R.id.normal_subtitle);
+
+        horizonRelateSubtitleView.setData(subtitleLstCN, SubtitleView.LANGUAGE_TYPE_CHINA);
+        horizonRelateSubtitleView.setData(subtitleLstCA, SubtitleView.LANGUAGE_TYPE_CANTONESE);
+        horizonRelateSubtitleView.setData(subtitleLstEN, SubtitleView.LANGUAGE_TYPE_ENGLISH);
+
+        verticalRelateSubtitleView.setData(subtitleLstCN, SubtitleView.LANGUAGE_TYPE_CHINA);
+        verticalRelateSubtitleView.setData(subtitleLstCA, SubtitleView.LANGUAGE_TYPE_CANTONESE);
+        verticalRelateSubtitleView.setData(subtitleLstEN, SubtitleView.LANGUAGE_TYPE_ENGLISH);
+
+        normalSubtitleView.setData(subtitleLstCN, SubtitleView.LANGUAGE_TYPE_CHINA);
+        normalSubtitleView.setData(subtitleLstCA, SubtitleView.LANGUAGE_TYPE_CANTONESE);
+        normalSubtitleView.setData(subtitleLstEN, SubtitleView.LANGUAGE_TYPE_ENGLISH);
+
+        Log.d("Subtitle", "ca size:"+subtitleLstCA.size());
+
+        normalSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CHINA);
+        verticalRelateSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CHINA);
+        horizonRelateSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CHINA);
+    }
+
+    private void updateSubtitle(int pts) {
+        if (rightVideoView.isPlaying()) {
+            horizonRelateSubtitleView.seekTo(pts);
+        } else if (topVideoView.isPlaying()) {
+            verticalRelateSubtitleView.seekTo(pts);
+        } else {
+            normalSubtitleView.seekTo(pts);
         }
     }
 
@@ -695,27 +784,6 @@ public class MainPlayerActivity extends Activity {
         }
     }
 
-//    private void seekAll(int sec) {
-//        playersController.seekTo_(sec);
-//    }
-
-//    private void pauseAll() {
-//        for (int i=0; i!=12; i++) {
-//            videoViewArrayList.get(i).pause();
-//        }
-//    }
-//
-//    private void resumeAll() {
-//        for (int i=0; i!=12; i++) {
-//            videoViewArrayList.get(i).resume();
-//        }
-//    }
-//
-//    private void stopAll() {
-//        for (int i=0; i!=12; i++) {
-//            videoViewArrayList.get(i).stop();
-//        }
-//    }
 
     static TimeLineInfo mTimelineInfo = null;
     private void getTimeLine() {
@@ -745,6 +813,22 @@ public class MainPlayerActivity extends Activity {
     }
     public static TimeLineInfo getTimelineInfo() {
         return mTimelineInfo;
+    }
+
+    public static WordMsgs wordMsgs = null;
+    private void getWordMsgs(int index) {
+        ObtainNetWorkData.getWordListData(new Callback<WordMsgs>() {
+            @Override
+            public void onResponse(Call<WordMsgs> call, Response<WordMsgs> response) {
+                wordMsgs = response.body();
+                Log.d(TAG, "get word list ok. info:" + response.toString());
+            }
+
+            @Override
+            public void onFailure(Call<WordMsgs> call, Throwable t) {
+                Log.w(TAG, "get word list failed, "+t.toString());
+            }
+        }, index);
     }
 
     public static ChapterListInfo chapterListInfo = null;
@@ -904,7 +988,7 @@ public class MainPlayerActivity extends Activity {
                 rightVideoView.stop();
                 horizonView.setVisibility(View.GONE);
 
-                changeRelateBtnStatus(relateId2, R.mipmap.relate_playing, true);
+                changeRelateBtnStatus(relateId2, R.mipmap.relate_playing, false);
                 changeRelateBtnStatus(relateId1, R.mipmap.relate_video, true);
             }
         });
@@ -915,7 +999,7 @@ public class MainPlayerActivity extends Activity {
                 rightVideoView.stop();
                 horizonView.setVisibility(View.GONE);
 
-                changeRelateBtnStatus(relateId1, R.mipmap.relate_playing, true);
+                changeRelateBtnStatus(relateId1, R.mipmap.relate_playing, false);
                 changeRelateBtnStatus(relateId2, R.mipmap.relate_video, true);
             }
         });
@@ -932,7 +1016,7 @@ public class MainPlayerActivity extends Activity {
                 topVideoView.stop();
                 topVideoView.stop();
                 verticalView.setVisibility(View.GONE);
-                changeRelateBtnStatus(relateId2, R.mipmap.relate_playing, true);
+                changeRelateBtnStatus(relateId2, R.mipmap.relate_playing, false);
                 changeRelateBtnStatus(relateId1, R.mipmap.relate_video, true);
             }
         });
@@ -943,7 +1027,7 @@ public class MainPlayerActivity extends Activity {
                 bottomVideoView.stop();
                 bottomVideoView.stop();
                 verticalView.setVisibility(View.GONE);
-                changeRelateBtnStatus(relateId1, R.mipmap.relate_playing, true);
+                changeRelateBtnStatus(relateId1, R.mipmap.relate_playing, false);
                 changeRelateBtnStatus(relateId2, R.mipmap.relate_video, true);
             }
         });
@@ -990,6 +1074,9 @@ public class MainPlayerActivity extends Activity {
 //        leftVideoView.start();
 //        rightVideoView.start();
     }
+
+
+
 
     private void addRelateBtns() {
         if (relateBtns == null)
@@ -1212,7 +1299,7 @@ public class MainPlayerActivity extends Activity {
 
                     //修改关联视频UI
                     RelateVideoInfo info = (RelateVideoInfo)msg.obj;
-                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(info.id_1, R.mipmap.relate_playing, true);
+                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(info.id_1, R.mipmap.relate_playing, false);
                     mainPlayerActivityWeakReference.get().changeRelateBtnStatus(info.id_2, R.mipmap.relate_video, true);
                     break;
                 case OnPlayCtrlEventListener.PLAY_RELATE_HORIZON_CTRL:
@@ -1232,7 +1319,7 @@ public class MainPlayerActivity extends Activity {
                     mainPlayerActivityWeakReference.get().relateId2 = videoInfo1.id_2;
 
                     //修改关联视频UI
-                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(videoInfo1.id_1, R.mipmap.relate_playing, true);
+                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(videoInfo1.id_1, R.mipmap.relate_playing, false);
                     mainPlayerActivityWeakReference.get().changeRelateBtnStatus(videoInfo1.id_2, R.mipmap.relate_video, true);
                     break;
                 case OnPlayCtrlEventListener.PLAY_RELATE_CLOSE_UI:
@@ -1254,7 +1341,10 @@ public class MainPlayerActivity extends Activity {
                         mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).setVisibility(View.VISIBLE);
                         Log.d(TAG, "visible index:"+msg.arg1 + "id:"+msg.arg2);
                     }
-                     break;
+                    break;
+                case OnPlayCtrlEventListener.SUBTITLE_UPDATE:
+                    mainPlayerActivityWeakReference.get().updateSubtitle(msg.arg1);
+                    break;
             }
         }
     }

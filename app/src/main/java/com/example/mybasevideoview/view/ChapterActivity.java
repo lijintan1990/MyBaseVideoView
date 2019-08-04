@@ -32,7 +32,7 @@ public class ChapterActivity extends Activity {
         setContentView(R.layout.activity_chapter);
         XslUtils.hideStausbar(new WeakReference<>(this), true);
         Intent intent = getIntent();
-        selectedIndex = intent.getIntExtra(String.valueOf(R.string.chapter_index), 1);
+        selectedIndex = intent.getIntExtra(String.valueOf(R.string.activity_value), 1);
         init();
     }
 

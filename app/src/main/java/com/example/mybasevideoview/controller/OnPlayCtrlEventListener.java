@@ -18,13 +18,8 @@ public interface OnPlayCtrlEventListener {
     int PLAY_ALL_CTRL = 14;
 
 
-//    //在中间显示的标识号
-//    int CENTER_NONE = 0;
-//    int CENTER_FULL = 1;
-//    int CENTER_LEFT = 2;
-//    int CENTER_RIGHT = 3;
-//    int CENTER_TOP = 4;
-//    int CENTER_BOTTOM = 5;
+    //字幕更新
+    int SUBTITLE_UPDATE = 100;
 
     //关联类型
     int RELATIVE_NONE = 0;
@@ -42,5 +37,7 @@ public interface OnPlayCtrlEventListener {
      * @param id2
      */
     void onRelateUIClose(int action, int id1,int id2);
+
+    void onSubtitleUpdate(int pts);
 }
 

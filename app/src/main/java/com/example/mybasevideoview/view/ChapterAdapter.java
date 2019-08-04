@@ -32,6 +32,7 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
 
     @Override
     public void onBindViewHolder(@NonNull ChapterVideoHolder chapterVideoHolder, int i) {
+        //修改子项的显示背景
         chapterVideoHolder.textView.setText(mDatas.get(i));
         if (i == clickPos) {
             chapterVideoHolder.textView.setBackgroundResource(R.drawable.xsl_chapter_item_selected);

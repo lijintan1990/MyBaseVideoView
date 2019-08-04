@@ -46,6 +46,7 @@ public class langugueActivity extends Activity {
 
         //linearLayout.setAlpha(0.5f);
 
+
         Drawable drawable = getResources().getDrawable(R.mipmap.xsl_langugue_simple);
         drawable.setBounds(0,0,65,65);
         buttonList.get(1).setCompoundDrawablePadding(10);
@@ -60,6 +61,10 @@ public class langugueActivity extends Activity {
         drawable2.setBounds(0,0,65,65);
         buttonList.get(3).setCompoundDrawablePadding(10);
         buttonList.get(3).setCompoundDrawables(drawable2,null,null,null);
+
+        Intent intent = getIntent();
+        int type = intent.getIntExtra(String.valueOf(R.string.activity_value), 0);
+        buttonList.get(type).setBackgroundResource(R.drawable.xsl_langugue_btn_color);
     }
 
     @OnClick({R.id.close_btn, R.id.chinese_btn, R.id.cantonese_btn, R.id.english_btn})
@@ -72,22 +77,32 @@ public class langugueActivity extends Activity {
                 break;
             case R.id.chinese_btn:
                 intent.putExtra(langugue_key, chinese);
+                buttonList.get(1).getBackground().setAlpha(255);
                 buttonList.get(1).setBackgroundResource(R.drawable.xsl_langugue_btn_color);
-                buttonList.get(3).setBackgroundResource(R.color.translucent_background);
-                buttonList.get(2).setBackgroundResource(R.color.translucent_background);
+                buttonList.get(3).getBackground().setAlpha(0);
+                buttonList.get(2).getBackground().setAlpha(0);
+//                buttonList.get(3).setBackgroundResource(R.color.translucent_background);
+//                buttonList.get(2).setBackgroundResource(R.color.translucent_background);
+                setResult(RequestCode.Languge_req, intent);
+                finish();
                 break;
             case R.id.cantonese_btn:
                 intent.putExtra(langugue_key, cantonese);
+                buttonList.get(2).getBackground().setAlpha(255);
                 buttonList.get(2).setBackgroundResource(R.drawable.xsl_langugue_btn_color);
-                buttonList.get(3).setBackgroundResource(R.color.translucent_background);
-                buttonList.get(1).setBackgroundResource(R.color.translucent_background);
+                buttonList.get(3).getBackground().setAlpha(0);
+                buttonList.get(1).getBackground().setAlpha(0);
+                setResult(RequestCode.Languge_req, intent);
+                finish();
                 break;
             case R.id.english_btn:
                 intent.putExtra(langugue_key, english);
-
+                buttonList.get(3).getBackground().setAlpha(255);
                 buttonList.get(3).setBackgroundResource(R.drawable.xsl_langugue_btn_color);
-                buttonList.get(2).setBackgroundResource(R.color.translucent_background);
-                buttonList.get(1).setBackgroundResource(R.color.translucent_background);
+                buttonList.get(2).getBackground().setAlpha(0);
+                buttonList.get(1).getBackground().setAlpha(0);
+                setResult(RequestCode.Languge_req, intent);
+                finish();
                 break;
         }
     }

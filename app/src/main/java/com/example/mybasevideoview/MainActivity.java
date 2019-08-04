@@ -355,7 +355,6 @@ public class MainActivity extends AppCompatActivity {
     void unZipRes() {
         File outDir = getExternalFilesDir("");
         XslUtils.deleteFile(new File(outDir.getAbsolutePath() + "/defaultData"));
-        String path = "file://android_asset/defaultData.zip";
 
         AssetManager assetManager = getResources().getAssets();
         try {

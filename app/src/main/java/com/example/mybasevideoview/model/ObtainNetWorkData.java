@@ -59,6 +59,17 @@ public class ObtainNetWorkData {
         call.enqueue(callback);
     }
 
+    public static void getWordListData(Callback<WordMsgs> callback, int index) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://www.hongmingyuan.net")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        NetDataInterface api = retrofit.create(NetDataInterface.class);
+        Call<WordMsgs> call = api.getWordMsgs(index);
+        call.enqueue(callback);
+    }
+
     public static void getVideoListData(Callback<VideoListInfo> callback) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://www.hongmingyuan.net")

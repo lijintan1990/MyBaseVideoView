@@ -229,8 +229,20 @@
                 android:layout_above="@+id/bottom"
                 android:layout_toRightOf="@+id/left"
                 android:layout_toLeftOf="@+id/right"
-                android:background="#000000"
-                android:id="@+id/p13" />
+                android:background="@mipmap/main_player_bkg"
+                android:id="@+id/p13">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <com.example.mybasevideoview.view.subTitle.SubtitleView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/normal_subtitle"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginBottom="6dp"/>
+                </RelativeLayout>
+            </com.kk.taurus.playerbase.widget.BaseVideoView>
         </RelativeLayout>
 
     </FrameLayout>

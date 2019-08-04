@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
+import static java.lang.Math.abs;
+
 /**
  * 1.轮询小窗口播放，到时间就播放，20ms轮询一次。
  * 2.轮询大窗口播放的逻辑，具体逻辑如下：
@@ -174,7 +176,6 @@ public class PlayersController extends Thread implements IPlayerCtrl{
             lst.get(i).start();
         }
     }
-
 
     @Override
     public void pause_() {
@@ -519,12 +520,19 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                 return;
             }
             //打开文本按钮
-            if (dataBean.getText() != null &&
-                    dataBean.getText().getImgUrl() != null &&
-                    !dataBean.getText().getImgUrl().isEmpty())
+            if (dataBean.getObjId() >= 0)
                 btnStateListener.onWordStateChange(OnBtnStateListener.XSL_WORD_BTN_STATE,
-                                                enable, dataBean.getText().getName(),
-                                                dataBean.getText().getImgUrl(), dataBean.getText().getContent());
+                                                enable, dataBean.getObjId());
+        }
+    }
+
+    //上一次通知更新字幕时间，每次间隔1s更新一次
+    private int lastSubtitleUpdateTime = 0;
+    //字幕通知
+    private void subTitleNotify() {
+        if (abs(currentPlayTime - lastSubtitleUpdateTime) > 1000) {
+            playCtrlEventListener.onSubtitleUpdate(currentPlayTime);
+            lastSubtitleUpdateTime = currentPlayTime;
         }
     }
 
@@ -599,6 +607,9 @@ public class PlayersController extends Thread implements IPlayerCtrl{
         if (!enableWord) {
             wordProc(null, false);
         }
+
+        //字幕更新
+        subTitleNotify();
     }
 
     @Override
@@ -630,7 +641,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                         //通知更新进度条
                         playCtrlEventListener.onPlayTimeCallback(OnPlayCtrlEventListener.PLAY_TIME_SET_CTRL, totalDuration, currentPlayTime);
                         int subTime = lst.get(centerVideoViewIndex).getCurrentPosition() - lst.get(12).getCurrentPosition();
-                        //快速seek多次，这里存在bug
+                        //简单的同步，快速seek多次，这里存在bug
                         if (subTime > 1000) {
                             for (int i = 0; i != 12; i++) {
                                 lst.get(i).pause();

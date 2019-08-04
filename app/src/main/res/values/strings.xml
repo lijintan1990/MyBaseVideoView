@@ -47,5 +47,5 @@
     <string name="word_image_url"> word_image_url </string>
     <string name="word_content"> word_content_url </string>
 
-    <string name="chapter_index"> chapter_index </string>
+    <string name="activity_value"> activity_value </string>
 </resources>

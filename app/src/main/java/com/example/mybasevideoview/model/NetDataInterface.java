@@ -2,6 +2,7 @@ package com.example.mybasevideoview.model;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Query;
 
 public interface NetDataInterface {
     /**
@@ -13,6 +14,9 @@ public interface NetDataInterface {
 
     @GET("api/home/getChapterList")
     Call<ChapterListInfo> getChapterList();
+
+    @GET("api/home/getTextItemList")
+    Call<WordMsgs> getWordMsgs(@Query("textId") int textId);
 
     @GET("api/home/timeline")
     Call<TimeLineInfo> getTimelineInfo();

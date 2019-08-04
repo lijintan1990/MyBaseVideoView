@@ -9,6 +9,6 @@ public interface OnBtnStateListener {
 
     //主面板右侧按钮状态更改
     void onStateChange(int action, boolean enable, String url);
-    void onWordStateChange(int action, boolean enable, String name, String imageUri, String content);
+    void onWordStateChange(int action, boolean enable, int objId);
     void onChapterBtnTextUpdate(String text);
 }
