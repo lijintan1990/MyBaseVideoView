@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
                     if (bNativeSeekFinish) {
                         curTimeTextView.setText(XslUtils.convertSecToTimeString(msg.arg1/1000));
                         int pos = msg.arg1 * 1000 / videoDuration;
-                        //Log.d(TAG, "pos:"+pos);
+                        Log.d(TAG, "pts:"+msg.arg1);
                         seekBar.setProgress(pos);
                     }
                     //18098953191
@@ -431,7 +431,7 @@ public class MainActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 Log.d(TAG, "seekBar stop touch:"+seekBar.getProgress());
                 int sec = seekBar.getProgress() * videoDuration / 1000;
-                Log.d(TAG, "realSeek:" + seekBar.getProgress());
+                Log.d(TAG, "seek pts:" + sec);
                 videoView.seekTo(sec);
             }
         });

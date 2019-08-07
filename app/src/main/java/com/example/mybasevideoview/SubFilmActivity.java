@@ -122,7 +122,7 @@ public class SubFilmActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 Log.d(TAG, "seekBar stop touch:"+seekBar.getProgress());
                 int sec = seekBar.getProgress() * videoView.getDuration() / 1000;
-                Log.d(TAG, "seek time:" + sec);
+                Log.d(TAG, "seek pts:" + sec);
                 videoView.seekTo(sec);
             }
         });
@@ -183,6 +183,7 @@ public class SubFilmActivity extends AppCompatActivity {
     }
 
     void updateUI(int curTime, int duration) {
+        Log.d(TAG, "pts:" + curTime);
         curTimeTextView.setText(XslUtils.convertSecToTimeString(curTime/1000));
         durationTextView.setText(XslUtils.convertSecToTimeString(duration/1000));
         seekBar.setProgress(curTime * 1000 / duration);
