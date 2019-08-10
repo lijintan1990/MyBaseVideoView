@@ -230,7 +230,6 @@ public class RenderTextureView extends TextureView implements IRender {
                 }
             }
         }
-
     }
 
     private class InternalSurfaceTextureListener implements SurfaceTextureListener{

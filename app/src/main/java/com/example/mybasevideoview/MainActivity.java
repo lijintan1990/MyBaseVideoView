@@ -32,9 +32,12 @@ import android.widget.Toast;
 
 import com.example.mybasevideoview.model.HomePageInfo;
 import com.example.mybasevideoview.model.ObtainNetWorkData;
+import com.example.mybasevideoview.model.SubtitlesDataCoding;
+import com.example.mybasevideoview.model.SubtitlesModel;
 import com.example.mybasevideoview.utils.NetworkCheck;
 import com.example.mybasevideoview.utils.XslUtils;
 import com.example.mybasevideoview.utils.ZipUtils;
+import com.example.mybasevideoview.view.subTitle.SubtitleView;
 import com.kk.taurus.playerbase.entity.DataSource;
 import com.kk.taurus.playerbase.event.OnPlayerEventListener;
 import com.kk.taurus.playerbase.widget.BaseVideoView;
@@ -53,6 +56,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.security.Permission;
+import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import kr.co.namee.permissiongen.PermissionFail;
@@ -155,6 +159,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 thread.start();
+                //加载字幕
+                loadSubtitles();
                 //播放视频
                 openVideo();
             }
@@ -203,6 +209,7 @@ public class MainActivity extends AppCompatActivity {
                         int pos = msg.arg1 * 1000 / videoDuration;
                         Log.d(TAG, "pts:"+msg.arg1);
                         seekBar.setProgress(pos);
+                        updateSubtitle(msg.arg1);
                     }
                     //18098953191
                     break;
@@ -273,6 +280,7 @@ public class MainActivity extends AppCompatActivity {
             super.run();
             int duration = 0;
             while (!bExit) {
+
                 BaseVideoView baseVideoView = mVideoViewRef.get();
                 Handler handler = mHandler.get();
                 if (baseVideoView != null
@@ -455,7 +463,6 @@ public class MainActivity extends AppCompatActivity {
         videoView.setOnPlayerEventListener(playerEventListener);
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -485,5 +492,40 @@ public class MainActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    SubtitleView subtitleView;
+    private ArrayList<SubtitlesModel> subtitleLstCN;
+    private ArrayList<SubtitlesModel> subtitleLstCA;
+    private ArrayList<SubtitlesModel> subtitleLstEN;
+    //字幕加载
+    private void loadSubtitles() {
+        try {
+            AssetManager assetManager = getResources().getAssets();
+            InputStream inputStreamCN = assetManager.open("chinese.srt");
+            InputStream inputStreamCA = assetManager.open("cantonese.srt");
+            InputStream inputStreamEN = assetManager.open("english.srt");
+
+            SubtitlesDataCoding dataCodingCN = new SubtitlesDataCoding();
+            SubtitlesDataCoding dataCodingCA = new SubtitlesDataCoding();
+            SubtitlesDataCoding dataCodingEN = new SubtitlesDataCoding();
+            subtitleLstCN = dataCodingCN.readFileStream(inputStreamCN);
+            subtitleLstEN = dataCodingEN.readFileStream(inputStreamEN);
+            subtitleLstCA = dataCodingCA.readFileStream(inputStreamCA);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        subtitleView = findViewById(R.id.subtitle);
+        subtitleView.setData(subtitleLstCN, SubtitleView.LANGUAGE_TYPE_CHINA);
+        subtitleView.setData(subtitleLstCA, SubtitleView.LANGUAGE_TYPE_CANTONESE);
+        subtitleView.setData(subtitleLstEN, SubtitleView.LANGUAGE_TYPE_ENGLISH);
+
+        Log.d("Subtitle", "ca size:"+subtitleLstCA.size());
+        subtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CHINA);
+    }
+
+    private void updateSubtitle(int pts) {
+        subtitleView.seekTo(pts);
     }
 }

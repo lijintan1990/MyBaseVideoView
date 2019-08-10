@@ -2,6 +2,7 @@ package com.example.mybasevideoview;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,16 +15,23 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.mybasevideoview.model.RequestCode;
+import com.example.mybasevideoview.model.SubtitlesDataCoding;
+import com.example.mybasevideoview.model.SubtitlesModel;
 import com.example.mybasevideoview.utils.XslUtils;
 import com.example.mybasevideoview.view.AboutActivity;
 import com.example.mybasevideoview.view.langugueActivity;
+import com.example.mybasevideoview.view.subTitle.SubtitleView;
 import com.kk.taurus.playerbase.entity.DataSource;
 import com.kk.taurus.playerbase.event.EventKey;
 import com.kk.taurus.playerbase.event.OnPlayerEventListener;
 import com.kk.taurus.playerbase.widget.BaseVideoView;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindViews;
 import butterknife.ButterKnife;
@@ -41,6 +49,8 @@ public class SubFilmActivity extends AppCompatActivity {
     SeekBar seekBar = null;
     TextView curTimeTextView = null;
     TextView durationTextView = null;
+
+    SubtitleView subtitleView;
 
     //底层seek结束,没有seek的情况下是true.一旦检测到seek,
     // 就变成false,false状态下，禁止更新进度条，直到收到底层
@@ -73,6 +83,9 @@ public class SubFilmActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        //加载字幕
+        loadSubtitles();
     }
 
     @Override
@@ -155,6 +168,7 @@ public class SubFilmActivity extends AppCompatActivity {
         videoView.setOnPlayerEventListener(playerEventListener);
     }
 
+    int curLangugue = langugueActivity.chinese;
     @OnClick({R.id.about_btn, R.id.langugue_btn})
     void buttonClick(View view) {
         switch (view.getId()) {
@@ -172,7 +186,8 @@ public class SubFilmActivity extends AppCompatActivity {
                 } else {
                     buttonList.get(1).setSelected(true);
                 }
-                createActivity(langugueActivity.class, RequestCode.Languge_req);
+                videoView.pause();
+                createActivity(langugueActivity.class, RequestCode.Languge_req, curLangugue);
                 break;
         }
     }
@@ -182,11 +197,18 @@ public class SubFilmActivity extends AppCompatActivity {
         startActivityForResult(intent, requestCode);
     }
 
+    private void createActivity(Class<?> cls, int requestCode, int value) {
+        Intent intent = new Intent(SubFilmActivity.this, cls);
+        intent.putExtra(String.valueOf(R.string.activity_value), value);
+        startActivityForResult(intent, requestCode);
+    }
+
     void updateUI(int curTime, int duration) {
         Log.d(TAG, "pts:" + curTime);
         curTimeTextView.setText(XslUtils.convertSecToTimeString(curTime/1000));
         durationTextView.setText(XslUtils.convertSecToTimeString(duration/1000));
         seekBar.setProgress(curTime * 1000 / duration);
+        updateSubtitle(curTime);
     }
 
     void videoPlay() {
@@ -200,18 +222,76 @@ public class SubFilmActivity extends AppCompatActivity {
          if (requestCode == RequestCode.About_req) {
             buttonList.get(0).setSelected(false);
         }  else if (requestCode == RequestCode.Languge_req) {
-            int langugueSelector = 0;
-            Bundle bd = data.getExtras();
-            langugueSelector = bd.getInt(langugueActivity.langugue_key);
-            buttonList.get(1).setSelected(false);
-            switch (langugueSelector) {
-                case langugueActivity.chinese:
-                    break;
-                case langugueActivity.cantonese:
-                    break;
-                case langugueActivity.english:
-                    break;
-            }
+             videoView.resume();
+             int langugueSelector = 0;
+             Bundle bd = data.getExtras();
+             langugueSelector = bd.getInt(langugueActivity.langugue_key);
+             if (langugueSelector < langugueActivity.unknow)
+                 curLangugue = langugueSelector;
+             buttonList.get(1).setSelected(false);
+
+             switch (langugueSelector) {
+                 case langugueActivity.chinese:
+                     subtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CHINA);
+                     buttonList.get(1).setBackgroundResource(R.mipmap.xsl_langugue_simple);
+                     break;
+                 case langugueActivity.cantonese:
+                     subtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CANTONESE);
+                     buttonList.get(1).setBackgroundResource(R.mipmap.xsl_langugue_complex);
+                     break;
+                 case langugueActivity.english:
+                     subtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_ENGLISH);
+                     buttonList.get(1).setBackgroundResource(R.mipmap.xsl_langugue_english);
+                     break;
+             }
         }
+    }
+
+    @Override
+    protected void onPause() {
+        videoView.pause();
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        videoView.resume();
+        super.onResume();
+    }
+
+    private ArrayList<SubtitlesModel> subtitleLstCN;
+    private ArrayList<SubtitlesModel> subtitleLstCA;
+    private ArrayList<SubtitlesModel> subtitleLstEN;
+
+    //字幕加载
+    private void loadSubtitles() {
+        try {
+            AssetManager assetManager = getResources().getAssets();
+            InputStream inputStreamCN = assetManager.open("chinese.srt");
+            InputStream inputStreamCA = assetManager.open("cantonese.srt");
+            InputStream inputStreamEN = assetManager.open("english.srt");
+
+            SubtitlesDataCoding dataCodingCN = new SubtitlesDataCoding();
+            SubtitlesDataCoding dataCodingCA = new SubtitlesDataCoding();
+            SubtitlesDataCoding dataCodingEN = new SubtitlesDataCoding();
+            subtitleLstCN = dataCodingCN.readFileStream(inputStreamCN);
+            subtitleLstEN = dataCodingEN.readFileStream(inputStreamEN);
+            subtitleLstCA = dataCodingCA.readFileStream(inputStreamCA);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        subtitleView = findViewById(R.id.subtitle);
+        subtitleView.setData(subtitleLstCN, SubtitleView.LANGUAGE_TYPE_CHINA);
+        subtitleView.setData(subtitleLstCA, SubtitleView.LANGUAGE_TYPE_CANTONESE);
+        subtitleView.setData(subtitleLstEN, SubtitleView.LANGUAGE_TYPE_ENGLISH);
+
+        Log.d("Subtitle", "ca size:"+subtitleLstCA.size());
+
+        subtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CHINA);
+    }
+
+    private void updateSubtitle(int pts) {
+        subtitleView.seekTo(pts);
     }
 }

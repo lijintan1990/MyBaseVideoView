@@ -622,11 +622,6 @@ public class MainPlayerActivity extends Activity {
 
             changeRelateBtnStatus(willPlayInCenterId, R.mipmap.relate_playing, false);
             changeRelateBtnStatus(relateId, R.mipmap.relate_video, true);
-
-//            relateBtns.get(willPlayInCenterId).setImageResource(R.mipmap.relate_playing);
-//            relateBtns.get(relateId).setImageResource(R.mipmap.relate_video);
-//            relateBtns.get(willPlayInCenterId).setVisibility(View.VISIBLE);
-//            relateBtns.get(relateId).setVisibility(View.VISIBLE);
         }
     }
 
@@ -694,6 +689,10 @@ public class MainPlayerActivity extends Activity {
 //            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 //
 //        }
+        if (videoViewArrayList.get(12).getState() == IPlayer.STATE_PAUSED) {
+            playersController.resume_();
+            videoViewArrayList.get(12).resume();
+        }
         super.onResume();
     }
 
@@ -710,8 +709,14 @@ public class MainPlayerActivity extends Activity {
 
     @Override
     protected void onPause() {
+        if (videoViewArrayList.get(12).isPlaying()) {
+            playersController.pause_();
+            videoViewArrayList.get(12).pause();
+        }
         super.onPause();
     }
+
+
 
     public static class RelateVideoInfo implements Serializable {
         private int startTime;

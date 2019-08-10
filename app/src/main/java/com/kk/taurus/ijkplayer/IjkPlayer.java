@@ -67,9 +67,7 @@ public class IjkPlayer extends BaseInternalPlayer {
 //        ijkMediaPlayer.native_setLogLevel(IjkMediaPlayer.IJK_LOG_DEBUG);
 
         //设置清除dns cache
-        //IjkMediaPlayer.OPT_CATEGORY_FORMAT, "dns_cache_clear", 1
-
-
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "dns_cache_clear", 1);
 
         //open mediacodec
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 0);
@@ -155,6 +153,7 @@ public class IjkPlayer extends BaseInternalPlayer {
                 mMediaPlayer.setDataSource(RawDataSourceProvider.create(applicationContext, rawUri));
             }
 
+            mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "dns_cache_clear", 1);
 //            mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 1);
 //            mMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-hevc", 1);
 
