@@ -337,51 +337,51 @@ public class MainPlayerActivity extends Activity {
         boolean clickAble = false;
         switch (view.getId()) {
             case R.id.p1:
-                if (maskViews.get(0).getVisibility() == View.VISIBLE)
+                if (maskViews.get(0).getVisibility() == View.GONE)
                     clickAble = true;
                 break;
             case R.id.p2:
-                if (maskViews.get(1).getVisibility() == View.VISIBLE)
+                if (maskViews.get(1).getVisibility() == View.GONE)
                     clickAble = true;
                 break;
             case R.id.p3:
-                if (maskViews.get(2).getVisibility() == View.VISIBLE)
+                if (maskViews.get(2).getVisibility() == View.GONE)
                     clickAble = true;
                 break;
             case R.id.p4:
-                if (maskViews.get(3).getVisibility() == View.VISIBLE)
+                if (maskViews.get(3).getVisibility() == View.GONE)
                     clickAble = true;
                 break;
             case R.id.p5:
-                if (maskViews.get(4).getVisibility() == View.VISIBLE)
+                if (maskViews.get(4).getVisibility() == View.GONE)
                     clickAble = true;
                 break;
             case R.id.p6:
-                if (maskViews.get(5).getVisibility() == View.VISIBLE)
+                if (maskViews.get(5).getVisibility() == View.GONE)
                     clickAble = true;
                 break;
             case R.id.p7:
-                if (maskViews.get(6).getVisibility() == View.VISIBLE)
+                if (maskViews.get(6).getVisibility() == View.GONE)
                     clickAble = true;
                 break;
             case R.id.p8:
-                if (maskViews.get(7).getVisibility() == View.VISIBLE)
+                if (maskViews.get(7).getVisibility() == View.GONE)
                     clickAble = true;
                 break;
             case R.id.p9:
-                if (maskViews.get(8).getVisibility() == View.VISIBLE)
+                if (maskViews.get(8).getVisibility() == View.GONE)
                     clickAble = true;
                 break;
             case R.id.p10:
-                if (maskViews.get(9).getVisibility() == View.VISIBLE)
+                if (maskViews.get(9).getVisibility() == View.GONE)
                     clickAble = true;
                 break;
             case R.id.p11:
-                if (maskViews.get(10).getVisibility() == View.VISIBLE)
+                if (maskViews.get(10).getVisibility() == View.GONE)
                     clickAble = true;
                 break;
             case R.id.p12:
-                if (maskViews.get(11).getVisibility() == View.VISIBLE)
+                if (maskViews.get(11).getVisibility() == View.GONE)
                     clickAble = true;
                 break;
         }
@@ -390,12 +390,17 @@ public class MainPlayerActivity extends Activity {
             return;
         }
 
+        int i = 0;
         for (BaseVideoView v : videoViewArrayList) {
             if (videoView == v) {
                 videoView.setBackgroundResource(R.drawable.xsl_video_shape_white);
+                int time = videoView.getCurrentPosition();
+                Message msg = playControlHandler.obtainMessage(OnPlayCtrlEventListener.PLAY_CTRL, time, i);
+                playControlHandler.sendMessage(msg);
             } else {
                 v.setBackgroundResource(R.drawable.xsl_video_shape);
             }
+            i++;
         }
     }
 
@@ -540,17 +545,6 @@ public class MainPlayerActivity extends Activity {
         startActivityForResult(intent, requestCode);
     }
 
-//    private void createWordActivity(Class<?> cls, int requestCode) {
-//        Intent intent = new Intent(MainPlayerActivity.this, cls);
-//
-////        Bundle bundle = new Bundle();
-////        bundle.putSerializable(String.valueOf(R.string.word_name), mWordTitle);
-////        bundle.putSerializable(String.valueOf(R.string.word_image_url), mWordImageUrl);
-////        bundle.putSerializable(String.valueOf(R.string.word_content), mWordContent);
-////        intent.putExtras(bundle);
-//        startActivityForResult(intent, requestCode);
-//    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
@@ -565,7 +559,8 @@ public class MainPlayerActivity extends Activity {
             int langugueSelector = 0;
             Bundle bd = data.getExtras();
             langugueSelector = bd.getInt(langugueActivity.langugue_key);
-            curLangugue = langugueSelector;
+            if (langugueSelector < langugueActivity.unknow)
+                curLangugue = langugueSelector;
             buttonList.get(1).setSelected(false);
 
             switch (langugueSelector) {
@@ -1014,7 +1009,7 @@ public class MainPlayerActivity extends Activity {
             @Override
             public void onClick(View v) {
                 topVideoView.stop();
-                topVideoView.stop();
+                bottomVideoView.stop();
                 verticalView.setVisibility(View.GONE);
                 changeRelateBtnStatus(relateId2, R.mipmap.relate_playing, false);
                 changeRelateBtnStatus(relateId1, R.mipmap.relate_video, true);
@@ -1024,7 +1019,7 @@ public class MainPlayerActivity extends Activity {
         findViewById(R.id.bottom_close).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                bottomVideoView.stop();
+                topVideoView.stop();
                 bottomVideoView.stop();
                 verticalView.setVisibility(View.GONE);
                 changeRelateBtnStatus(relateId1, R.mipmap.relate_playing, false);
@@ -1034,49 +1029,29 @@ public class MainPlayerActivity extends Activity {
 
         horizonView.setVisibility(View.GONE);
         verticalView.setVisibility(View.GONE);
-
-//        leftVideoView.setDataSource(new DataSource("http://cdn.hongmingyuan.net/video/360/V08-1080-0702-360pw25.mp4"));
-//        rightVideoView.setDataSource(new DataSource("http://cdn.hongmingyuan.net/video/360/V08-1080-0702-360pw25.mp4"));
-//        leftVideoView.start();
-//        rightVideoView.start();
-
-//        leftVideoView = new BaseVideoView(this);
-//        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
-//                FrameLayout.LayoutParams.MATCH_PARENT);
-//
-//        //创建线性布局
-//        LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-//        LinearLayout linearLayout = new LinearLayout(this);
-//        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-//        linearLayout.setLayoutParams(layoutParams1);
-//
-//
-//        leftVideoView = new BaseVideoView(this);
-//        rightVideoView = new BaseVideoView(this);
-//        topVideoView = new BaseVideoView(this);
-//        bottomVideoView = new BaseVideoView(this);
-//
-//        LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
-//        layoutParams2.weight = 1;
-//        leftVideoView.setLayoutParams(layoutParams2);
-//        layoutParams2.rightMargin = 2;
-//        LinearLayout.LayoutParams layoutParams3 = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
-//        layoutParams3.weight = 1;
-//        rightVideoView.setLayoutParams(layoutParams3);
-//        linearLayout.addView(leftVideoView);
-//        linearLayout.addView(rightVideoView);
-//
-//        FrameLayout layout = findViewById(R.id.frame_layout);
-//        layout.addView(linearLayout);
-//
-//        leftVideoView.setDataSource(new DataSource("http://cdn.hongmingyuan.net/video/360/V08-1080-0702-360pw25.mp4"));
-//        rightVideoView.setDataSource(new DataSource("http://cdn.hongmingyuan.net/video/360/V08-1080-0702-360pw25.mp4"));
-//        leftVideoView.start();
-//        rightVideoView.start();
     }
 
+    /**
+     * 自动播放结束，没有去点击关闭按钮
+     */
+    private void verticalRelateVideosFinish() {
+        topVideoView.stop();
+        bottomVideoView.stop();
+        verticalView.setVisibility(View.GONE);
+        changeRelateBtnStatus(relateId1, R.mipmap.relate_playing, false);
+        changeRelateBtnStatus(relateId2, R.mipmap.relate_video, false);
+    }
+    /**
+     * 自动播放结束，没有去点击关闭按钮
+     */
+    private void horizonRelateVideosFinish() {
+        leftVideoView.stop();
+        rightVideoView.stop();
+        horizonView.setVisibility(View.GONE);
 
-
+        changeRelateBtnStatus(relateId2, R.mipmap.relate_playing, false);
+        changeRelateBtnStatus(relateId1, R.mipmap.relate_video, false);
+    }
 
     private void addRelateBtns() {
         if (relateBtns == null)
@@ -1323,9 +1298,11 @@ public class MainPlayerActivity extends Activity {
                     mainPlayerActivityWeakReference.get().changeRelateBtnStatus(videoInfo1.id_2, R.mipmap.relate_video, true);
                     break;
                 case OnPlayCtrlEventListener.PLAY_RELATE_CLOSE_UI:
-                    Log.d(TAG, "close relate UI. id1:" + msg.arg1 + " id2:" + msg.arg2);
-                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(msg.arg1, 0, false);
-                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(msg.arg2, 0, false);
+                    mainPlayerActivityWeakReference.get().verticalRelateVideosFinish();
+                    mainPlayerActivityWeakReference.get().horizonRelateVideosFinish();
+//                    Log.d(TAG, "close relate UI. id1:" + msg.arg1 + " id2:" + msg.arg2);
+//                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(msg.arg1, 0, false);
+//                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(msg.arg2, 0, false);
                     break;
                 case OnPlayCtrlEventListener.PLAY_TIME_SET_CTRL:
                     mainPlayerActivityWeakReference.get().updatePlayCtroller(msg.arg1, msg.arg2);

@@ -26,6 +26,7 @@ public class langugueActivity extends Activity {
     public static final int chinese = 1;
     public static final int cantonese = 2;
     public static final int english = 3;
+    public static final int unknow = 4;
     public static final String langugue_key = "langugue";
     private Intent intent = null;
 
@@ -71,7 +72,7 @@ public class langugueActivity extends Activity {
     void click(View view) {
         switch (view.getId()) {
             case R.id.close_btn:
-                intent.putExtra(langugue_key, chinese);
+                intent.putExtra(langugue_key, unknow);
                 setResult(RequestCode.Languge_req, intent);
                 finish();
                 break;
@@ -81,8 +82,6 @@ public class langugueActivity extends Activity {
                 buttonList.get(1).setBackgroundResource(R.drawable.xsl_langugue_btn_color);
                 buttonList.get(3).getBackground().setAlpha(0);
                 buttonList.get(2).getBackground().setAlpha(0);
-//                buttonList.get(3).setBackgroundResource(R.color.translucent_background);
-//                buttonList.get(2).setBackgroundResource(R.color.translucent_background);
                 setResult(RequestCode.Languge_req, intent);
                 finish();
                 break;

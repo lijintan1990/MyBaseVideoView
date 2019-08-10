@@ -654,7 +654,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                             seekTo_(currentPlayTime);
                         }
                     } else {
-                        Log.d(TAG, "-1");
+                        //Log.d(TAG, "-1");
                     }
                 }
 
