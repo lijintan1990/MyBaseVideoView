@@ -393,25 +393,35 @@ public class MainPlayerActivity extends Activity {
         int i = 0;
         for (BaseVideoView v : videoViewArrayList) {
             if (videoView == v) {
+                Log.d(TAG, "set index " + i + " white");
                 videoView.setBackgroundResource(R.drawable.xsl_video_shape_white);
                 int time = videoView.getCurrentPosition();
                 Message msg = playControlHandler.obtainMessage(OnPlayCtrlEventListener.PLAY_CTRL, time, i);
                 playControlHandler.sendMessage(msg);
             } else {
+                Log.d(TAG, "set index " + i + " black");
                 v.setBackgroundResource(R.drawable.xsl_video_shape);
             }
             i++;
+            if (i == 12) {
+                break;
+            }
         }
+        videoViewArrayList.get(12).setBackgroundResource(R.drawable.xsl_video_shape_white);
     }
 
     //这个是程序自动触发的，因为seek导致时间不准，不得不把这个拆开写
     void videoViewOnClick_1(BaseVideoView videoView) {
+        int i = 0;
         for (BaseVideoView v : videoViewArrayList) {
+            i++;
             if (videoView == v) {
                 videoView.setBackgroundResource(R.drawable.xsl_video_shape_white);
             } else {
                 v.setBackgroundResource(R.drawable.xsl_video_shape);
             }
+            if (i == 11)
+                break;
         }
     }
 
@@ -552,7 +562,7 @@ public class MainPlayerActivity extends Activity {
             mNeedStartTransactAty = false;
             createPlayCtrl();
         } else if (requestCode == RequestCode.About_req) {
-            buttonList.get(5).setSelected(false);
+            buttonList.get(0).setSelected(false);
         } else if (requestCode == RequestCode.Languge_req) {
             playersController.resume_();
             videoViewArrayList.get(12).resume();
@@ -1110,7 +1120,7 @@ public class MainPlayerActivity extends Activity {
             view.setVisibility(View.VISIBLE);
 
             view.setBackgroundColor(Color.BLACK);
-            view.getBackground().setAlpha(130);
+            view.getBackground().setAlpha(180);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -1250,7 +1260,7 @@ public class MainPlayerActivity extends Activity {
                         videoViewLst.get().get(12).setDataSource(new DataSource(mVideolst.getData().get(msg.arg2).getVideoUrl360()));
                         videoViewLst.get().get(12).start(msg.arg1);
                         mainPlayerActivityWeakReference.get().setListenVideoView(videoViewLst.get().get(12));
-                        //videoViewLst.get().get(msg.arg2).setBackgroundResource(R.drawable.xsl_video_shape_white);
+                        videoViewLst.get().get(12).setBackgroundResource(R.drawable.xsl_video_shape_white);
                         mainPlayerActivityWeakReference.get().videoViewOnClick_1(videoViewLst.get().get(msg.arg2));
                         Log.d(TAG, "play main url: "+mVideolst.getData().get(msg.arg2).getVideoUrl360());
                     }

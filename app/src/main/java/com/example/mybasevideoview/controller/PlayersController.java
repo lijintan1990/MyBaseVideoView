@@ -530,7 +530,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
     private int lastSubtitleUpdateTime = 0;
     //字幕通知
     private void subTitleNotify() {
-        if (abs(currentPlayTime - lastSubtitleUpdateTime) > 1000) {
+        if (abs(currentPlayTime - lastSubtitleUpdateTime) > 300) {
             playCtrlEventListener.onSubtitleUpdate(currentPlayTime);
             lastSubtitleUpdateTime = currentPlayTime;
         }
