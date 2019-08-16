@@ -10,6 +10,8 @@ import android.util.Log;
 
 import com.example.mybasevideoview.model.ChapterListInfo;
 
+import static com.example.mybasevideoview.MainPlayerActivity.TAG;
+
 public class MySeekBar extends AppCompatSeekBar {
     private Paint whitePaint;
     //单位是秒
@@ -51,20 +53,17 @@ public class MySeekBar extends AppCompatSeekBar {
         if (mDuration <= 0) {
             return;
         }
-//        int w = getWidth();
-//        int h = getHeight();
-        //Log.d("MyseekBar", "w:"+w+"  h:" + h);
-        int i = 0;
+        int w = getWidth();
         for (ChapterListInfo.DataBean data : chapterListInfo.getData()) {
             if (data.getStartTime() > mDuration)
                 break;
 
             // 1000会不准，1200却是准的，懒得查了
-            int posX = data.getStartTime() * 1200 / mDuration;
+            int posX = data.getStartTime() * w / mDuration;
             //seekBar左边总是会有预留空间，容错
-            if (posX < 50)
-                posX = 50;
-
+            if (posX < 10)
+                posX = 10;
+            Log.d(TAG,"小白点位置:" + posX);
             canvas.drawCircle(posX, 12, 8, whitePaint);
         }
     }
