@@ -22,230 +22,239 @@
             android:id="@+id/back_btn"/>
     </LinearLayout>
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:id="@+id/frame_layout"
         android:layout_weight="1">
-        <RelativeLayout
+        <LinearLayout
+            android:id="@+id/controller"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:visibility="visible"
+            android:layout_alignParentBottom="true"
+            android:background="@color/black"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/main_controller_image_view_play_state"
+                android:layout_width="wrap_content"
+                android:layout_height="16dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/selector_play_state"/>
+            <TextView
+                android:id="@+id/main_controller_text_view_curr_time"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textSize="12sp"
+                android:textColor="#ffffff"
+                android:gravity="center"
+                android:text="00:00:00"/>
+            <com.example.mybasevideoview.view.MySeekBar
+                android:id="@+id/main_controller_seek_bar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="8dp"
+                android:maxHeight="4dp"
+                android:minHeight="4dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
+                android:focusable="false"
+                android:splitTrack="false"
+                android:progressDrawable="@drawable/style_video_player_video_seekbar"
+                android:thumb="@drawable/selector_seek_bar_thumb"/>
+            <TextView
+                android:id="@+id/main_controller_text_view_total_time"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingRight="10dp"
+                android:textSize="12sp"
+                android:textColor="#ffffff"
+                android:gravity="center"
+                android:text="00:00:00"/>
+        </LinearLayout>
+
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/black">
-
-            <LinearLayout
+            android:id="@+id/frame_layout"
+            android:layout_above="@+id/controller">
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/top"
-                android:layout_alignParentTop="true"
-                android:orientation="horizontal">
-                <View
-                    android:id="@+id/fill_unit_one"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="#000000"/>
-                <com.kk.taurus.playerbase.widget.BaseVideoView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/xsl_video_shape"
-                    android:clickable="true"
-                    android:id="@+id/p1" />
-                <com.kk.taurus.playerbase.widget.BaseVideoView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:background="@drawable/xsl_video_shape"
-                    android:id="@+id/p2" />
-                <com.kk.taurus.playerbase.widget.BaseVideoView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:background="@drawable/xsl_video_shape"
-                    android:id="@+id/p3" />
-                <View
-                    android:id="@+id/fill_unit_two"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="#000000"/>
-            </LinearLayout>
+                android:layout_height="match_parent"
+                android:background="@color/black">
 
-            <LinearLayout
-                android:id="@+id/controller"
-                android:layout_width="match_parent"
-                android:layout_height="24dp"
-                android:visibility="visible"
-                android:layout_alignParentBottom="true"
-                android:background="@color/black"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-                <ImageView
-                    android:id="@+id/main_controller_image_view_play_state"
-                    android:layout_width="wrap_content"
-                    android:layout_height="16dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/selector_play_state"/>
-                <TextView
-                    android:id="@+id/main_controller_text_view_curr_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:textSize="12sp"
-                    android:textColor="#ffffff"
-                    android:gravity="center"
-                    android:text="00:00:00"/>
-                <com.example.mybasevideoview.view.MySeekBar
-                    android:id="@+id/main_controller_seek_bar"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:maxHeight="4dp"
-                    android:minHeight="4dp"
-                    android:focusable="false"
-                    android:splitTrack="false"
-                    android:progressDrawable="@drawable/style_video_player_video_seekbar"
-                    android:thumb="@drawable/selector_seek_bar_thumb"/>
-                <TextView
-                    android:id="@+id/main_controller_text_view_total_time"
+                    android:id="@+id/top"
+                    android:layout_alignParentTop="true"
+                    android:orientation="horizontal">
+                    <View
+                        android:id="@+id/fill_unit_one"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="#000000"/>
+                    <com.kk.taurus.playerbase.widget.BaseVideoView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/xsl_video_shape"
+                        android:clickable="true"
+                        android:id="@+id/p1" />
+                    <com.kk.taurus.playerbase.widget.BaseVideoView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:background="@drawable/xsl_video_shape"
+                        android:id="@+id/p2" />
+                    <com.kk.taurus.playerbase.widget.BaseVideoView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:background="@drawable/xsl_video_shape"
+                        android:id="@+id/p3" />
+                    <View
+                        android:id="@+id/fill_unit_two"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="#000000"/>
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/bottom"
+                    android:layout_alignParentBottom="true">
+                    <View
+                        android:id="@+id/fill_unit_three"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="#000000"/>
+                    <com.kk.taurus.playerbase.widget.BaseVideoView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:background="@drawable/xsl_video_shape"
+                        android:id="@+id/p7" />
+                    <com.kk.taurus.playerbase.widget.BaseVideoView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:background="@drawable/xsl_video_shape"
+                        android:id="@+id/p8" />
+                    <com.kk.taurus.playerbase.widget.BaseVideoView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:background="@drawable/xsl_video_shape"
+                        android:id="@+id/p9" />
+                    <View
+                        android:id="@+id/fill_unit_four"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="#000000"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/left"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:paddingRight="10dp"
-                    android:textSize="12sp"
-                    android:textColor="#ffffff"
-                    android:gravity="center"
-                    android:text="00:00:00"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/bottom"
-                android:layout_above="@+id/controller">
-                <View
-                    android:id="@+id/fill_unit_three"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="#000000"/>
-                <com.kk.taurus.playerbase.widget.BaseVideoView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:background="@drawable/xsl_video_shape"
-                    android:id="@+id/p7" />
-                <com.kk.taurus.playerbase.widget.BaseVideoView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:background="@drawable/xsl_video_shape"
-                    android:id="@+id/p8" />
-                <com.kk.taurus.playerbase.widget.BaseVideoView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:background="@drawable/xsl_video_shape"
-                    android:id="@+id/p9" />
-                <View
-                    android:id="@+id/fill_unit_four"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="#000000"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/left"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/top"
-                android:layout_above="@+id/bottom"
-                android:orientation="vertical"
-                android:layout_alignParentLeft="true">
-                <com.kk.taurus.playerbase.widget.BaseVideoView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:background="@drawable/xsl_video_shape"
-                    android:id="@+id/p10" />
-                <com.kk.taurus.playerbase.widget.BaseVideoView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:background="@drawable/xsl_video_shape"
-                    android:id="@+id/p11" />
-                <com.kk.taurus.playerbase.widget.BaseVideoView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:background="@drawable/xsl_video_shape"
-                    android:id="@+id/p12" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/right"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/top"
-                android:layout_above="@+id/bottom"
-                android:layout_alignParentRight="true"
-                android:orientation="vertical">
-                <com.kk.taurus.playerbase.widget.BaseVideoView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:background="@drawable/xsl_video_shape"
-                    android:id="@+id/p4" />
-                <com.kk.taurus.playerbase.widget.BaseVideoView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:background="@drawable/xsl_video_shape"
-                    android:id="@+id/p5" />
-                <com.kk.taurus.playerbase.widget.BaseVideoView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:background="@drawable/xsl_video_shape"
-                    android:id="@+id/p6" />
-            </LinearLayout>
-
-            <com.kk.taurus.playerbase.widget.BaseVideoView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/top"
-                android:layout_above="@+id/bottom"
-                android:layout_toRightOf="@+id/left"
-                android:layout_toLeftOf="@+id/right"
-                android:background="@mipmap/main_player_bkg"
-                android:id="@+id/p13">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-                    <com.example.mybasevideoview.view.subTitle.SubtitleView
+                    android:layout_below="@+id/top"
+                    android:layout_above="@+id/bottom"
+                    android:orientation="vertical"
+                    android:layout_alignParentLeft="true">
+                    <com.kk.taurus.playerbase.widget.BaseVideoView
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/normal_subtitle"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginBottom="6dp"/>
-                </RelativeLayout>
-            </com.kk.taurus.playerbase.widget.BaseVideoView>
-        </RelativeLayout>
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:background="@drawable/xsl_video_shape"
+                        android:id="@+id/p10" />
+                    <com.kk.taurus.playerbase.widget.BaseVideoView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:background="@drawable/xsl_video_shape"
+                        android:id="@+id/p11" />
+                    <com.kk.taurus.playerbase.widget.BaseVideoView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:background="@drawable/xsl_video_shape"
+                        android:id="@+id/p12" />
+                </LinearLayout>
 
-    </FrameLayout>
+                <LinearLayout
+                    android:id="@+id/right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/top"
+                    android:layout_above="@+id/bottom"
+                    android:layout_alignParentRight="true"
+                    android:orientation="vertical">
+                    <com.kk.taurus.playerbase.widget.BaseVideoView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:background="@drawable/xsl_video_shape"
+                        android:id="@+id/p4" />
+                    <com.kk.taurus.playerbase.widget.BaseVideoView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:background="@drawable/xsl_video_shape"
+                        android:id="@+id/p5" />
+                    <com.kk.taurus.playerbase.widget.BaseVideoView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:background="@drawable/xsl_video_shape"
+                        android:id="@+id/p6" />
+                </LinearLayout>
+
+                <com.kk.taurus.playerbase.widget.BaseVideoView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/top"
+                    android:layout_above="@+id/bottom"
+                    android:layout_toRightOf="@+id/left"
+                    android:layout_toLeftOf="@+id/right"
+                    android:background="@mipmap/main_player_bkg"
+                    android:id="@+id/p13">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                        <com.example.mybasevideoview.view.subTitle.SubtitleView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/normal_subtitle"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginBottom="6dp"/>
+                    </RelativeLayout>
+                </com.kk.taurus.playerbase.widget.BaseVideoView>
+            </RelativeLayout>
+        </FrameLayout>
+    </RelativeLayout>
+
 
     <LinearLayout
         android:layout_width="30dp"
