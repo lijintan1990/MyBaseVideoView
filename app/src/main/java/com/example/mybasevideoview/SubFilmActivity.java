@@ -50,7 +50,7 @@ public class SubFilmActivity extends AppCompatActivity {
     TextView curTimeTextView = null;
     TextView durationTextView = null;
 
-    SubtitleView subtitleView;
+    SubtitleView subtitleView = null;
 
     //底层seek结束,没有seek的情况下是true.一旦检测到seek,
     // 就变成false,false状态下，禁止更新进度条，直到收到底层
@@ -85,7 +85,7 @@ public class SubFilmActivity extends AppCompatActivity {
         });
 
         //加载字幕
-        loadSubtitles();
+        //loadSubtitles();
     }
 
     @Override
@@ -292,6 +292,7 @@ public class SubFilmActivity extends AppCompatActivity {
     }
 
     private void updateSubtitle(int pts) {
-        subtitleView.seekTo(pts);
+        if (subtitleView != null)
+            subtitleView.seekTo(pts);
     }
 }

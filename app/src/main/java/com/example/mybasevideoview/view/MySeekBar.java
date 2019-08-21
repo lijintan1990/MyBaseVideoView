@@ -63,7 +63,7 @@ public class MySeekBar extends AppCompatSeekBar {
             //seekBar左边总是会有预留空间，容错
             if (posX < 10)
                 posX = 10;
-            Log.d(TAG,"小白点位置:" + posX);
+            //Log.d(TAG,"小白点位置:" + posX);
             canvas.drawCircle(posX, 12, 8, whitePaint);
         }
     }

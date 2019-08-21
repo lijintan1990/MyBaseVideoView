@@ -516,16 +516,18 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        subtitleView = findViewById(R.id.subtitle);
-        subtitleView.setData(subtitleLstCN, SubtitleView.LANGUAGE_TYPE_CHINA);
-        subtitleView.setData(subtitleLstCA, SubtitleView.LANGUAGE_TYPE_CANTONESE);
-        subtitleView.setData(subtitleLstEN, SubtitleView.LANGUAGE_TYPE_ENGLISH);
-
-        Log.d("Subtitle", "ca size:"+subtitleLstCA.size());
-        subtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CHINA);
+        //關閉字幕
+//        subtitleView = findViewById(R.id.subtitle);
+//        subtitleView.setData(subtitleLstCN, SubtitleView.LANGUAGE_TYPE_CHINA);
+//        subtitleView.setData(subtitleLstCA, SubtitleView.LANGUAGE_TYPE_CANTONESE);
+//        subtitleView.setData(subtitleLstEN, SubtitleView.LANGUAGE_TYPE_ENGLISH);
+//
+//        Log.d("Subtitle", "ca size:"+subtitleLstCA.size());
+//        subtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CHINA);
     }
 
     private void updateSubtitle(int pts) {
-        subtitleView.seekTo(pts);
+        if (subtitleView != null)
+            subtitleView.seekTo(pts);
     }
 }

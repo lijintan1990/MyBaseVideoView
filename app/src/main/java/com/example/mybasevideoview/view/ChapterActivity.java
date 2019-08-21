@@ -54,6 +54,19 @@ public class ChapterActivity extends Activity {
                 //这里可以直接改变颜色，但是你不知道哪个需要变回去
                 //view.setBackgroundResource(R.drawable.xsl_chapter_item_selected);
                 selectedIndex = position;
+
+                int size = MainPlayerActivity.chapterListInfo.getData().size();
+                if (selectedIndex % 2 == 0) {
+                    //左边的
+                    selectedIndex = selectedIndex / 2 + 1;
+                } else {
+                    selectedIndex = (size + 1) / 2 + (selectedIndex + 1) / 2;
+                }
+                Log.d(TAG, "ret chapterIndex:" + selectedIndex);
+                Intent intent = new Intent();
+                intent.putExtra(chapter_key, selectedIndex);
+                setResult(RequestCode.Chapter_req, intent);
+                finish();
             }
         });
         recyclerView.setAdapter(chapterAdapter);

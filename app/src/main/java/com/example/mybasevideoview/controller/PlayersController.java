@@ -250,11 +250,13 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                 Log.d(TAG, "stop window index:" + centerVideoViewIndex);
                 //结束中间视频播放
                 lst.get(12).stop();
+                int state = lst.get(12).getState();
                 //查找合适的视频进行播放
                 //重新设置
                 centerVideoViewIndex = -1;
                 //老的播放已经结束
                 bSeeking = false;
+                Log.d(TAG,  "set bSeeking false");
             }
 
             currentPlayTime = msc;
@@ -371,6 +373,24 @@ public class PlayersController extends Thread implements IPlayerCtrl{
         }
     }
 
+
+    public void updateCenterPlayerInfo(int centerPlayId, int playTime) {
+        synchronized (lockObj) {
+
+            TimeLineInfo timeLineInfo = MainPlayerActivity.getTimelineInfo();
+
+            for (TimeLineInfo.DataBean dataBean : timeLineInfo.getData()) {
+                if (dataBean.getType() == DataType.XSL_VIDEO &&
+                    dataBean.getStartTime() * 1000 < playTime &&
+                        (dataBean.getStartTime() + dataBean.getDuration()) * 1000 > playTime &&
+                    dataBean.getObjId() == centerPlayId) {
+                    centerVideoViewIndex = centerPlayId;
+                    centerStartTime = dataBean.getStartTime() * 1000;
+                    centerDuration = dataBean.getDuration() * 1000;
+                }
+            }
+        }
+    }
     /**
      {
      "id": 56,
@@ -650,9 +670,10 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                             for (int i = 0; i != 12; i++) {
                                 lst.get(i).resume();
                             }
-                        } else if (subTime < -1000) {
-                            seekTo_(currentPlayTime);
                         }
+//                        else if (subTime < -1000) {
+//                            seekTo_(currentPlayTime);
+//                        }
                     } else {
                         //Log.d(TAG, "-1");
                     }

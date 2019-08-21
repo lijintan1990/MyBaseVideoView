@@ -4,18 +4,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/translucent_background">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:layout_marginTop="88dp">
         <com.kk.taurus.playerbase.widget.BaseVideoView
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_marginVertical="88dp"
-            android:id="@+id/leftVideoView"
             android:layout_marginRight="2dp"
+            android:id="@+id/leftVideoView"
             >
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -36,7 +37,6 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_marginVertical="88dp"
             android:id="@+id/rightVideoView"
             >
             <RelativeLayout
@@ -58,7 +58,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/horizon_subtitle"
-        android:layout_marginHorizontal="20dp">
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="50dp">
     </com.example.mybasevideoview.view.subTitle.SubtitleView>
 
 </LinearLayout>
