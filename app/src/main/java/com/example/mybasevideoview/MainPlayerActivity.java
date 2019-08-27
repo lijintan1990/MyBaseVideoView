@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.DisplayMetrics;
@@ -314,12 +316,80 @@ public class MainPlayerActivity extends Activity {
         }
     }
 
+    public static ArrayList<String> middleVideoUrls = null;
+    private void init360Videos() {
+//        File outDir = getExternalFilesDir("");
+//        String videoDir = outDir.getAbsolutePath();
+        //Uri.parse("android.resource://"+getPackageName()+"/raw/video");
+        String sdcard = Environment.getExternalStoragePublicDirectory("").getAbsolutePath();
+
+        middleVideoUrls = new ArrayList<>();
+        for (int i=0; i!=12; i++) {
+            middleVideoUrls.add("/sdcard/raw/" + i + ".mp4");
+        }
+//            String strNum = "";
+//            for (int i=0; i!=12; i++) {
+//                switch (i) {
+//                    case 0:
+//                        strNum = "zero";
+//                        middleVideoUrls.add("android.resource://" + getPackageName() + "/"+ R.raw.zero);
+//                        break;
+//                    case 1:
+//                        strNum = "one";
+//                        middleVideoUrls.add("android.resource://" + getPackageName() + "/"+ R.raw.one);
+//                        break;
+//                    case 2:
+//                        strNum = "two";
+//                        middleVideoUrls.add("android.resource://" + getPackageName() + "/"+ R.raw.two);
+//                        break;
+//                    case 3:
+//                        strNum = "three";
+//                        middleVideoUrls.add("android.resource://" + getPackageName() + "/"+ R.raw.three);
+//                        break;
+//                    case 4:
+//                        strNum = "four";
+//                        middleVideoUrls.add("android.resource://" + getPackageName() + "/"+ R.raw.four);
+//                        break;
+//                    case 5:
+//                        strNum = "five";
+//                        middleVideoUrls.add("android.resource://" + getPackageName() + "/"+ R.raw.five);
+//                        break;
+//                    case 6:
+//                        strNum = "six";
+//                        middleVideoUrls.add("android.resource://" + getPackageName() + "/"+ R.raw.six);
+//                        break;
+//                    case 7:
+//                        strNum = "seven";
+//                        middleVideoUrls.add("android.resource://" + getPackageName() + "/"+ R.raw.seven);
+//                        break;
+//                    case 8:
+//                        strNum = "eight";
+//                        middleVideoUrls.add("android.resource://" + getPackageName() + "/"+ R.raw.eight);
+//                        break;
+//                    case 9:
+//                        strNum = "nigh";
+//                        middleVideoUrls.add("android.resource://" + getPackageName() + "/"+ R.raw.nigh);
+//                        break;
+//                    case 10:
+//                        strNum = "ten";
+//                        middleVideoUrls.add("android.resource://" + getPackageName() + "/"+ R.raw.ten);
+//                        break;
+//                    case 11:
+//                        strNum = "eleven";
+//                        middleVideoUrls.add("android.resource://" + getPackageName() + "/"+ R.raw.eleven);
+//                        break;
+//                }
+//            }
+    }
+
     void init() {
         initSeekBar();
         reLayout();
         loadSubtitles();
         disableAllBtn();
         initLocal90Videos();
+        if (useLocalVideo)
+            init360Videos();
         Log.d(TAG, "init thread id:%d" + Thread.currentThread().getId());
 
         getVideoList();
@@ -1246,6 +1316,7 @@ public class MainPlayerActivity extends Activity {
         });
     }
 
+    public boolean useLocalVideo = true;
     public static class PlayControlHandler extends Handler {
         WeakReference<List<BaseVideoView>> videoViewLst;
         WeakReference<MainPlayerActivity> mainPlayerActivityWeakReference;
@@ -1264,15 +1335,21 @@ public class MainPlayerActivity extends Activity {
                     if (videoViewLst.get() != null) {
                         if (videoViewLst.get().get(12).getState() == IPlayer.STATE_STARTED)
                             videoViewLst.get().get(12).stop();
-                        videoViewLst.get().get(12).setDataSource(new DataSource(mVideolst.getData().get(msg.arg2).getVideoUrl360()));
+
+                        String uri;
+                        if (mainPlayerActivityWeakReference.get().useLocalVideo) {
+                            uri = middleVideoUrls.get(msg.arg2);
+                        } else {
+                            uri = mVideolst.getData().get(msg.arg2).getVideoUrl360();
+                        }
+
+                        videoViewLst.get().get(12).setDataSource(new DataSource(uri));
                         videoViewLst.get().get(12).start(msg.arg1);
                         videoViewLst.get().get(12).setVolume(0, 0);
                         mainPlayerActivityWeakReference.get().setListenVideoView(videoViewLst.get().get(12));
                         videoViewLst.get().get(12).setBackgroundResource(R.drawable.xsl_video_shape_white);
                         mainPlayerActivityWeakReference.get().videoViewOnClick_1(videoViewLst.get().get(msg.arg2));
                         Log.d(TAG, "play main url: "+mVideolst.getData().get(msg.arg2).getVideoUrl360());
-
-                        //mainPlayerActivityWeakReference.get().playersController.updateCenterPlayerInfo(msg.arg2, msg.arg1);
                     }
                     break;
                 case OnPlayCtrlEventListener.STOP_CTRL:
@@ -1290,12 +1367,21 @@ public class MainPlayerActivity extends Activity {
                     //播放关联视频
                     mainPlayerActivityWeakReference.get().verticalView.setVisibility(View.VISIBLE);
                     RelateVideoInfo videoInfo = (RelateVideoInfo)msg.obj;
-                    mainPlayerActivityWeakReference.get().topVideoView.setDataSource(new DataSource(videoInfo.getUri_1()));
-                    mainPlayerActivityWeakReference.get().topVideoView.start(videoInfo.getStartTime() * 1000);
-                    mainPlayerActivityWeakReference.get().bottomVideoView.setDataSource(new DataSource(videoInfo.getUri_2()));
-                    mainPlayerActivityWeakReference.get().bottomVideoView.start(videoInfo.getStartTime() * 1000);
+                    if (mainPlayerActivityWeakReference.get().useLocalVideo) {
+                        mainPlayerActivityWeakReference.get().topVideoView.setDataSource(new DataSource(middleVideoUrls.get(videoInfo.id_1)));
+                        mainPlayerActivityWeakReference.get().topVideoView.start(videoInfo.getStartTime() * 1000);
+                        mainPlayerActivityWeakReference.get().bottomVideoView.setDataSource(new DataSource(middleVideoUrls.get(videoInfo.id_2)));
+                        mainPlayerActivityWeakReference.get().bottomVideoView.start(videoInfo.getStartTime() * 1000);
+                    } else {
+                        mainPlayerActivityWeakReference.get().topVideoView.setDataSource(new DataSource(videoInfo.getUri_1()));
+                        mainPlayerActivityWeakReference.get().topVideoView.start(videoInfo.getStartTime() * 1000);
+                        mainPlayerActivityWeakReference.get().bottomVideoView.setDataSource(new DataSource(videoInfo.getUri_2()));
+                        mainPlayerActivityWeakReference.get().bottomVideoView.start(videoInfo.getStartTime() * 1000);
+                    }
+
                     mainPlayerActivityWeakReference.get().relateId1 = videoInfo.id_1;
                     mainPlayerActivityWeakReference.get().relateId2 = videoInfo.id_2;
+                    Log.d(TAG, "relate id: " + videoInfo.id_1 + " relate id: "+ videoInfo.id_2);
 
                     //修改关联视频UI
                     RelateVideoInfo info = (RelateVideoInfo)msg.obj;
@@ -1303,18 +1389,21 @@ public class MainPlayerActivity extends Activity {
                     mainPlayerActivityWeakReference.get().changeRelateBtnStatus(info.id_2, R.mipmap.relate_video, true);
                     break;
                 case OnPlayCtrlEventListener.PLAY_RELATE_HORIZON_CTRL:
-//                    mainPlayerActivityWeakReference.get().playersController.pauseNoLock();
-//                    mainPlayerActivityWeakReference.get().videoViewArrayList.get(12).pause();
-//                    Intent intent1 = new Intent(mainPlayerActivityWeakReference.get(), RelateHorizonActivity.class);
-//                    intent1.putExtra(RELATE_INFO, (Serializable) msg.obj);
-//                    mainPlayerActivityWeakReference.get().startActivityForResult(intent1, RequestCode.Relate_req);
                     //播放关联视频
                     mainPlayerActivityWeakReference.get().horizonView.setVisibility(View.VISIBLE);
                     RelateVideoInfo videoInfo1 = (RelateVideoInfo)msg.obj;
-                    mainPlayerActivityWeakReference.get().leftVideoView.setDataSource(new DataSource(videoInfo1.getUri_1()));
-                    mainPlayerActivityWeakReference.get().leftVideoView.start(videoInfo1.getStartTime() * 1000);
-                    mainPlayerActivityWeakReference.get().rightVideoView.setDataSource(new DataSource(videoInfo1.getUri_2()));
-                    mainPlayerActivityWeakReference.get().rightVideoView.start(videoInfo1.getStartTime() * 1000);
+                    if (mainPlayerActivityWeakReference.get().useLocalVideo) {
+                        mainPlayerActivityWeakReference.get().topVideoView.setDataSource(new DataSource(middleVideoUrls.get(videoInfo1.id_1)));
+                        mainPlayerActivityWeakReference.get().topVideoView.start(videoInfo1.getStartTime() * 1000);
+                        mainPlayerActivityWeakReference.get().bottomVideoView.setDataSource(new DataSource(middleVideoUrls.get(videoInfo1.id_2)));
+                        mainPlayerActivityWeakReference.get().bottomVideoView.start(videoInfo1.getStartTime() * 1000);
+                    } else {
+                        mainPlayerActivityWeakReference.get().leftVideoView.setDataSource(new DataSource(videoInfo1.getUri_1()));
+                        mainPlayerActivityWeakReference.get().leftVideoView.start(videoInfo1.getStartTime() * 1000);
+                        mainPlayerActivityWeakReference.get().rightVideoView.setDataSource(new DataSource(videoInfo1.getUri_2()));
+                        mainPlayerActivityWeakReference.get().rightVideoView.start(videoInfo1.getStartTime() * 1000);
+                    }
+
                     mainPlayerActivityWeakReference.get().relateId1 = videoInfo1.id_1;
                     mainPlayerActivityWeakReference.get().relateId2 = videoInfo1.id_2;
 

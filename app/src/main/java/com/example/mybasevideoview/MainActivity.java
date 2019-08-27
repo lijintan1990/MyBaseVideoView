@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -16,6 +17,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -112,6 +114,12 @@ public class MainActivity extends AppCompatActivity {
     private static final int UPDATE_PLAY_DURATION = 5;
 
     View wifiNoticeView;
+
+    //请求状态码
+    private static int REQUEST_PERMISSION_CODE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -363,19 +371,52 @@ public class MainActivity extends AppCompatActivity {
     void unZipRes() {
         File outDir = getExternalFilesDir("");
         XslUtils.deleteFile(new File(outDir.getAbsolutePath() + "/defaultData"));
+        //XslUtils.deleteFile(new File(outDir.getAbsolutePath() + "/360"));
 
         AssetManager assetManager = getResources().getAssets();
         try {
             InputStream inputStream = assetManager.open("defaultData.zip");
             ZipUtils.UnZipFolder(inputStream, outDir.getAbsolutePath());
+//            InputStream inputStream1 = assetManager.open("middle.zip");
+//            ZipUtils.UnZipFolder(inputStream1, outDir.getAbsolutePath());
+            //assetManager.close();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+//        for (int i=0; i!= 12; i++) {
+//            String strPath = outDir.getAbsolutePath() + "/" + i + ".mp4";
+//            if (XslUtils.fileIsExists(strPath)) {
+//                continue;
+//            } else {
+//                InputStream inputStream = null;
+//                try {
+//                    inputStream = assetManager.open("" + i + ".zip");
+//                    if (inputStream == null) {
+//                        Log.d(TAG, "open " + i + "file filed");
+//                        continue;
+//                    }
+//                    ZipUtils.UnZipFolder(inputStream, outDir.getAbsolutePath());
+//                    Log.d(TAG, "unzip " + i + "file");
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+ //       }
+
+
     }
 
     void init() {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_PERMISSION_CODE);
+            }
+        }
         unZipRes();
         videoView = findViewById(R.id.one);
         subVideoView = findViewById(R.id.subMovie);
