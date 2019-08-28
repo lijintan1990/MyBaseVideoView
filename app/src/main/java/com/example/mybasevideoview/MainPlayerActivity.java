@@ -1392,11 +1392,12 @@ public class MainPlayerActivity extends Activity {
                     //播放关联视频
                     mainPlayerActivityWeakReference.get().horizonView.setVisibility(View.VISIBLE);
                     RelateVideoInfo videoInfo1 = (RelateVideoInfo)msg.obj;
+
                     if (mainPlayerActivityWeakReference.get().useLocalVideo) {
-                        mainPlayerActivityWeakReference.get().topVideoView.setDataSource(new DataSource(middleVideoUrls.get(videoInfo1.id_1)));
-                        mainPlayerActivityWeakReference.get().topVideoView.start(videoInfo1.getStartTime() * 1000);
-                        mainPlayerActivityWeakReference.get().bottomVideoView.setDataSource(new DataSource(middleVideoUrls.get(videoInfo1.id_2)));
-                        mainPlayerActivityWeakReference.get().bottomVideoView.start(videoInfo1.getStartTime() * 1000);
+                        mainPlayerActivityWeakReference.get().leftVideoView.setDataSource(new DataSource(middleVideoUrls.get(videoInfo1.id_1)));
+                        mainPlayerActivityWeakReference.get().leftVideoView.start(videoInfo1.getStartTime() * 1000);
+                        mainPlayerActivityWeakReference.get().rightVideoView.setDataSource(new DataSource(middleVideoUrls.get(videoInfo1.id_2)));
+                        mainPlayerActivityWeakReference.get().rightVideoView.start(videoInfo1.getStartTime() * 1000);
                     } else {
                         mainPlayerActivityWeakReference.get().leftVideoView.setDataSource(new DataSource(videoInfo1.getUri_1()));
                         mainPlayerActivityWeakReference.get().leftVideoView.start(videoInfo1.getStartTime() * 1000);
