@@ -107,8 +107,7 @@ public class MainPlayerActivity extends Activity {
 
     //当前播放的章节
     int curChapter = 1;
-    //当前选择的语言
-    int curLangugue = langugueActivity.chinese;
+
 
     //中间窗口的字幕
     SubtitleView normalSubtitleView;
@@ -128,7 +127,8 @@ public class MainPlayerActivity extends Activity {
         }
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
+        Intent intent = getIntent();
+        curLangugue = intent.getIntExtra(getResources().getString(R.string.langugue), SubtitleView.LANGUAGE_TYPE_CHINA);
         //这个一定要在createPlayCtrl之前调用，不然重复进入主面板之后就会内存泄漏或者崩溃，
         // 因为设置的videolist为空，_stop实际上无法调用videoView的stop函数
         init();
@@ -204,16 +204,6 @@ public class MainPlayerActivity extends Activity {
                 playersController.pause_();
                 videoViewArrayList.get(12).pause();
                 createActivity(WordActivity.class, RequestCode.Word_req, mWordId);
-                break;
-            case R.id.langugue_btn:
-                if (buttonList.get(1).isSelected()) {
-                    buttonList.get(1).setSelected(false);
-                } else {
-                    buttonList.get(1).setSelected(true);
-                }
-                playersController.pause_();
-                videoViewArrayList.get(12).pause();
-                createActivity(langugueActivity.class, RequestCode.Languge_req, curLangugue);
                 break;
             case R.id.back_btn:
                 if (playersController != null)
@@ -528,6 +518,7 @@ public class MainPlayerActivity extends Activity {
 
             @Override
             public void onSubtitleUpdate(int pts) {
+                //Log.d(TAG, "onSubtitleUpdate pts: " + pts);
                 Message msg = playControlHandler.obtainMessage(SUBTITLE_UPDATE, pts, 0);
                 playControlHandler.sendMessage(msg);
             }
@@ -633,36 +624,6 @@ public class MainPlayerActivity extends Activity {
             createPlayCtrl();
         } else if (requestCode == RequestCode.About_req) {
             buttonList.get(0).setSelected(false);
-        } else if (requestCode == RequestCode.Languge_req) {
-            playersController.resume_();
-            videoViewArrayList.get(12).resume();
-            int langugueSelector = 0;
-            Bundle bd = data.getExtras();
-            langugueSelector = bd.getInt(langugueActivity.langugue_key);
-            if (langugueSelector < langugueActivity.unknow)
-                curLangugue = langugueSelector;
-            buttonList.get(1).setSelected(false);
-
-            switch (langugueSelector) {
-                case langugueActivity.chinese:
-                    normalSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CHINA);
-                    verticalRelateSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CHINA);
-                    horizonRelateSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CHINA);
-                    buttonList.get(1).setBackgroundResource(R.mipmap.xsl_langugue_simple);
-                    break;
-                case langugueActivity.cantonese:
-                    normalSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CANTONESE);
-                    verticalRelateSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CANTONESE);
-                    horizonRelateSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CANTONESE);
-                    buttonList.get(1).setBackgroundResource(R.mipmap.xsl_langugue_complex);
-                    break;
-                case langugueActivity.english:
-                    normalSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_ENGLISH);
-                    verticalRelateSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_ENGLISH);
-                    horizonRelateSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_ENGLISH);
-                    buttonList.get(1).setBackgroundResource(R.mipmap.xsl_langugue_english);
-                    break;
-            }
         } else if (requestCode == RequestCode.Appliance_req) {
             buttonList.get(2).setSelected(false);
             playersController.resume_();
@@ -705,6 +666,7 @@ public class MainPlayerActivity extends Activity {
         }
     }
 
+    private int curLangugue = SubtitleView.LANGUAGE_TYPE_CHINA;
     private ArrayList<SubtitlesModel> subtitleLstCN;
     private ArrayList<SubtitlesModel> subtitleLstCA;
     private ArrayList<SubtitlesModel> subtitleLstEN;
@@ -774,6 +736,7 @@ public class MainPlayerActivity extends Activity {
             videoViewArrayList.get(12).resume();
         }
         super.onResume();
+        Log.d(TAG, "xx onResume");
     }
 
     @Override
@@ -785,6 +748,7 @@ public class MainPlayerActivity extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
+        Log.d(TAG, "xx onStop");
     }
 
     @Override
@@ -794,9 +758,8 @@ public class MainPlayerActivity extends Activity {
             videoViewArrayList.get(12).pause();
         }
         super.onPause();
+        Log.d(TAG, "xx onPause");
     }
-
-
 
     public static class RelateVideoInfo implements Serializable {
         private int startTime;
@@ -1316,7 +1279,7 @@ public class MainPlayerActivity extends Activity {
         });
     }
 
-    public boolean useLocalVideo = true;
+    public boolean useLocalVideo = false;
     public static class PlayControlHandler extends Handler {
         WeakReference<List<BaseVideoView>> videoViewLst;
         WeakReference<MainPlayerActivity> mainPlayerActivityWeakReference;

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,98 +9,182 @@
     android:background="@color/black"
     tools:context=".MainActivity">
 
-    <!--com.next.easynavigation.view.EasyNavigationBar
-        android:id="@+id/navigationBar"
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </com.next.easynavigation.view.EasyNavigationBar-->
-
-    <LinearLayout
-        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.7"
-        android:orientation="vertical"
-        android:layout_marginLeft="34dp"
-        android:layout_marginRight="12dp"
-        android:layout_marginVertical="30dp">
+        android:background="@mipmap/main_page"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="70dp"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.7"
+            android:orientation="vertical"
+            android:layout_marginRight="20dp">
 
-        <com.kk.taurus.playerbase.widget.BaseVideoView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="#000000"
-            android:layout_margin="1dp"
-            android:id="@+id/one" >
-            <RelativeLayout
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:layout_marginTop="28dp"
+                android:layout_marginBottom="17dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/about"
+                    android:layout_marginRight="20dp"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:text="团队介绍"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/langugue"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:text="字幕选择: 中文简体"
+                    android:layout_marginLeft="30dp"/>
+            </LinearLayout>
+
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="0dp"
+                android:layout_weight="1">
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:id="@+id/videoImageView"/>
+                    android:background="@mipmap/main_page_video"/>
 
-                <ImageButton
+                <com.kk.taurus.playerbase.widget.BaseVideoView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="#000000"
+                    android:layout_margin="10dp"
+                    android:id="@+id/one" >
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:id="@+id/videoImageView"/>
+
+                        <ImageButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/play_btn"
+                            android:background="@mipmap/player_icon_start_play"
+                            android:layout_centerInParent="true"/>
+
+                        <com.example.mybasevideoview.view.subTitle.SubtitleView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/subtitle"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginBottom="18dp"/>
+                    </RelativeLayout>
+
+
+                </com.kk.taurus.playerbase.widget.BaseVideoView>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginBottom="40dp">
+                <include layout="@layout/layout_progress"></include>
+            </FrameLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.3"
+            android:orientation="horizontal"
+            android:layout_marginTop="70dp"
+            android:layout_marginBottom="70dp"
+            android:background="@mipmap/statics"
+            android:layout_marginRight="20dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:id="@+id/sub_video"
+                android:layout_weight="1">
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/play_btn"
-                    android:background="@mipmap/player_icon_start_play"
-                    android:layout_centerInParent="true"/>
-
-                <com.example.mybasevideoview.view.subTitle.SubtitleView
-                    android:layout_width="match_parent"
+                    android:text="观"
+                    android:textSize="20sp"
+                    android:textColor="@color/white"/>
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/subtitle"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="18dp"/>
-            </RelativeLayout>
+                    android:text="看"
+                    android:textSize="20sp"
+                    android:textColor="@color/white"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="视"
+                    android:textSize="20sp"
+                    android:textColor="@color/white"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="频"
+                    android:textSize="20sp"
+                    android:textColor="@color/white"/>
+            </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:id="@+id/statics"
+                android:layout_weight="1">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="资"
+                    android:textSize="20sp"
+                    android:textColor="@color/white"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="料"
+                    android:textSize="20sp"
+                    android:textColor="@color/white"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="库"
+                    android:textSize="20sp"
+                    android:textColor="@color/white"/>
+            </LinearLayout>
 
-        </com.kk.taurus.playerbase.widget.BaseVideoView>
+        </LinearLayout>
 
-        <include layout="@layout/layout_progress"></include>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="70dp"
+            android:layout_marginTop="70dp"
+            android:layout_marginBottom="70dp"
+            android:src="@mipmap/main_page_xsl"/>
+
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="0.3"
-        android:background="@color/black"
-        android:orientation="vertical"
-        android:layout_marginVertical="30dp"
-        android:layout_marginRight="36dp">
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.5"
-            android:layout_marginBottom="10dp"
-            android:background="#000000"
-            android:id="@+id/subMovie">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="center"
-                android:id="@+id/subImageView"/>
-
-            <include layout="@layout/layout_sub_film"/>
-        </FrameLayout>
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.5"
-            android:background="#000000"
-            android:id="@+id/wholeMovie">
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="center"
-                android:id="@+id/wholeImageView"/>
-
-            <include layout="@layout/layout_whole_film"/>
-        </FrameLayout>
-
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>

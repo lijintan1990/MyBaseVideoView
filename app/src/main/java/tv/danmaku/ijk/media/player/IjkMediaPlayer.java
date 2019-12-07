@@ -536,6 +536,7 @@ public final class IjkMediaPlayer extends AbstractMediaPlayer {
     @Override
     public void pause() throws IllegalStateException {
         stayAwake(false);
+        Log.d(TAG, "xx ijk pause");
         _pause();
     }
 

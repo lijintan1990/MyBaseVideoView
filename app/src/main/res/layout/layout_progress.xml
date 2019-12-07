@@ -3,9 +3,8 @@
     android:id="@+id/cover_player_controller_bottom_container"
     android:layout_width="match_parent"
     android:layout_height="30dp"
-    android:visibility="visible"
+    android:visibility="gone"
     android:layout_alignParentBottom="true"
-    android:background="@drawable/shape_controller_bottom_gradient"
     android:gravity="center_vertical"
     android:orientation="horizontal">
 

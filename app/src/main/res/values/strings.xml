@@ -16,6 +16,8 @@
 
     <string name="input_url_play">输入地址播放</string>
 
+    <string name="langugue">语言</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="xsl_about">

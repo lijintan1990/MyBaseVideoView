@@ -111,6 +111,7 @@ public class SubtitleView extends LinearLayout implements ISubtitleControl, Subt
             //Log.d("Subtitle", "" + position + "/" + dataCur.get(dataCur.size() - 1).end);
         }
 
+        //Log.d("subTitle", "subtitle pts:" + position);
         if (model != null) {
             setItemSubtitle(model.contextC);
         } else {

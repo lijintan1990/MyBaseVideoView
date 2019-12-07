@@ -228,6 +228,7 @@ public class IjkPlayer extends BaseInternalPlayer {
     public void pause() {
         try{
             int state = getState();
+            //Log.d(TAG, "xx pause state " + state);
             if(available()
                     && state!=STATE_END
                     && state!=STATE_ERROR

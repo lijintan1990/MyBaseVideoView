@@ -55,7 +55,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
     //给关联视频的锁，有关联视频的时候主面板需要暂停播放
     private Object relateLockObj;
 
-    //标记已经播放过的关联视频
+    //标记正在关联视频
     ArrayList<TimeLineInfo.DataBean> relatePlayedVideoLst;
 
     public PlayersController(List<BaseVideoView> videoViewList) {
@@ -184,6 +184,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                 List<BaseVideoView> lst = videoViewList.get();
                 for (int i=0; i!=12; i++) {
                     lst.get(i).pause();
+                    Log.d(TAG, "xx pause " + i);
                 }
             }
         }
@@ -206,6 +207,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
 
                 for (int i=0; i!=12; i++) {
                     lst.get(i).resume();
+                    Log.d(TAG, "xx onResume " + i);
                 }
             }
         }
@@ -214,7 +216,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
     @Override
     public void seekTo_(int msc) {
         synchronized (lockObj) {
-            msc = msc + 3000;
+            msc = msc + 1000;
             if (videoViewList.get() != null) {
                 List<BaseVideoView> lst = videoViewList.get();
                 Log.d(TAG, "mySeek to:" + msc);
@@ -356,7 +358,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
      * 由于一些时间误差导致再次启动关联视频。
      * @param dataBean
      */
-    public void addRelateDataToLst(TimeLineInfo.DataBean dataBean) {
+    private void addRelateDataToLst(TimeLineInfo.DataBean dataBean) {
         Log.d(TAG, "add relate data to list");
         synchronized (relateLockObj) {
             relatePlayedVideoLst.add(dataBean);
@@ -454,7 +456,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
             centerStartTime = dataBean.getStartTime() * 1000;
             centerDuration = dataBean.getDuration() * 1000;
             Log.d(TAG, "change play id:"+windowIndex + " startTime:"+centerStartTime+" duration:"+centerDuration + " currentPlayTime:"+currentPlayTime);
-            playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL, currentPlayTime+3000, windowIndex);
+            playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL, currentPlayTime+500, windowIndex);
         }
 
         int relateId;
@@ -594,18 +596,20 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                 } else if (type == DataType.XSL_ACTION) {
                     enableAction = true;
                 }
-            } else if (dataBean.getType() == DataType.XSL_VIDEO &&
-                    (dataBean.getStartTime() + dataBean.getDuration() + 3) * 1000 < currentPlayTime &&
-                    (dataBean.getStartTime() + dataBean.getDuration() + 4) * 1000 > currentPlayTime &&
-                    dataBean.getRelevanceVideoId() > 0) {
-                    //处理被关禁闭的关联视频，在关联视频结束时间之后3-4s之间，将关联视频取消禁闭
-                    //还有就是可以通过UI，用户手动取消禁闭
-                    removeRelateDataInLst();
-                    Log.d(TAG, "will close id:"+dataBean.getId() + " ");
-                    //通知关闭UI上面的关联按钮
-                    playCtrlEventListener.onRelateUIClose(OnPlayCtrlEventListener.PLAY_RELATE_CLOSE_UI,
-                            dataBean.getObjId() - 1, dataBean.getRelevanceVideoId() - 1);
-            } else if(dataBean.getType() == DataType.XSL_VIDEO && currentPlayTime > (dataBean.getStartTime() + dataBean.getDuration()) * 1000 &&
+            }
+//            else if (dataBean.getType() == DataType.XSL_VIDEO &&
+//                    (dataBean.getStartTime() + dataBean.getDuration() + 2) * 1000 < currentPlayTime &&
+//                    (dataBean.getStartTime() + dataBean.getDuration() + 3) * 1000 > currentPlayTime &&
+//                    dataBean.getRelevanceVideoId() > 0) {
+//                    //处理被关禁闭的关联视频，在关联视频结束时间之后3-4s之间，将关联视频取消禁闭
+//                    //还有就是可以通过UI，用户手动取消禁闭
+//                    removeRelateDataInLst();
+//                    Log.d(TAG, "will close id:"+dataBean.getId() + " ");
+//                    //通知关闭UI上面的关联按钮
+//                    playCtrlEventListener.onRelateUIClose(OnPlayCtrlEventListener.PLAY_RELATE_CLOSE_UI,
+//                            dataBean.getObjId() - 1, dataBean.getRelevanceVideoId() - 1);
+//            }
+            else if(dataBean.getType() == DataType.XSL_VIDEO && currentPlayTime > (dataBean.getStartTime() + dataBean.getDuration()) * 1000 &&
                         currentPlayTime < (dataBean.getStartTime() + dataBean.getDuration() + 1) * 1000) {
                 //播放完一秒内加上遮罩
                 maskViewListener.setMaskViewStatus(OnMaskViewListener.ACTION_MASK_VISIABLE, dataBean.getObjId() - 1, dataBean.getId());
@@ -614,6 +618,23 @@ public class PlayersController extends Thread implements IPlayerCtrl{
             //当前时间还没轮询到开始，直接跳出循环
             if (dataBean.getStartTime() * 1000 > currentPlayTime)
                 break;
+        }
+
+        /**
+         * 删除关联视频禁闭
+         */
+        for (TimeLineInfo.DataBean dataBean : relatePlayedVideoLst) {
+            Log.d(TAG, "dataBean startTime: " + dataBean.getStartTime() * 1000 + " endTime:"
+                    + (dataBean.getStartTime() + dataBean.getDuration()) * 1000 + " currentPlayTime:" + currentPlayTime);
+            if (dataBean.getRelevanceVideoId() > 0 &&
+                    (dataBean.getStartTime() * 1000 > currentPlayTime || (dataBean.getStartTime() + dataBean.getDuration()) * 1000 < currentPlayTime)) {
+                //通知关闭UI上面的关联按钮
+                playCtrlEventListener.onRelateUIClose(OnPlayCtrlEventListener.PLAY_RELATE_CLOSE_UI,
+                        dataBean.getObjId() - 1, dataBean.getRelevanceVideoId() - 1);
+
+                removeRelateDataInLst();
+                break;
+            }
         }
 
         if (!enableAction) {
@@ -635,6 +656,8 @@ public class PlayersController extends Thread implements IPlayerCtrl{
     @Override
     public void run() {
         int syncVideoTime = 0;
+        //记录上一次的seek的时间，用于计算避免重复seek
+        long lastSeekTime = 0;
         List<BaseVideoView> lst = videoViewList.get();
 
         while (running) {
@@ -657,7 +680,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                     //中间窗口有视频播放，那么开始计时
                     if (centerVideoViewIndex != -1 && lst.get(12).getState() == IPlayer.STATE_STARTED) {
                         currentPlayTime = lst.get(12).getCurrentPosition();
-                        //Log.d(TAG, "play currentPlayTime: " + currentPlayTime);
+                        Log.d(TAG, "小视频 play currentPlayTime: " + currentPlayTime + "use view index playTime:"+ lst.get(centerVideoViewIndex).getCurrentPosition());
                         //通知更新进度条
                         playCtrlEventListener.onPlayTimeCallback(OnPlayCtrlEventListener.PLAY_TIME_SET_CTRL, totalDuration, currentPlayTime);
                         int subTime = lst.get(centerVideoViewIndex).getCurrentPosition() - lst.get(12).getCurrentPosition();
@@ -665,17 +688,25 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                         if (subTime > 1000) {
                             for (int i = 0; i != 12; i++) {
                                 lst.get(i).pause();
+                                Log.d(TAG, "小视频快了，暂停");
                             }
-                        } else if (subTime >= -1000 && subTime <= 1000){
+                        } else if (subTime < -300) {
+                            //seekTo_(currentPlayTime);
+                            long currentTime = System.currentTimeMillis();
+                            if (currentTime - 1000 > lastSeekTime) {
+                                Log.d(TAG, "小视频慢了，seek " + (currentPlayTime + 500));
+                                List<BaseVideoView> videoViews = videoViewList.get();
+                                videoViews.get(centerVideoViewIndex).seekTo(currentPlayTime + 500);
+                                videoViews.get(centerVideoViewIndex).resume();
+                            }
+                            lastSeekTime = System.currentTimeMillis();
+                        } else {
+                            //Log.d(TAG, "-1");
+                            Log.d(TAG, "小视频恢复播放");
                             for (int i = 0; i != 12; i++) {
                                 lst.get(i).resume();
                             }
                         }
-//                        else if (subTime < -1000) {
-//                            seekTo_(currentPlayTime);
-//                        }
-                    } else {
-                        //Log.d(TAG, "-1");
                     }
                 }
 

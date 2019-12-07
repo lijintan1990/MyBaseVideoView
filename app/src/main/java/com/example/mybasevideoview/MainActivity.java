@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,20 +29,25 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mybasevideoview.model.HomePageInfo;
 import com.example.mybasevideoview.model.ObtainNetWorkData;
+import com.example.mybasevideoview.model.RequestCode;
 import com.example.mybasevideoview.model.SubtitlesDataCoding;
 import com.example.mybasevideoview.model.SubtitlesModel;
 import com.example.mybasevideoview.utils.NetworkCheck;
 import com.example.mybasevideoview.utils.XslUtils;
 import com.example.mybasevideoview.utils.ZipUtils;
+import com.example.mybasevideoview.view.AboutActivity;
+import com.example.mybasevideoview.view.langugueActivity;
 import com.example.mybasevideoview.view.subTitle.SubtitleView;
 import com.kk.taurus.playerbase.entity.DataSource;
 import com.kk.taurus.playerbase.event.OnPlayerEventListener;
+import com.kk.taurus.playerbase.player.IPlayer;
 import com.kk.taurus.playerbase.widget.BaseVideoView;
 //import android.widget.Button;
 //
@@ -59,8 +65,11 @@ import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.security.Permission;
 import java.util.ArrayList;
+import java.util.List;
 
+import butterknife.BindViews;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import kr.co.namee.permissiongen.PermissionFail;
 import kr.co.namee.permissiongen.PermissionGen;
 import kr.co.namee.permissiongen.PermissionSuccess;
@@ -73,17 +82,10 @@ import static com.kk.taurus.playerbase.player.IPlayer.STATE_STARTED;
 
 
 public class MainActivity extends AppCompatActivity {
-//    private String[] tabText = {"首页", "乡射礼", "关于"};
-//    //未选中icon
-//    private int[] normalIcon = {R.mipmap.index, R.mipmap.find, R.mipmap.message};
-//    //选中时icon
-//    private int[] selectIcon = {R.mipmap.index1, R.mipmap.find1, R.mipmap.message1};
-//
-//    private List<Fragment> fragments = new ArrayList<>();
     private static final String TAG = "MainActivity";
     BaseVideoView videoView = null;
-    FrameLayout subVideoView = null;
-    FrameLayout wholeVideoView = null;
+    LinearLayout subVideoView = null;
+    LinearLayout wholeVideoView = null;
     HomePageInfo pageInfo = null;
     ImageView playCtrView = null;
     SeekBar seekBar = null;
@@ -107,6 +109,9 @@ public class MainActivity extends AppCompatActivity {
     // seek finish回调在设置成true，继续更新进度条
     boolean bNativeSeekFinish = true;
 
+    @BindViews({R.id.about, R.id.langugue})
+    List<TextView> textViewList;
+
     private static final int UPDATE_VIDEO_THUMBNAIL = 1;
     private static final int UPDATE_SUB_MOVIE_THUMBNAIL = 2;
     private static final int UPDATE_WHOLE_MOVIE_THUMBNAIL = 3;
@@ -126,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         XslUtils.hideStausbar(new WeakReference<>(this), true);
 
         Log.d(TAG, "main thread id:"+Thread.currentThread().getId());
@@ -145,8 +151,47 @@ public class MainActivity extends AppCompatActivity {
                 //播放视频
                 videoPlay();
                 playBtn.setVisibility(View.INVISIBLE);
+                playCtrView.setSelected(false);
+                findViewById(R.id.cover_player_controller_bottom_container).setVisibility(View.VISIBLE);
             }
         });
+    }
+    //当前选择的语言
+    int curLangugue = langugueActivity.chinese;
+    @OnClick({R.id.about, R.id.langugue})
+    void textViewOnClick(View view) {
+        switch (view.getId()) {
+            case R.id.about:
+                createActivity(AboutActivity.class, RequestCode.About_req);
+                break;
+            case R.id.langugue:
+                createActivity(langugueActivity.class, RequestCode.Languge_req, curLangugue);
+                break;
+        }
+    }
+
+    private void createActivity(Class<?> cls, int requestCode) {
+        Intent intent = new Intent(MainActivity.this, cls);
+        startActivityForResult(intent, requestCode);
+    }
+
+    private void createActivity(Class<?> cls, int requestCode, int value) {
+        Intent intent = new Intent(MainActivity.this, cls);
+        intent.putExtra(String.valueOf(R.string.activity_value), value);
+        startActivityForResult(intent, requestCode);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        //super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RequestCode.About_req) {
+        } else if (requestCode == RequestCode.Languge_req) {
+            int langugueSelector = 0;
+            Bundle bd = data.getExtras();
+            langugueSelector = bd.getInt(langugueActivity.langugue_key);
+            if (langugueSelector < langugueActivity.unknow)
+                curLangugue = langugueSelector;
+        }
     }
 
     void setImageViewBmp() {
@@ -204,12 +249,12 @@ public class MainActivity extends AppCompatActivity {
                     imageView.setBackground(new BitmapDrawable((Bitmap)msg.obj));
                     break;
                 case UPDATE_SUB_MOVIE_THUMBNAIL:
-                    ImageView subImageView = findViewById(R.id.subImageView);
-                    subImageView.setBackground(new BitmapDrawable((Bitmap)msg.obj));
+//                    ImageView subImageView = findViewById(R.id.subImageView);
+//                    subImageView.setBackground(new BitmapDrawable((Bitmap)msg.obj));
                     break;
                 case UPDATE_WHOLE_MOVIE_THUMBNAIL:
-                    ImageView wholeImageView = findViewById(R.id.wholeImageView);
-                    wholeImageView.setBackground(new BitmapDrawable((Bitmap)msg.obj));
+//                    ImageView wholeImageView = findViewById(R.id.wholeImageView);
+//                    wholeImageView.setBackground(new BitmapDrawable((Bitmap)msg.obj));
                     break;
                 case UPDATE_PLAY_TIME:
                     if (bNativeSeekFinish) {
@@ -265,12 +310,16 @@ public class MainActivity extends AppCompatActivity {
 
     void videoPlay() {
         if (pageInfo != null) {
-            videoView.setDataSource(new DataSource(pageInfo.getData().getIndex().getVideoUrl()));
-            videoView.start();
-            ImageView imageView = findViewById(R.id.videoImageView);
-            imageView.setVisibility(View.GONE);
-            playThread = new PlayThread(new WeakReference<>(videoView), new WeakReference<>(handler));
-            playThread.start();
+            if (videoView.getState() == IPlayer.STATE_PAUSED) {
+                videoView.resume();
+            } else {
+                videoView.setDataSource(new DataSource(pageInfo.getData().getIndex().getVideoUrl()));
+                videoView.start();
+                ImageView imageView = findViewById(R.id.videoImageView);
+                imageView.setVisibility(View.GONE);
+                playThread = new PlayThread(new WeakReference<>(videoView), new WeakReference<>(handler));
+                playThread.start();
+            }
         }
     }
 
@@ -419,8 +468,8 @@ public class MainActivity extends AppCompatActivity {
         }
         unZipRes();
         videoView = findViewById(R.id.one);
-        subVideoView = findViewById(R.id.subMovie);
-        wholeVideoView = findViewById(R.id.wholeMovie);
+        wholeVideoView = findViewById(R.id.statics);
+        subVideoView= findViewById(R.id.sub_video);
         playCtrView = findViewById(R.id.player_controller_image_view_play_state);
         seekBar = findViewById(R.id.player_controller_seek_bar);
         curTimeTextView = findViewById(R.id.player_controller_text_view_curr_time);
@@ -429,7 +478,7 @@ public class MainActivity extends AppCompatActivity {
         subVideoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String url = null;
+                String url;
                 if (pageInfo != null && pageInfo.getStatus() == 0) {
                     url = pageInfo.getData().getExcerpts().getVideoUrl();
                     if (url != null && url != "") {
@@ -447,6 +496,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, MainPlayerActivity.class);
+                intent.putExtra(getResources().getString(R.string.langugue), curLangugue);
                 startActivity(intent);
             }
         });
@@ -459,6 +509,7 @@ public class MainActivity extends AppCompatActivity {
                     playCtrView.setSelected(false);
                 } else if (videoView.getState() == STATE_STARTED) {
                     videoView.pause();
+                    playBtn.setVisibility(View.VISIBLE);
                     playCtrView.setSelected(true);
                 }
             }
@@ -494,6 +545,7 @@ public class MainActivity extends AppCompatActivity {
                     bNativeSeekFinish = true;
                 } else if (eventCode == PLAYER_EVENT_ON_PLAY_COMPLETE) {
                     playBtn.setVisibility(View.VISIBLE);
+                    findViewById(R.id.cover_player_controller_bottom_container).setVisibility(View.GONE);
                 }
 //                else if (eventCode == PLAYER_EVENT_ON_SEEK_TO) {
 //                    bNativeSeekFinish = false;
@@ -514,6 +566,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         videoView.pause();
+        playBtn.setVisibility(View.VISIBLE);
     }
 
     @Override
