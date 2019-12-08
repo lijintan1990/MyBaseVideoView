@@ -13,3 +13,4 @@
 .externalNativeBuild
 app/src/main/jniLibs/armeabi-v7a/libijkffmpeg.so.bak
 app/src/main/jniLibs/armeabi-v7a/libijkplayer.so.bak
+app/src/main/assets/defaultData.zip

@@ -52,17 +52,10 @@ public class PlayersController extends Thread implements IPlayerCtrl{
 
     //操作所有view的锁
     private Object lockObj;
-    //给关联视频的锁，有关联视频的时候主面板需要暂停播放
-    private Object relateLockObj;
-
-    //标记正在关联视频
-    ArrayList<TimeLineInfo.DataBean> relatePlayedVideoLst;
 
     public PlayersController(List<BaseVideoView> videoViewList) {
-        this.videoViewList = new WeakReference<>(videoViewList) ;
-        relatePlayedVideoLst = new ArrayList<>();
+        this.videoViewList = new WeakReference<>(videoViewList);
         lockObj = new Object();
-        relateLockObj = new Object();
     }
 
     public void setCtrlEventListener(OnPlayCtrlEventListener onPlayCtrlEventListener) {
@@ -296,76 +289,6 @@ public class PlayersController extends Thread implements IPlayerCtrl{
 
     }
 
-    /**
-     * 一旦有关联视频，我们需要暂停controller线程
-     * 等关联视频关闭在回复controller线程
-     */
-    public void relateVideoWait() {
-        synchronized (relateLockObj) {
-            try {
-                Log.d(TAG, "before relate wait");
-                relateLockObj.wait();
-                Log.d(TAG, "after relate wait");
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * 关联视频窗口关闭，需要通知controller线程继续运行
-     */
-    public void relateViewNotify() {
-        synchronized (relateLockObj) {
-            Log.d(TAG, "relate notify");
-            relateLockObj.notify();
-            Log.d(TAG, "after notify");
-        }
-    }
-
-    private boolean isRelateDataInLst(TimeLineInfo.DataBean dataBean) {
-        //TODO: 感觉这个函数可以不用加锁
-        Log.d(TAG, "before isRelate");
-        synchronized (relateLockObj) {
-            for (TimeLineInfo.DataBean data : relatePlayedVideoLst) {
-                if (data == dataBean || dataBean.getRelevanceVideoId() == data.getObjId()) {
-                    Log.d(TAG, "relate data is in list");
-                    return true;
-                }
-            }
-        }
-        Log.d(TAG, "after isRelate");
-        return false;
-    }
-
-    /**
-     * 把已经做过关联的视频从链表里面移除，在一下几种情况下移除
-     * 1. 当前播放时间已经大于关联视频的结尾时间加3s
-     * 2. 用户点击手动关联的时候，需要移除，然后等待controller的再次播放管理视频
-     */
-    public void removeRelateDataInLst() {
-        Log.d(TAG, "before remove relate data form list");
-        synchronized (relateLockObj) {
-            Log.d(TAG, "取消禁闭，可以继续关联");
-            relatePlayedVideoLst.clear();
-        }
-
-        Log.d(TAG, "after remove relate data form list");
-    }
-
-    /**
-     * 加入到已经播放的关联视频列表当中去，避免关联视频activity返回后，
-     * 由于一些时间误差导致再次启动关联视频。
-     * @param dataBean
-     */
-    private void addRelateDataToLst(TimeLineInfo.DataBean dataBean) {
-        Log.d(TAG, "add relate data to list");
-        synchronized (relateLockObj) {
-            relatePlayedVideoLst.add(dataBean);
-        }
-        Log.d(TAG, "after add relate data");
-    }
-
     //被点击的小窗口的id, -1是默认值，表示不需要做任何处理
     private int clickedWindowIdex = -1;
 
@@ -374,7 +297,6 @@ public class PlayersController extends Thread implements IPlayerCtrl{
             clickedWindowIdex = windowIndex;
         }
     }
-
 
     public void updateCenterPlayerInfo(int centerPlayId, int playTime) {
         synchronized (lockObj) {
@@ -458,41 +380,13 @@ public class PlayersController extends Thread implements IPlayerCtrl{
             Log.d(TAG, "change play id:"+windowIndex + " startTime:"+centerStartTime+" duration:"+centerDuration + " currentPlayTime:"+currentPlayTime);
             playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL, currentPlayTime+500, windowIndex);
         }
-
-        int relateId;
-        int relateType = dataBean.getRelevanceType();
-
-        //判断是否有关联视频
-        if (relateType != 0) {
-            if (isRelateDataInLst(dataBean)) {
-                return;
-            }
-            relateId = dataBean.getRelevanceVideoId() - 1;
-            addRelateDataToLst(dataBean);
-            if (relateType == OnPlayCtrlEventListener.RELATIVE_VERTICAL) {
-                playCtrlEventListener.onPlayRelateVideos(OnPlayCtrlEventListener.PLAY_RELATE_VERTICAL_CTRL,
-                        windowIndex, relateId, dataBean.getStartTime(), dataBean.getDuration());
-                Log.d(TAG, "will play relate video. playId: "+windowIndex + " relateId:"+relateId);
-                Log.d(TAG, "0 before wait");
-                relateVideoWait();
-                Log.d(TAG, "0 after wait");
-            } else if (relateType == OnPlayCtrlEventListener.RELATIVE_HORIZON) {
-                addRelateDataToLst(dataBean);
-                playCtrlEventListener.onPlayRelateVideos(OnPlayCtrlEventListener.PLAY_RELATE_HORIZON_CTRL,
-                        windowIndex, relateId, dataBean.getStartTime(), dataBean.getDuration());
-                Log.d(TAG, "will play relate video. playId: "+windowIndex + " relateId:"+relateId);
-//                Log.d(TAG, "1 before wait");
-//                relateVideoWait();
-//                Log.d(TAG, "1 after wait");
-            }
-        }
     }
 
     private void chapterProc(TimeLineInfo.DataBean dataBean) {
         if (btnStateListener == null || dataBean == null)
             return;
 
-        btnStateListener.onChapterBtnTextUpdate(dataBean.getChapter().getCode());
+        btnStateListener.onChapterBtnTextUpdate(dataBean.getChapter().getCode(), dataBean.getChapter().getName());
     }
 
     private void applienceProc(TimeLineInfo.DataBean dataBean, boolean enable) {
@@ -596,20 +490,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                 } else if (type == DataType.XSL_ACTION) {
                     enableAction = true;
                 }
-            }
-//            else if (dataBean.getType() == DataType.XSL_VIDEO &&
-//                    (dataBean.getStartTime() + dataBean.getDuration() + 2) * 1000 < currentPlayTime &&
-//                    (dataBean.getStartTime() + dataBean.getDuration() + 3) * 1000 > currentPlayTime &&
-//                    dataBean.getRelevanceVideoId() > 0) {
-//                    //处理被关禁闭的关联视频，在关联视频结束时间之后3-4s之间，将关联视频取消禁闭
-//                    //还有就是可以通过UI，用户手动取消禁闭
-//                    removeRelateDataInLst();
-//                    Log.d(TAG, "will close id:"+dataBean.getId() + " ");
-//                    //通知关闭UI上面的关联按钮
-//                    playCtrlEventListener.onRelateUIClose(OnPlayCtrlEventListener.PLAY_RELATE_CLOSE_UI,
-//                            dataBean.getObjId() - 1, dataBean.getRelevanceVideoId() - 1);
-//            }
-            else if(dataBean.getType() == DataType.XSL_VIDEO && currentPlayTime > (dataBean.getStartTime() + dataBean.getDuration()) * 1000 &&
+            } else if(dataBean.getType() == DataType.XSL_VIDEO && currentPlayTime > (dataBean.getStartTime() + dataBean.getDuration()) * 1000 &&
                         currentPlayTime < (dataBean.getStartTime() + dataBean.getDuration() + 1) * 1000) {
                 //播放完一秒内加上遮罩
                 maskViewListener.setMaskViewStatus(OnMaskViewListener.ACTION_MASK_VISIABLE, dataBean.getObjId() - 1, dataBean.getId());
@@ -618,23 +499,6 @@ public class PlayersController extends Thread implements IPlayerCtrl{
             //当前时间还没轮询到开始，直接跳出循环
             if (dataBean.getStartTime() * 1000 > currentPlayTime)
                 break;
-        }
-
-        /**
-         * 删除关联视频禁闭
-         */
-        for (TimeLineInfo.DataBean dataBean : relatePlayedVideoLst) {
-            Log.d(TAG, "dataBean startTime: " + dataBean.getStartTime() * 1000 + " endTime:"
-                    + (dataBean.getStartTime() + dataBean.getDuration()) * 1000 + " currentPlayTime:" + currentPlayTime);
-            if (dataBean.getRelevanceVideoId() > 0 &&
-                    (dataBean.getStartTime() * 1000 > currentPlayTime || (dataBean.getStartTime() + dataBean.getDuration()) * 1000 < currentPlayTime)) {
-                //通知关闭UI上面的关联按钮
-                playCtrlEventListener.onRelateUIClose(OnPlayCtrlEventListener.PLAY_RELATE_CLOSE_UI,
-                        dataBean.getObjId() - 1, dataBean.getRelevanceVideoId() - 1);
-
-                removeRelateDataInLst();
-                break;
-            }
         }
 
         if (!enableAction) {
@@ -680,7 +544,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                     //中间窗口有视频播放，那么开始计时
                     if (centerVideoViewIndex != -1 && lst.get(12).getState() == IPlayer.STATE_STARTED) {
                         currentPlayTime = lst.get(12).getCurrentPosition();
-                        Log.d(TAG, "小视频 play currentPlayTime: " + currentPlayTime + "use view index playTime:"+ lst.get(centerVideoViewIndex).getCurrentPosition());
+                        //Log.d(TAG, "小视频 play currentPlayTime: " + currentPlayTime + "use view index playTime:"+ lst.get(centerVideoViewIndex).getCurrentPosition());
                         //通知更新进度条
                         playCtrlEventListener.onPlayTimeCallback(OnPlayCtrlEventListener.PLAY_TIME_SET_CTRL, totalDuration, currentPlayTime);
                         int subTime = lst.get(centerVideoViewIndex).getCurrentPosition() - lst.get(12).getCurrentPosition();
@@ -701,8 +565,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                             }
                             lastSeekTime = System.currentTimeMillis();
                         } else {
-                            //Log.d(TAG, "-1");
-                            Log.d(TAG, "小视频恢复播放");
+                            //Log.d(TAG, "小视频恢复播放");
                             for (int i = 0; i != 12; i++) {
                                 lst.get(i).resume();
                             }

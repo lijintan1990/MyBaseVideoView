@@ -11,6 +11,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:id="@+id/left_layout">
         <Button
             android:layout_width="28dp"
@@ -20,6 +21,26 @@
             android:layout_marginRight="10dp"
             android:background="@mipmap/back"
             android:id="@+id/back_btn"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/chapter_title"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:ems="1"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/chapter_content"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:ems="1"/>
     </LinearLayout>
 
     <RelativeLayout
@@ -31,18 +52,10 @@
             android:layout_width="match_parent"
             android:layout_height="24dp"
             android:visibility="visible"
-            android:layout_alignParentBottom="true"
+            android:layout_alignParentTop="true"
             android:background="@color/black"
             android:gravity="center_vertical"
             android:orientation="horizontal">
-            <ImageView
-                android:id="@+id/main_controller_image_view_play_state"
-                android:layout_width="wrap_content"
-                android:layout_height="16dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:scaleType="centerInside"
-                android:src="@drawable/selector_play_state"/>
             <TextView
                 android:id="@+id/main_controller_text_view_curr_time"
                 android:layout_width="wrap_content"
@@ -80,7 +93,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/frame_layout"
-            android:layout_above="@+id/controller">
+            android:layout_below="@+id/controller">
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -239,6 +252,26 @@
                     android:layout_toLeftOf="@+id/right"
                     android:background="@mipmap/main_player_bkg"
                     android:id="@+id/p13">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_gravity="center"
+                        android:gravity="center">
+                        <TextView
+                            android:id="@+id/chapter_num"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp"
+                            android:textColor="@color/white"/>
+                        <TextView
+                            android:id="@+id/chapter_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:textColor="@color/white"
+                            android:layout_marginTop="8dp"/>
+                    </LinearLayout>
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -250,6 +283,11 @@
                             android:layout_alignParentBottom="true"
                             android:layout_marginBottom="6dp"/>
                     </RelativeLayout>
+                    <com.example.mybasevideoview.view.PlayControlMaskView
+                        android:id="@+id/play_touch_mask"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clickable="true"/>
                 </com.kk.taurus.playerbase.widget.BaseVideoView>
             </RelativeLayout>
         </FrameLayout>
@@ -263,7 +301,7 @@
         android:visibility="visible"
         android:layout_marginRight="20dp"
         android:id="@+id/rightButtons">
-        <Button
+        <!--Button
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginTop="20dp"
@@ -275,7 +313,7 @@
             android:layout_height="30dp"
             android:layout_marginVertical="10dp"
             android:id="@+id/langugue_btn"
-            android:background="@drawable/xsl_langugue"/>
+            android:background="@drawable/xsl_langugue"/-->
         <Button
             android:layout_width="30dp"
             android:layout_height="30dp"
@@ -294,15 +332,13 @@
             android:id="@+id/word_btn"
             android:layout_marginVertical="10dp"
             android:background="@drawable/xsl_word"/>
-        <Button
+        <!--Button
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:id="@+id/chapter_btn"
             android:layout_marginVertical="10dp"
             android:text="01"
-            android:background="@drawable/xsl_chapter"/>
+            android:background="@drawable/xsl_chapter"/-->
 
     </LinearLayout>
-
-
 </LinearLayout>

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,11 +11,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -36,17 +35,14 @@ import com.example.mybasevideoview.model.TimeLineInfo;
 import com.example.mybasevideoview.model.VideoListInfo;
 import com.example.mybasevideoview.model.WordMsgs;
 import com.example.mybasevideoview.utils.XslUtils;
-import com.example.mybasevideoview.view.AboutActivity;
 import com.example.mybasevideoview.view.AppliancesActivity;
 import com.example.mybasevideoview.view.ChapterActivity;
 import com.example.mybasevideoview.view.MySeekBar;
-import com.example.mybasevideoview.view.RelateHorizonActivity;
+import com.example.mybasevideoview.view.PlayControlMaskView;
 import com.example.mybasevideoview.view.RelateVerticalActivity;
 import com.example.mybasevideoview.view.TransactActivity;
 import com.example.mybasevideoview.view.WordActivity;
 import com.example.mybasevideoview.view.dummy.RelateButton;
-import com.example.mybasevideoview.view.langugueActivity;
-import com.example.mybasevideoview.view.subTitle.SubtitleTextView;
 import com.example.mybasevideoview.view.subTitle.SubtitleView;
 import com.kk.taurus.playerbase.entity.DataSource;
 import com.kk.taurus.playerbase.event.OnErrorEventListener;
@@ -83,19 +79,14 @@ public class MainPlayerActivity extends Activity {
     @BindViews({R.id.p1, R.id.p2, R.id.p3, R.id.p4, R.id.p5, R.id.p6, R.id.p7, R.id.p8, R.id.p9, R.id.p10, R.id.p11, R.id.p12, R.id.p13})
     List<BaseVideoView> videoViewArrayList;
 
-    @BindViews({R.id.about_btn, R.id.langugue_btn, R.id.appliances_btn, R.id.action_btn, R.id.chapter_btn, R.id.word_btn, R.id.back_btn})
+    @BindViews({R.id.appliances_btn, R.id.action_btn, R.id.word_btn, R.id.back_btn})
     List<Button> buttonList;
     @BindViews({R.id.main_controller_text_view_curr_time, R.id.main_controller_text_view_total_time})
     List<TextView> textViews;
-    @BindView(R.id.main_controller_image_view_play_state)
-    ImageView ctrlImageView;
+    @BindViews({R.id.chapter_title, R.id.chapter_content, R.id.chapter_num, R.id.chapter_name})
+    List<TextView> chapterTextViewList;
 
     private MySeekBar mySeekBar;
-
-    private BaseVideoView leftVideoView = null;
-    private BaseVideoView rightVideoView = null;
-    private BaseVideoView topVideoView = null;
-    private BaseVideoView bottomVideoView = null;
 
     // 名物視頻的地址
     String mApplienceUrl = null;
@@ -106,13 +97,11 @@ public class MainPlayerActivity extends Activity {
     int mWordId = -1;
 
     //当前播放的章节
-    int curChapter = 1;
+    int curChapter;
 
 
     //中间窗口的字幕
     SubtitleView normalSubtitleView;
-    SubtitleView horizonRelateSubtitleView;
-    SubtitleView verticalRelateSubtitleView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,57 +138,27 @@ public class MainPlayerActivity extends Activity {
         super.setRequestedOrientation(requestedOrientation);
     }
 
-    @OnClick({R.id.about_btn, R.id.langugue_btn, R.id.appliances_btn, R.id.action_btn, R.id.chapter_btn, R.id.word_btn, R.id.back_btn})
+    @OnClick({R.id.appliances_btn, R.id.action_btn, R.id.word_btn, R.id.back_btn})
     void buttonClick(View view) {
         switch (view.getId()) {
-            case R.id.about_btn:
+            case R.id.action_btn:
+                break;
+            case R.id.appliances_btn:
                 if (buttonList.get(0).isSelected()) {
                     buttonList.get(0).setSelected(false);
                 } else {
                     buttonList.get(0).setSelected(true);
-                }
-                createActivity(AboutActivity.class, RequestCode.About_req);
-                break;
-            case R.id.action_btn:
-                break;
-            case R.id.appliances_btn:
-                if (buttonList.get(2).isSelected()) {
-                    buttonList.get(2).setSelected(false);
-                } else {
-                    buttonList.get(2).setSelected(true);
                 }
 
                 playersController.pause_();
                 videoViewArrayList.get(12).pause();
                 createActivity(AppliancesActivity.class, RequestCode.Appliance_req, mApplienceUrl);
                 break;
-            case R.id.chapter_btn:
-                if (buttonList.get(4).isSelected()) {
-                    buttonList.get(4).setSelected(false);
-                } else {
-                    buttonList.get(4).setSelected(true);
-                }
-
-                List<ChapterListInfo.DataBean> data  = MainPlayerActivity.chapterListInfo.getData();
-                int size = data.size();
-                int chapterInRecycleIndex = curChapter - 1;
-                if (chapterInRecycleIndex < (size+1) / 2) {
-                    chapterInRecycleIndex = chapterInRecycleIndex * 2;
-                } else {
-                    //计算右边的
-                    chapterInRecycleIndex = (chapterInRecycleIndex - (size + 1) / 2) * 2 + 1;
-                }
-
-//                playersController.pause_();
-//                videoViewArrayList.get(12).pause();
-                Log.d(TAG, "curChapter:"+curChapter + " index:"+chapterInRecycleIndex);
-                createActivity(ChapterActivity.class, RequestCode.Chapter_req, chapterInRecycleIndex);
-                break;
             case R.id.word_btn:
-                if (buttonList.get(5).isSelected()) {
-                    buttonList.get(5).setSelected(false);
+                if (buttonList.get(2).isSelected()) {
+                    buttonList.get(2).setSelected(false);
                 } else {
-                    buttonList.get(5).setSelected(true);
+                    buttonList.get(2).setSelected(true);
                 }
                 playersController.pause_();
                 videoViewArrayList.get(12).pause();
@@ -216,32 +175,16 @@ public class MainPlayerActivity extends Activity {
     /**
      * 暂停 继续按钮
      */
-    @OnClick(R.id.main_controller_image_view_play_state)
+    //@OnClick(R.id.main_controller_image_view_play_state)
     void playCtrlClick() {
         if (videoViewArrayList.get(12).isPlaying()) {
-            ctrlImageView.setSelected(true);
+            //ctrlImageView.setSelected(true);
             playersController.pause_();
             videoViewArrayList.get(12).pause();
-
-            if (leftVideoView.isPlaying()) {
-                leftVideoView.pause();
-                rightVideoView.pause();
-            } else if(rightVideoView.isPlaying()) {
-                topVideoView.pause();
-                bottomVideoView.pause();
-            }
         } else {
             playersController.resume_();
             videoViewArrayList.get(12).resume();
-            ctrlImageView.setSelected(false);
 
-            if (leftVideoView.getState() == IPlayer.STATE_PAUSED) {
-                leftVideoView.resume();
-                rightVideoView.resume();
-            } else if(rightVideoView.getState() == IPlayer.STATE_PAUSED) {
-                topVideoView.resume();
-                bottomVideoView.resume();
-            }
         }
     }
 
@@ -249,12 +192,11 @@ public class MainPlayerActivity extends Activity {
      * 使所有按钮变灰并且不可点击
      */
     private void disableAllBtn() {
-        for (int i=2; i!= 6; i++) {
+        for (int i=0; i!= 3; i++) {
             buttonList.get(i).getBackground().setAlpha(50);
             buttonList.get(i).setClickable(false);
+            setBtnState(true, i);
         }
-
-        setBtnState(true, 4);
     }
 
     private void initSeekBar() {
@@ -269,7 +211,7 @@ public class MainPlayerActivity extends Activity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                bNativeSeekFinish = false;
+                //bNativeSeekFinish = false;
             }
 
             @Override
@@ -277,19 +219,23 @@ public class MainPlayerActivity extends Activity {
                 Log.d(TAG, "seekBar stop touch:"+seekBar.getProgress());
                 if (playersController == null)
                     return;
-
+                int d = playersController.getDuration();
+                int p = seekBar.getProgress();
                 //1000是进度条总共1000等份
-                 int sec = seekBar.getProgress() * playersController.getDuration() / 1000;
-                 Log.d(TAG, "mySeek time:" + sec);
-                 playersController.seekNotify(sec);
+                int sec = seekBar.getProgress() * (playersController.getDuration() / 1000) / 1000;
+                Log.d(TAG, "mySeek time:" + sec);
 
-                 if (leftVideoView.getState() == IPlayer.STATE_STARTED) {
-                     leftVideoView.seekTo(sec);
-                     rightVideoView.seekTo(sec);
-                 } else if(rightVideoView.getState() == IPlayer.STATE_STARTED) {
-                     topVideoView.seekTo(sec);
-                     bottomVideoView.seekTo(sec);
-                 }
+                for (ChapterListInfo.DataBean data : chapterListInfo.getData()) {
+                    int rangeBegin = data.getStartTime() - 200;
+                    int rangeEnd = rangeBegin + 200;
+
+                    Log.i(TAG, "seek sec:" + sec + " begin:" + rangeBegin + " rangeEnd:" + rangeEnd);
+                    if (sec > rangeBegin && sec < rangeEnd) {
+                        bNativeSeekFinish = false;
+                        playersController.seekNotify(data.getStartTime() * 1000);
+                        break;
+                    }
+                }
             }
         });
     }
@@ -381,7 +327,6 @@ public class MainPlayerActivity extends Activity {
         if (useLocalVideo)
             init360Videos();
         Log.d(TAG, "init thread id:%d" + Thread.currentThread().getId());
-
         getVideoList();
         getTimeLine();
         getChapter();
@@ -532,15 +477,12 @@ public class MainPlayerActivity extends Activity {
                     public void run() {
                         switch (action) {
                             case OnBtnStateListener.XSL_APPLIANCE_BTN_STATE:
-                                setBtnState(enable, 2);
+                                setBtnState(enable, 0);
                                 mApplienceUrl = url;
                                 break;
                             case OnBtnStateListener.XSL_ACTION_BTN_STATE:
-                                setBtnState(enable, 3);
+                                setBtnState(enable, 1);
                                 mActionUrl = url;
-                                break;
-                            case OnBtnStateListener.XSL_CHAPTER_BTN_STATE:
-                                setBtnState(enable, 4);
                                 break;
                         }
                     }
@@ -549,20 +491,87 @@ public class MainPlayerActivity extends Activity {
 
             @Override
             public void onWordStateChange(int action, boolean enable, int objId) {
-                setBtnState(enable, 5);
+                setBtnState(enable, 2);
                 mWordId = objId;
             }
 
             @Override
-            public void onChapterBtnTextUpdate(String text) {
+            public void onChapterBtnTextUpdate(String text, String content) {
+                int chapter = Integer.parseInt(text);
+                if (chapter == curChapter) {
+                    return;
+                }
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        int chapter = Integer.parseInt(text);
-                        if (chapter != curChapter) {
-                            buttonList.get(4).setText(text);
-                            curChapter = chapter;
+                        String title = "第";
+
+                        switch (chapter) {
+                            case 1:
+                                title += "一";
+                                break;
+                            case 2:
+                                title += "二";
+                                break;
+                            case 3:
+                                title += "三";
+                                break;
+                            case 4:
+                                title += "四";
+                                break;
+                            case 5:
+                                title += "五";
+                                break;
+                            case 6:
+                                title += "六";
+                                break;
+                            case 7:
+                                title += "七";
+                                break;
+                            case 8:
+                                title += "八";
+                                break;
+                           case 9:
+                                title += "九";
+                                break;
+                            case 10:
+                                title += "十";
+                                break;
+                                case 11:
+                                title += "十一";
+                                break;
+                                case 12:
+                                title += "十二";
+                                break;
+                            case 13:
+                                title += "十三";
+                                break;
+                                case 14:
+                                title += "十四";
+                                break;
+                            case 15:
+                                title += "十五";
+                                break;
+                            case 16:
+                                title += "十六";
+                                break;
+                            case 17:
+                                title += "十七";
+                                break;
                         }
+                        title += "章";
+                        chapterTextViewList.get(0).setText(title);
+                        chapterTextViewList.get(2).setText(title);
+                        chapterTextViewList.get(1).setText(content);
+                        chapterTextViewList.get(3).setText(content);
+                        curChapter = chapter;
+                        chapterTextViewList.get(1).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                chapterTextViewList.get(2).setText("");
+                                chapterTextViewList.get(3).setText("");
+                            }
+                        }, 2000);
                     }
                 });
             }
@@ -622,47 +631,14 @@ public class MainPlayerActivity extends Activity {
         if (requestCode == RequestCode.Transact_req) {
             mNeedStartTransactAty = false;
             createPlayCtrl();
-        } else if (requestCode == RequestCode.About_req) {
-            buttonList.get(0).setSelected(false);
         } else if (requestCode == RequestCode.Appliance_req) {
+            buttonList.get(0).setSelected(false);
+            playersController.resume_();
+            videoViewArrayList.get(12).resume();
+        } else if (requestCode == RequestCode.Word_req) {
             buttonList.get(2).setSelected(false);
             playersController.resume_();
             videoViewArrayList.get(12).resume();
-        } else if (requestCode == RequestCode.Chapter_req) {
-            Bundle bd = data.getExtras();
-            int chapterIndex = bd.getInt(ChapterActivity.chapter_key);
-            int seekTime = chapterListInfo.getData().get(chapterIndex - 1).getStartTime();
-
-            String text;
-            if (chapterIndex < 10) {
-                text = "0" + chapterIndex;
-            } else {
-                text = "" + chapterIndex;
-            }
-            buttonList.get(4).setText(text);
-            buttonList.get(4).setSelected(false);
-            bNativeSeekFinish = false;
-            playersController.seekNotify(seekTime * 1000);
-        } else if (requestCode == RequestCode.Word_req) {
-            buttonList.get(5).setSelected(false);
-            playersController.resume_();
-            videoViewArrayList.get(12).resume();
-        } else if (requestCode == RequestCode.Relate_req) {
-            if (data == null)
-                return;
-            Bundle bd = data.getExtras();
-            int time = bd.getInt(RelateVerticalActivity.Relate_key_time);
-            int willPlayInCenterId = bd.getInt(RelateVerticalActivity.Relate_key_play_id);
-            int relateId = bd.getInt(RelateVerticalActivity.Relate_key_relate_id);
-            Log.d(TAG, "relateid:" + relateId + " willPlayId:"+willPlayInCenterId);
-            playersController.relateViewNotify();
-            playersController.resume_();
-
-            Message msg = playControlHandler.obtainMessage(OnPlayCtrlEventListener.PLAY_CTRL, time, willPlayInCenterId);
-            playControlHandler.sendMessage(msg);
-
-            changeRelateBtnStatus(willPlayInCenterId, R.mipmap.relate_video, true);
-            changeRelateBtnStatus(relateId, R.mipmap.relate_video, true);
         }
     }
 
@@ -689,36 +665,30 @@ public class MainPlayerActivity extends Activity {
             e.printStackTrace();
         }
 
-        horizonRelateSubtitleView = findViewById(R.id.horizon_subtitle);
-        verticalRelateSubtitleView = findViewById(R.id.vertical_subtitle);
         normalSubtitleView = findViewById(R.id.normal_subtitle);
-
-        horizonRelateSubtitleView.setData(subtitleLstCN, SubtitleView.LANGUAGE_TYPE_CHINA);
-        horizonRelateSubtitleView.setData(subtitleLstCA, SubtitleView.LANGUAGE_TYPE_CANTONESE);
-        horizonRelateSubtitleView.setData(subtitleLstEN, SubtitleView.LANGUAGE_TYPE_ENGLISH);
-
-        verticalRelateSubtitleView.setData(subtitleLstCN, SubtitleView.LANGUAGE_TYPE_CHINA);
-        verticalRelateSubtitleView.setData(subtitleLstCA, SubtitleView.LANGUAGE_TYPE_CANTONESE);
-        verticalRelateSubtitleView.setData(subtitleLstEN, SubtitleView.LANGUAGE_TYPE_ENGLISH);
-
         normalSubtitleView.setData(subtitleLstCN, SubtitleView.LANGUAGE_TYPE_CHINA);
         normalSubtitleView.setData(subtitleLstCA, SubtitleView.LANGUAGE_TYPE_CANTONESE);
         normalSubtitleView.setData(subtitleLstEN, SubtitleView.LANGUAGE_TYPE_ENGLISH);
 
         Log.d("Subtitle", "ca size:"+subtitleLstCA.size());
-
-        normalSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CHINA);
-        verticalRelateSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CHINA);
-        horizonRelateSubtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CHINA);
+        normalSubtitleView.setLanguage(curLangugue);
     }
 
+    @BindView(R.id.play_touch_mask)
+    PlayControlMaskView maskView;
+
     private void updateSubtitle(int pts) {
-        if (rightVideoView.isPlaying()) {
-            horizonRelateSubtitleView.seekTo(pts);
-        } else if (topVideoView.isPlaying()) {
-            verticalRelateSubtitleView.seekTo(pts);
-        } else {
-            normalSubtitleView.seekTo(pts);
+        normalSubtitleView.seekTo(pts);
+    }
+    public void touchMoveSeek(int jumpTime) {
+        if (bNativeSeekFinish) {
+            bNativeSeekFinish = false;
+            int curPlayTime = videoViewArrayList.get(12).getCurrentPosition() + jumpTime * 1000;
+            int duration = playersController.getDuration();
+            String strCurPlayTime = XslUtils.convertSecToTimeString(curPlayTime / 1000);
+            String strDuration = XslUtils.convertSecToTimeString(duration / 1000);
+            maskView.setText(strCurPlayTime + "/" + strDuration);
+            playersController.seekNotify(curPlayTime);
         }
     }
 
@@ -1002,144 +972,8 @@ public class MainPlayerActivity extends Activity {
         //linearParams.height = linearParams.width * 9 / 16;
         p5.setLayoutParams(linearParams);
 
-        //添加按钮
-        addRelateBtns();
         //添加遮罩
         addMaskView();
-
-        addVideoLayer();
-    }
-
-    View horizonView;
-    View verticalView;
-    int relateId1;//主播放的id
-    int relateId2;//关联视频的id
-    /**
-     * 添加视频弹层
-     */
-    private void addVideoLayer() {
-        FrameLayout frameLayout = findViewById(R.id.frame_layout);
-        //左右关联界面添加
-        horizonView = View.inflate(this, R.layout.horizon_video_layer, null);
-        frameLayout.addView(horizonView);
-        leftVideoView = findViewById(R.id.leftVideoView);
-        rightVideoView = findViewById(R.id.rightVideoView);
-        findViewById(R.id.left_close).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                leftVideoView.stop();
-                rightVideoView.stop();
-                horizonView.setVisibility(View.GONE);
-                //关闭的是主播放的视频，那么就要播放关联的视频
-                int time = videoViewArrayList.get(12).getCurrentPosition();
-                Message msg = playControlHandler.obtainMessage(OnPlayCtrlEventListener.PLAY_CTRL, time, relateId2);
-                playControlHandler.sendMessage(msg);
-                playersController.updateCenterPlayerInfo(relateId2, time);
-                changeRelateBtnStatus(relateId2, R.mipmap.relate_video, true);
-                changeRelateBtnStatus(relateId1, R.mipmap.relate_video, true);
-            }
-        });
-        findViewById(R.id.right_close).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                leftVideoView.stop();
-                rightVideoView.stop();
-                horizonView.setVisibility(View.GONE);
-                int time = videoViewArrayList.get(12).getCurrentPosition();
-                Message msg = playControlHandler.obtainMessage(OnPlayCtrlEventListener.PLAY_CTRL, time, relateId1);
-                playControlHandler.sendMessage(msg);
-                playersController.updateCenterPlayerInfo(relateId2, time);
-                changeRelateBtnStatus(relateId1, R.mipmap.relate_video, true);
-                changeRelateBtnStatus(relateId2, R.mipmap.relate_video, true);
-            }
-        });
-
-        //上下关联界面添加
-        verticalView = View.inflate(this, R.layout.vertical_video_layer, null);
-        frameLayout.addView(verticalView);
-        topVideoView = findViewById(R.id.topVideoView);
-        bottomVideoView = findViewById(R.id.bottomVideoView);
-
-        findViewById(R.id.top_close).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                topVideoView.stop();
-                bottomVideoView.stop();
-                verticalView.setVisibility(View.GONE);
-                changeRelateBtnStatus(relateId2, R.mipmap.relate_video, true);
-                changeRelateBtnStatus(relateId1, R.mipmap.relate_video, true);
-            }
-        });
-
-        findViewById(R.id.bottom_close).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                topVideoView.stop();
-                bottomVideoView.stop();
-                verticalView.setVisibility(View.GONE);
-                changeRelateBtnStatus(relateId1, R.mipmap.relate_video, true);
-                changeRelateBtnStatus(relateId2, R.mipmap.relate_video, true);
-            }
-        });
-
-        horizonView.setVisibility(View.GONE);
-        verticalView.setVisibility(View.GONE);
-    }
-
-    /**
-     * 自动播放结束，没有去点击关闭按钮
-     */
-    private void verticalRelateVideosFinish() {
-        topVideoView.stop();
-        bottomVideoView.stop();
-        verticalView.setVisibility(View.GONE);
-        changeRelateBtnStatus(relateId1, R.mipmap.relate_video, false);
-        changeRelateBtnStatus(relateId2, R.mipmap.relate_video, false);
-    }
-    /**
-     * 自动播放结束，没有去点击关闭按钮
-     */
-    private void horizonRelateVideosFinish() {
-        leftVideoView.stop();
-        rightVideoView.stop();
-        horizonView.setVisibility(View.GONE);
-
-        changeRelateBtnStatus(relateId2, R.mipmap.relate_video, false);
-        changeRelateBtnStatus(relateId1, R.mipmap.relate_video, false);
-    }
-
-    private void addRelateBtns() {
-        if (relateBtns == null)
-            relateBtns = new ArrayList<>();
-        for (int i=0; i!=12; i++) {
-            RelateButton button = new RelateButton(videoViewArrayList.get(i).getContext());
-            relateBtns.add(button);
-            //布局
-            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
-                    FrameLayout.LayoutParams.WRAP_CONTENT);
-            layoutParams.setMargins(200, 100, 0, 0);
-            button.setLayoutParams(layoutParams);
-            button.setVisibility(View.GONE);//隐藏
-            button.getBackground().setAlpha(0);
-            button.setWindowIndex(i);
-
-            //和videoView关联
-            button.setmFatherView(new WeakReference<>(videoViewArrayList.get(i)));
-            videoViewArrayList.get(i).addView(button);
-
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //在可见的情况下才存在需要取消关联禁闭
-                    if (button.getmResId() == R.mipmap.relate_video && button.getVisibility() == View.VISIBLE) {
-                        videoViewOnClick_1(button.getmFatherView().get());
-                        Log.d(TAG, "click window: " + button.getWindowIndex());
-                        //取消对关联视频的禁闭
-                        playersController.removeRelateDataInLst();
-                    }
-                }
-            });
-        }
     }
 
     /**
@@ -1317,70 +1151,6 @@ public class MainPlayerActivity extends Activity {
                     break;
                 case OnPlayCtrlEventListener.STOP_CTRL:
                     videoViewLst.get().get(12).stop();
-                    break;
-//                case OnPlayCtrlEventListener.SEEK_CTRL:
-//                    mainPlayerActivityWeakReference.get().seekAll(msg.arg2);
-//                    break;
-                case OnPlayCtrlEventListener.PLAY_RELATE_VERTICAL_CTRL:
-//                    mainPlayerActivityWeakReference.get().playersController.pauseNoLock();
-//                    mainPlayerActivityWeakReference.get().videoViewArrayList.get(12).pause();
-//                    Intent intent = new Intent(mainPlayerActivityWeakReference.get(), RelateVerticalActivity.class);
-//                    intent.putExtra(RELATE_INFO, (Serializable) msg.obj);
-//                    mainPlayerActivityWeakReference.get().startActivityForResult(intent, RequestCode.Relate_req);
-                    //播放关联视频
-                    mainPlayerActivityWeakReference.get().verticalView.setVisibility(View.VISIBLE);
-                    RelateVideoInfo videoInfo = (RelateVideoInfo)msg.obj;
-                    if (mainPlayerActivityWeakReference.get().useLocalVideo) {
-                        mainPlayerActivityWeakReference.get().topVideoView.setDataSource(new DataSource(middleVideoUrls.get(videoInfo.id_1)));
-                        mainPlayerActivityWeakReference.get().topVideoView.start(videoInfo.getStartTime() * 1000);
-                        mainPlayerActivityWeakReference.get().bottomVideoView.setDataSource(new DataSource(middleVideoUrls.get(videoInfo.id_2)));
-                        mainPlayerActivityWeakReference.get().bottomVideoView.start(videoInfo.getStartTime() * 1000);
-                    } else {
-                        mainPlayerActivityWeakReference.get().topVideoView.setDataSource(new DataSource(videoInfo.getUri_1()));
-                        mainPlayerActivityWeakReference.get().topVideoView.start(videoInfo.getStartTime() * 1000);
-                        mainPlayerActivityWeakReference.get().bottomVideoView.setDataSource(new DataSource(videoInfo.getUri_2()));
-                        mainPlayerActivityWeakReference.get().bottomVideoView.start(videoInfo.getStartTime() * 1000);
-                    }
-
-                    mainPlayerActivityWeakReference.get().relateId1 = videoInfo.id_1;
-                    mainPlayerActivityWeakReference.get().relateId2 = videoInfo.id_2;
-                    Log.d(TAG, "relate id: " + videoInfo.id_1 + " relate id: "+ videoInfo.id_2);
-
-                    //修改关联视频UI
-                    RelateVideoInfo info = (RelateVideoInfo)msg.obj;
-                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(info.id_1, R.mipmap.relate_video, true);
-                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(info.id_2, R.mipmap.relate_video, true);
-                    break;
-                case OnPlayCtrlEventListener.PLAY_RELATE_HORIZON_CTRL:
-                    //播放关联视频
-                    mainPlayerActivityWeakReference.get().horizonView.setVisibility(View.VISIBLE);
-                    RelateVideoInfo videoInfo1 = (RelateVideoInfo)msg.obj;
-
-                    if (mainPlayerActivityWeakReference.get().useLocalVideo) {
-                        mainPlayerActivityWeakReference.get().leftVideoView.setDataSource(new DataSource(middleVideoUrls.get(videoInfo1.id_1)));
-                        mainPlayerActivityWeakReference.get().leftVideoView.start(videoInfo1.getStartTime() * 1000);
-                        mainPlayerActivityWeakReference.get().rightVideoView.setDataSource(new DataSource(middleVideoUrls.get(videoInfo1.id_2)));
-                        mainPlayerActivityWeakReference.get().rightVideoView.start(videoInfo1.getStartTime() * 1000);
-                    } else {
-                        mainPlayerActivityWeakReference.get().leftVideoView.setDataSource(new DataSource(videoInfo1.getUri_1()));
-                        mainPlayerActivityWeakReference.get().leftVideoView.start(videoInfo1.getStartTime() * 1000);
-                        mainPlayerActivityWeakReference.get().rightVideoView.setDataSource(new DataSource(videoInfo1.getUri_2()));
-                        mainPlayerActivityWeakReference.get().rightVideoView.start(videoInfo1.getStartTime() * 1000);
-                    }
-
-                    mainPlayerActivityWeakReference.get().relateId1 = videoInfo1.id_1;
-                    mainPlayerActivityWeakReference.get().relateId2 = videoInfo1.id_2;
-
-                    //修改关联视频UI
-                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(videoInfo1.id_1, R.mipmap.relate_video, true);
-                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(videoInfo1.id_2, R.mipmap.relate_video, true);
-                    break;
-                case OnPlayCtrlEventListener.PLAY_RELATE_CLOSE_UI:
-                    mainPlayerActivityWeakReference.get().verticalRelateVideosFinish();
-                    mainPlayerActivityWeakReference.get().horizonRelateVideosFinish();
-//                    Log.d(TAG, "close relate UI. id1:" + msg.arg1 + " id2:" + msg.arg2);
-//                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(msg.arg1, 0, false);
-//                    mainPlayerActivityWeakReference.get().changeRelateBtnStatus(msg.arg2, 0, false);
                     break;
                 case OnPlayCtrlEventListener.PLAY_TIME_SET_CTRL:
                     mainPlayerActivityWeakReference.get().updatePlayCtroller(msg.arg1, msg.arg2);
