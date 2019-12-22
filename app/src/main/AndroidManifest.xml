@@ -21,6 +21,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <activity android:name=".view.maskActivity"
+            android:theme="@style/translucent" />
+        <activity android:name=".view.DownloadActivity"
+            android:theme="@style/translucent"/>
+        <activity android:name=".view.Transact2Activity"
+            android:theme="@style/translucent"/>
+        <activity android:name=".view.Transact3Activity"
+            android:theme="@style/translucent"/>
         <activity android:name=".view.WordActivity"
             android:theme="@style/translucent">
         </activity>
@@ -58,6 +66,7 @@
             android:screenOrientation="landscape" />
         <activity
             android:name=".MainActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

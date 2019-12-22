@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/father"
+    tools:context="com.example.mybasevideoview.view.Transact2Activity">
+
+    <View
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:background="@drawable/xsl_video_shape_white"
+        android:id="@+id/center_view"/>
+
+    <ImageView
+        android:layout_width="@dimen/instructor_len"
+        android:layout_height="50dp"
+        android:id="@+id/left_indicate"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:layout_toRightOf="@+id/center_view"
+        android:layout_centerVertical="true"
+        android:src="@mipmap/xsl_left_instructor"/>
+    <TextView
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:textSize="16sp"
+        android:textColor="@color/white"
+        android:text="@string/transact_tip_2_1"
+        android:layout_toRightOf="@id/left_indicate"
+        android:layout_alignBottom="@+id/left_indicate"/>
+
+    <View
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:background="@drawable/xsl_video_shape_white"
+        android:id="@+id/small_view"/>
+
+    <ImageView
+        android:layout_width="@dimen/instructor_len"
+        android:layout_height="30dp"
+        android:id="@+id/indicate"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
+        android:layout_marginTop="50dp"
+        android:layout_toRightOf="@+id/small_view"
+        android:src="@mipmap/xsl_left_instructor"/>
+    <TextView
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:textSize="16sp"
+        android:textColor="@color/white"
+        android:text="@string/transact_tip_2_2"
+        android:layout_toRightOf="@id/indicate"
+        android:layout_alignBottom="@+id/indicate"/>
+
+    <Button
+        android:layout_width="108dp"
+        android:layout_height="32dp"
+        android:text="下一页"
+        android:textSize="16sp"
+        android:textColor="@color/white"
+        android:background="@drawable/xsl_iknow_btn"
+        android:id="@+id/next_2"/>
+</RelativeLayout>

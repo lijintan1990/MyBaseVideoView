@@ -8,7 +8,12 @@ public interface RequestCode {
     int Word_req = 4; //文字介绍页面返回
     int Chapter_req = 5; //章节页面返回
     int Relate_req = 6;//关联页面返回
-    int Transact_req = 7; //主播放页面引导页返回
+    int Transact1_req = 7; //主播放页面引导页返回
+    int Transact2_req = 8; //主播放页面引导页返回
+    int Transact3_req = 9; //主播放页面引导页返回
+    int Mask_req = 10; //主播放页面引导页返回
+    int Download_req = 11;
+    int MainPlay_req = 12;
 
     String Key_ret_code = "ret_code";
     String Key_about_req = "req_about";

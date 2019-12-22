@@ -34,15 +34,18 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.mybasevideoview.controller.NetworkReq;
 import com.example.mybasevideoview.model.HomePageInfo;
 import com.example.mybasevideoview.model.ObtainNetWorkData;
 import com.example.mybasevideoview.model.RequestCode;
+import com.example.mybasevideoview.model.SharedPreferenceUtil;
 import com.example.mybasevideoview.model.SubtitlesDataCoding;
 import com.example.mybasevideoview.model.SubtitlesModel;
 import com.example.mybasevideoview.utils.NetworkCheck;
 import com.example.mybasevideoview.utils.XslUtils;
 import com.example.mybasevideoview.utils.ZipUtils;
 import com.example.mybasevideoview.view.AboutActivity;
+import com.example.mybasevideoview.view.DownloadActivity;
 import com.example.mybasevideoview.view.langugueActivity;
 import com.example.mybasevideoview.view.subTitle.SubtitleView;
 import com.kk.taurus.playerbase.entity.DataSource;
@@ -133,10 +136,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         XslUtils.hideStausbar(new WeakReference<>(this), true);
+        //SharedPreferenceUtil.getInstance(this).remove(getResources().getString(R.string.need_cache_view));
 
         Log.d(TAG, "main thread id:"+Thread.currentThread().getId());
+        getPreference();
         init();
-
+        getNetworkData();
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 //            permissionCheck();
 //            //6.0以上手机权限给予之后在初始化这些图片
@@ -155,6 +160,12 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.cover_player_controller_bottom_container).setVisibility(View.VISIBLE);
             }
         });
+    }
+
+    private void getNetworkData() {
+        NetworkReq.getInstance().getTimeLine();
+        NetworkReq.getInstance().getChapter();
+        NetworkReq.getInstance().getVideoList();
     }
     //当前选择的语言
     int curLangugue = langugueActivity.chinese;
@@ -191,9 +202,22 @@ public class MainActivity extends AppCompatActivity {
             langugueSelector = bd.getInt(langugueActivity.langugue_key);
             if (langugueSelector < langugueActivity.unknow)
                 curLangugue = langugueSelector;
+        } else if (requestCode == RequestCode.Download_req) {
+            Bundle bundle = data.getExtras();
+            int ret = bundle.getInt(getResources().getString(R.string.download_result));
+            if (ret == RequestCode.MainPlay_req) {
+                startMainPlayActivity();
+            }
         }
     }
 
+    private void startMainPlayActivity() {
+        Log.d(TAG, "startMainPlayActivity");
+        Intent intent = new Intent(MainActivity.this, MainPlayerActivity.class);
+        intent.putExtra(getResources().getString(R.string.langugue), curLangugue);
+        startActivity(intent);
+    }
+    
     void setImageViewBmp() {
         ObtainNetWorkData.getHomeData(new Callback<HomePageInfo>() {
             @Override
@@ -460,7 +484,29 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    void init() {
+    private boolean needCacheVideo;
+    private boolean needScreenTips;
+    private boolean needPay;
+    private void getPreference() {
+        if (SharedPreferenceUtil.getInstance(this).contains(getResources().getString(R.string.need_cache_view))) {
+            needCacheVideo = SharedPreferenceUtil.getInstance(this).getBoolean(getResources().getString(R.string.need_cache_view));
+        } else {
+            needCacheVideo = true;
+        }
+        if (SharedPreferenceUtil.getInstance(this).contains(getResources().getString(R.string.need_screen_tips))) {
+            needScreenTips = SharedPreferenceUtil.getInstance(this).getBoolean(getResources().getString(R.string.need_screen_tips));
+        } else {
+            needScreenTips = false;
+        }
+
+        if (SharedPreferenceUtil.getInstance(this).contains(getResources().getString(R.string.need_pay))) {
+            needPay = SharedPreferenceUtil.getInstance(this).getBoolean(getResources().getString(R.string.need_pay));
+        } else {
+            needPay = false;
+        }
+    }
+
+    private void init() {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_PERMISSION_CODE);
@@ -495,9 +541,12 @@ public class MainActivity extends AppCompatActivity {
         wholeVideoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, MainPlayerActivity.class);
-                intent.putExtra(getResources().getString(R.string.langugue), curLangugue);
-                startActivity(intent);
+                if (needCacheVideo) {
+                    Intent intent = new Intent(MainActivity.this, DownloadActivity.class);
+                    startActivityForResult(intent, RequestCode.Download_req);
+                } else {
+                    startMainPlayActivity();
+                }
             }
         });
 

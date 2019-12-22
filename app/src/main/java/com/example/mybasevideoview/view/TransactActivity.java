@@ -33,7 +33,6 @@ public class TransactActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_transact);
         XslUtils.hideStausbar(new WeakReference<>(this), true);

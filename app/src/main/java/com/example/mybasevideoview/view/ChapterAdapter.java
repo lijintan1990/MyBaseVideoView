@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.example.mybasevideoview.MainPlayerActivity;
 import com.example.mybasevideoview.R;
+import com.example.mybasevideoview.controller.NetworkReq;
 import com.example.mybasevideoview.model.ChapterListInfo;
 
 import java.util.ArrayList;
@@ -56,7 +57,7 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
         if (mDatas == null) {
             mDatas = new ArrayList<String>();
 
-            List<ChapterListInfo.DataBean> data  = MainPlayerActivity.chapterListInfo.getData();
+            List<ChapterListInfo.DataBean> data  = NetworkReq.getInstance().getChapterListInfo().getData();
             if (data != null) {
                 int mid = (data.size() + 1) / 2;
                 int right;

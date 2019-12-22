@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.example.mybasevideoview.MainPlayerActivity;
 import com.example.mybasevideoview.R;
+import com.example.mybasevideoview.controller.NetworkReq;
 import com.example.mybasevideoview.model.ChapterListInfo;
 import com.example.mybasevideoview.model.RequestCode;
 import com.example.mybasevideoview.utils.XslUtils;
@@ -55,7 +56,7 @@ public class ChapterActivity extends Activity {
                 //view.setBackgroundResource(R.drawable.xsl_chapter_item_selected);
                 selectedIndex = position;
 
-                int size = MainPlayerActivity.chapterListInfo.getData().size();
+                int size = NetworkReq.getInstance().getChapterListInfo().getData().size();
                 if (selectedIndex % 2 == 0) {
                     //左边的
                     selectedIndex = selectedIndex / 2 + 1;
@@ -75,7 +76,7 @@ public class ChapterActivity extends Activity {
         findViewById(R.id.close_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int size = MainPlayerActivity.chapterListInfo.getData().size();
+                int size = NetworkReq.getInstance().getChapterListInfo().getData().size();
                 if (selectedIndex % 2 == 0) {
                     //左边的
                     selectedIndex = selectedIndex / 2 + 1;

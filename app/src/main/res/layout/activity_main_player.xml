@@ -293,12 +293,12 @@
         </FrameLayout>
     </RelativeLayout>
 
-
     <LinearLayout
         android:layout_width="30dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:visibility="visible"
+        android:gravity="center"
         android:layout_marginRight="20dp"
         android:id="@+id/rightButtons">
         <!--Button
@@ -315,11 +315,11 @@
             android:id="@+id/langugue_btn"
             android:background="@drawable/xsl_langugue"/-->
         <Button
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginVertical="10dp"
             android:id="@+id/appliances_btn"
-            android:background="@drawable/xsl_appliances"/>
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginVertical="30dp"
+            android:background="@drawable/xsl_appliances" />
         <Button
             android:layout_width="30dp"
             android:layout_height="30dp"

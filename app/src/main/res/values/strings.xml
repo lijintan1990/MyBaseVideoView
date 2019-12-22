@@ -41,6 +41,7 @@
         电子邮箱：chineseritual@163.com\n
     </string>
 
+
     <string name="applience_url"> applience_url </string>
     <string name="action_url"> action_url </string>
     <string name="subFile_url"> sub_file_url </string>
@@ -50,4 +51,19 @@
     <string name="word_content"> word_content_url </string>
 
     <string name="activity_value"> activity_value </string>
+
+    <string name="center_play_x">center_playX</string>
+    <string name="center_play_y">center_playY</string>
+    <string name="center_play_width">center_playWidth</string>
+    <string name="center_play_height">center_playHeight</string>
+
+    <string name="transact_tip_2_1">点击有画面的小视频作为主视频进行播放</string>
+    <string name="transact_tip_2_2">选中后的视频作为主视频在该区域播放</string>
+    <string name="transact_tip_3_1">点击进度条的节点可快速切换章节播放</string>
+    <string name="transact_tip_3_2">在主视频区域进行左/右拖动可做快退/进操作</string>
+
+    <string name="download_result">download_result</string>
+    <string name="need_pay">need_pay</string>
+    <string name="need_screen_tips">need_screen_tips</string>
+    <string name="need_cache_view">need_cache_video</string>
 </resources>

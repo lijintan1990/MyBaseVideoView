@@ -13,6 +13,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -22,6 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.example.mybasevideoview.controller.NetworkReq;
 import com.example.mybasevideoview.controller.OnBtnStateListener;
 import com.example.mybasevideoview.controller.OnMaskViewListener;
 import com.example.mybasevideoview.controller.OnPlayCtrlEventListener;
@@ -37,12 +39,16 @@ import com.example.mybasevideoview.model.WordMsgs;
 import com.example.mybasevideoview.utils.XslUtils;
 import com.example.mybasevideoview.view.AppliancesActivity;
 import com.example.mybasevideoview.view.ChapterActivity;
+import com.example.mybasevideoview.view.DownloadActivity;
 import com.example.mybasevideoview.view.MySeekBar;
 import com.example.mybasevideoview.view.PlayControlMaskView;
 import com.example.mybasevideoview.view.RelateVerticalActivity;
+import com.example.mybasevideoview.view.Transact2Activity;
+import com.example.mybasevideoview.view.Transact3Activity;
 import com.example.mybasevideoview.view.TransactActivity;
 import com.example.mybasevideoview.view.WordActivity;
 import com.example.mybasevideoview.view.dummy.RelateButton;
+import com.example.mybasevideoview.view.maskActivity;
 import com.example.mybasevideoview.view.subTitle.SubtitleView;
 import com.kk.taurus.playerbase.entity.DataSource;
 import com.kk.taurus.playerbase.event.OnErrorEventListener;
@@ -124,12 +130,14 @@ public class MainPlayerActivity extends Activity {
         //buttonList.get(2).getBackground().setAlpha(50);
         if (mNeedStartTransactAty) {
             Log.d(TAG, "start transactActivity");
-            createActivity(TransactActivity.class, RequestCode.Transact_req);
+            //createActivity(TransactActivity.class, RequestCode.Transact1_req);
+            createActivity(maskActivity.class, RequestCode.Mask_req);
             mNeedStartTransactAty = false;
         } else {
             createPlayCtrl();
         }
     }
+
 
     @Override
     public void setRequestedOrientation(int requestedOrientation) {
@@ -202,11 +210,16 @@ public class MainPlayerActivity extends Activity {
     private void initSeekBar() {
         mySeekBar = findViewById(R.id.main_controller_seek_bar);
         mySeekBar.setMax(1000);
+        if (playersController != null) {
+            int duration = playersController.getDuration();
+            if (duration != 0) {
+                mySeekBar.setChapterListInfo(NetworkReq.getInstance().getChapterListInfo(), duration);
+            }
+        }
 
         mySeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-
             }
 
             @Override
@@ -225,7 +238,7 @@ public class MainPlayerActivity extends Activity {
                 int sec = seekBar.getProgress() * (playersController.getDuration() / 1000) / 1000;
                 Log.d(TAG, "mySeek time:" + sec);
 
-                for (ChapterListInfo.DataBean data : chapterListInfo.getData()) {
+                for (ChapterListInfo.DataBean data : NetworkReq.getInstance().getChapterListInfo().getData()) {
                     int rangeBegin = data.getStartTime() - 200;
                     int rangeEnd = rangeBegin + 200;
 
@@ -254,14 +267,12 @@ public class MainPlayerActivity extends Activity {
 
     public static ArrayList<String> middleVideoUrls = null;
     private void init360Videos() {
-//        File outDir = getExternalFilesDir("");
-//        String videoDir = outDir.getAbsolutePath();
-        //Uri.parse("android.resource://"+getPackageName()+"/raw/video");
-        String sdcard = Environment.getExternalStoragePublicDirectory("").getAbsolutePath();
+        File outDir = getExternalFilesDir("");
+        String videoDir = outDir.getAbsolutePath() + "/360/";
 
         middleVideoUrls = new ArrayList<>();
         for (int i=0; i!=12; i++) {
-            middleVideoUrls.add("/sdcard/raw/" + i + ".mp4");
+            middleVideoUrls.add(videoDir + i + ".mp4");
         }
 //            String strNum = "";
 //            for (int i=0; i!=12; i++) {
@@ -327,9 +338,6 @@ public class MainPlayerActivity extends Activity {
         if (useLocalVideo)
             init360Videos();
         Log.d(TAG, "init thread id:%d" + Thread.currentThread().getId());
-        getVideoList();
-        getTimeLine();
-        getChapter();
     }
 
     /**
@@ -443,8 +451,8 @@ public class MainPlayerActivity extends Activity {
             @Override
             public void onPlayRelateVideos(int action, int id1, int id2, int startTime, int duration) {
                 RelateVideoInfo info = new RelateVideoInfo(startTime,
-                        duration, mVideolst.getData().get(id1).getVideoUrl360(),
-                        mVideolst.getData().get(id2).getVideoUrl360(), id1, id2);
+                        duration, NetworkReq.getInstance().getVideoLstInfo().getData().get(id1).getVideoUrl360(),
+                        NetworkReq.getInstance().getVideoLstInfo().getData().get(id2).getVideoUrl360(), id1, id2);
                 Message msg = playControlHandler.obtainMessage(action, info);
                 playControlHandler.sendMessage(msg);
             }
@@ -587,8 +595,8 @@ public class MainPlayerActivity extends Activity {
 
         playersController.startPlay_();
         int duration = playersController.getDuration();
-        if (duration != 0 && chapterListInfo != null) {
-            mySeekBar.setChapterListInfo(chapterListInfo, duration);
+        if (duration != 0 && NetworkReq.getInstance().getChapterListInfo() != null) {
+            mySeekBar.setChapterListInfo(NetworkReq.getInstance().getChapterListInfo(), duration);
         }
     }
 
@@ -628,7 +636,28 @@ public class MainPlayerActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RequestCode.Transact_req) {
+        if (requestCode == RequestCode.Mask_req) {
+            mNeedStartTransactAty = false;
+            //createPlayCtrl();
+//            Intent intent = new Intent(MainPlayerActivity.this, DownloadActivity.class);
+//            startActivityForResult(intent, RequestCode.Download_req);
+        } if (requestCode == RequestCode.Transact1_req) {
+            Intent intent = new Intent(MainPlayerActivity.this, Transact2Activity.class);
+            intent.putExtra(String.valueOf(R.string.center_play_x), centerX);
+            intent.putExtra(String.valueOf(R.string.center_play_y), centerY);
+            intent.putExtra(String.valueOf(R.string.center_play_width), centerWidth);
+            intent.putExtra(String.valueOf(R.string.center_play_height), centerHeight);
+            Log.d(TAG, "centerX:" + centerX + " centerY:" + centerY + " width:" + centerWidth);
+            startActivityForResult(intent, RequestCode.Transact2_req);
+        } if (requestCode == RequestCode.Transact2_req) {
+            Intent intent = new Intent(MainPlayerActivity.this, Transact3Activity.class);
+            intent.putExtra(String.valueOf(R.string.center_play_x), centerX);
+            intent.putExtra(String.valueOf(R.string.center_play_y), centerY);
+            intent.putExtra(String.valueOf(R.string.center_play_width), centerWidth);
+            intent.putExtra(String.valueOf(R.string.center_play_height), centerHeight);
+            Log.d(TAG, "centerX:" + centerX + " centerY:" + centerY + " width:" + centerWidth);
+            startActivityForResult(intent, RequestCode.Transact3_req);
+        } if (requestCode == RequestCode.Transact3_req) {
             mNeedStartTransactAty = false;
             createPlayCtrl();
         } else if (requestCode == RequestCode.Appliance_req) {
@@ -797,94 +826,6 @@ public class MainPlayerActivity extends Activity {
         }
     }
 
-
-    static TimeLineInfo mTimelineInfo = null;
-    private void getTimeLine() {
-        ObtainNetWorkData.getTimelineData(new Callback<TimeLineInfo>() {
-            @Override
-            public void onResponse(Call<TimeLineInfo> call, Response<TimeLineInfo> response) {
-                Log.d(TAG, "get homepage data success");
-                mTimelineInfo = response.body();
-                Log.d(TAG, "onResponse thread id:"+Thread.currentThread().getId());
-                if (mTimelineInfo.getData() == null) {
-                    Log.e(TAG, "Service Error. "+ mTimelineInfo.getMsg());
-                    mTimelineInfo = null;
-                }
-                if (playersController != null) {
-                    int duration = playersController.getDuration();
-                    if (duration != 0) {
-                        mySeekBar.setChapterListInfo(chapterListInfo, duration);
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<TimeLineInfo> call, Throwable t) {
-                Log.w(TAG, "get timeline failed, "+t.toString());
-            }
-        });
-    }
-    public static TimeLineInfo getTimelineInfo() {
-        return mTimelineInfo;
-    }
-
-    public static WordMsgs wordMsgs = null;
-    private void getWordMsgs(int index) {
-        ObtainNetWorkData.getWordListData(new Callback<WordMsgs>() {
-            @Override
-            public void onResponse(Call<WordMsgs> call, Response<WordMsgs> response) {
-                wordMsgs = response.body();
-                Log.d(TAG, "get word list ok. info:" + response.toString());
-            }
-
-            @Override
-            public void onFailure(Call<WordMsgs> call, Throwable t) {
-                Log.w(TAG, "get word list failed, "+t.toString());
-            }
-        }, index);
-    }
-
-    public static ChapterListInfo chapterListInfo = null;
-    private void getChapter() {
-        ObtainNetWorkData.getChapterListData(new Callback<ChapterListInfo>() {
-            @Override
-            public void onResponse(Call<ChapterListInfo> call, Response<ChapterListInfo> response) {
-                chapterListInfo = response.body();
-                if (playersController != null) {
-                    int duration = playersController.getDuration();
-                    if (duration != 0) {
-                        mySeekBar.setChapterListInfo(chapterListInfo, duration);
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ChapterListInfo> call, Throwable t) {
-                Log.w(TAG, "get chapter info failed, "+t.toString());
-            }
-        });
-    }
-
-    static VideoListInfo mVideolst = null;
-    private void getVideoList() {
-        ObtainNetWorkData.getVideoListData(new Callback<VideoListInfo>() {
-            @Override
-            public void onResponse(Call<VideoListInfo> call, Response<VideoListInfo> response) {
-                Log.d(TAG, "get homepage data success");
-                mVideolst = response.body();
-                Log.d(TAG, "onResponse thread id:"+Thread.currentThread().getId());
-            }
-
-            @Override
-            public void onFailure(Call<VideoListInfo> call, Throwable t) {
-                Log.w(TAG, "get timeline failed, "+t.toString());
-            }
-        });
-    }
-    public static VideoListInfo getVideoLstInfo() {
-        return mVideolst;
-    }
-
     void closeAllPlayers() {
         if (playersController != null)
             playersController.stop_();
@@ -895,6 +836,10 @@ public class MainPlayerActivity extends Activity {
         }
     }
 
+    private int centerPlayWindowLeftTopX;
+    private int centerPlayWindowLeftTopY;
+    private int centerPlayWindowWidth;
+    private int centerPlayWindowHeight;
     //主播放页面重新布局
     void reLayout() {
         DisplayMetrics dm = new DisplayMetrics();
@@ -929,6 +874,7 @@ public class MainPlayerActivity extends Activity {
             needWidth = needHeight * 16 / 9;
         }
 
+        //设置右侧按钮
         int rightBtnMarginLeft = w - needWidth;
         LinearLayout ln = findViewById(R.id.rightButtons);
         LinearLayout.LayoutParams linearParams = (LinearLayout.LayoutParams)ln.getLayoutParams();
@@ -949,6 +895,7 @@ public class MainPlayerActivity extends Activity {
         linearParams.height = needHeight / 5;
         Log.d(TAG, "height:"+ linearParams.height);
         //linearParams.width = linearParams.height * 16 / 9;
+        int smallHeight = linearParams.height;
 
         p1.setLayoutParams(linearParams);
         p8.setLayoutParams(linearParams);
@@ -961,6 +908,7 @@ public class MainPlayerActivity extends Activity {
         //linearParams.width = (dm.widthPixels - convertDpToPixel(116))/5 - convertDpToPixel(1);
         linearParams.width = needWidth / 5 - 12;
         Log.d(TAG, "width:"+ linearParams.width);
+        int smallWidth = linearParams.width;
 
         p11.setLayoutParams(linearParams);
 
@@ -972,9 +920,22 @@ public class MainPlayerActivity extends Activity {
         //linearParams.height = linearParams.width * 9 / 16;
         p5.setLayoutParams(linearParams);
 
+//        centerX = findViewById(R.id.p13).getLeft();
+//        centerY = findViewById(R.id.p13).getRight();
+//        centerWidth = findViewById(R.id.p13).getWidth();
+//        centerHeight= findViewById(R.id.p13).getHeight();
+
         //添加遮罩
         addMaskView();
+
+        centerX = convertDpToPixel(58) + smallWidth;
+        centerY = cotrollerHeight + smallHeight + 16;
+        centerWidth = smallWidth * 3 + 6;
+        centerHeight = smallHeight * 3 + 3;
+        Log.d(TAG, "centerX: " + centerX + " y:" + centerY + " width:" + centerWidth + " centerHeight:" + centerHeight);
     }
+
+    int centerX, centerY, centerWidth, centerHeight;
 
     /**
      * 给小窗口添加遮罩
@@ -1137,7 +1098,7 @@ public class MainPlayerActivity extends Activity {
                         if (mainPlayerActivityWeakReference.get().useLocalVideo) {
                             uri = middleVideoUrls.get(msg.arg2);
                         } else {
-                            uri = mVideolst.getData().get(msg.arg2).getVideoUrl360();
+                            uri = NetworkReq.getInstance().getVideoLstInfo().getData().get(msg.arg2).getVideoUrl360();
                         }
 
                         videoViewLst.get().get(12).setDataSource(new DataSource(uri));
@@ -1146,7 +1107,7 @@ public class MainPlayerActivity extends Activity {
                         mainPlayerActivityWeakReference.get().setListenVideoView(videoViewLst.get().get(12));
                         videoViewLst.get().get(12).setBackgroundResource(R.drawable.xsl_video_shape_white);
                         mainPlayerActivityWeakReference.get().videoViewOnClick_1(videoViewLst.get().get(msg.arg2));
-                        Log.d(TAG, "play main url: "+mVideolst.getData().get(msg.arg2).getVideoUrl360());
+                        Log.d(TAG, "play main url: "+NetworkReq.getInstance().getVideoLstInfo().getData().get(msg.arg2).getVideoUrl360());
                     }
                     break;
                 case OnPlayCtrlEventListener.STOP_CTRL:

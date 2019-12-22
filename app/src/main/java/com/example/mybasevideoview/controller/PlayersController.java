@@ -117,12 +117,12 @@ public class PlayersController extends Thread implements IPlayerCtrl{
 
     @Override
     public int getDuration() {
-        if (MainPlayerActivity.getTimelineInfo() == null)
+        if (NetworkReq.getInstance().getTimelineInfo() == null)
             return 0;
         if (totalDuration != 0)
             return totalDuration;
 
-        List<TimeLineInfo.DataBean> dataBeanList = MainPlayerActivity.getTimelineInfo().getData();
+        List<TimeLineInfo.DataBean> dataBeanList = NetworkReq.getInstance().getTimelineInfo().getData();
         for (int i = dataBeanList.size()-1; i >= 0; i--) {
             if (dataBeanList.get(i).getType() == DataType.XSL_VIDEO) {
                 totalDuration = (dataBeanList.get(i).getStartTime() + dataBeanList.get(i).getDuration()) * 1000;
@@ -301,7 +301,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
     public void updateCenterPlayerInfo(int centerPlayId, int playTime) {
         synchronized (lockObj) {
 
-            TimeLineInfo timeLineInfo = MainPlayerActivity.getTimelineInfo();
+            TimeLineInfo timeLineInfo = NetworkReq.getInstance().getTimelineInfo();
 
             for (TimeLineInfo.DataBean dataBean : timeLineInfo.getData()) {
                 if (dataBean.getType() == DataType.XSL_VIDEO &&
@@ -465,7 +465,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
         boolean enableAction = false;
         boolean enableWord = false;
         boolean enableChapter = false;
-        TimeLineInfo timeLineInfo = MainPlayerActivity.getTimelineInfo();
+        TimeLineInfo timeLineInfo = NetworkReq.getInstance().getTimelineInfo();
 
         for (TimeLineInfo.DataBean dataBean : timeLineInfo.getData()) {
             if (dataBean.getStartTime() * 1000 <= currentPlayTime
@@ -525,7 +525,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
         List<BaseVideoView> lst = videoViewList.get();
 
         while (running) {
-            TimeLineInfo timeLineInfo = MainPlayerActivity.getTimelineInfo();
+            TimeLineInfo timeLineInfo = NetworkReq.getInstance().getTimelineInfo();
             if (timeLineInfo == null) {
                 try {
                     sleep(100);
