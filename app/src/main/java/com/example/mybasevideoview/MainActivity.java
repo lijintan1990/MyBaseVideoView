@@ -203,11 +203,11 @@ public class MainActivity extends AppCompatActivity {
             if (langugueSelector < langugueActivity.unknow)
                 curLangugue = langugueSelector;
         } else if (requestCode == RequestCode.Download_req) {
-            Bundle bundle = data.getExtras();
-            int ret = bundle.getInt(getResources().getString(R.string.download_result));
-            if (ret == RequestCode.MainPlay_req) {
+//            Bundle bundle = data.getExtras();
+//            int ret = bundle.getInt(getResources().getString(R.string.download_result));
+//            if (ret == RequestCode.MainPlay_req) {
                 startMainPlayActivity();
-            }
+//            }
         }
     }
 
@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(getResources().getString(R.string.langugue), curLangugue);
         startActivity(intent);
     }
-    
+
     void setImageViewBmp() {
         ObtainNetWorkData.getHomeData(new Callback<HomePageInfo>() {
             @Override
@@ -445,7 +445,6 @@ public class MainActivity extends AppCompatActivity {
         File outDir = getExternalFilesDir("");
         XslUtils.deleteFile(new File(outDir.getAbsolutePath() + "/defaultData"));
         //XslUtils.deleteFile(new File(outDir.getAbsolutePath() + "/360"));
-
         AssetManager assetManager = getResources().getAssets();
         try {
             InputStream inputStream = assetManager.open("defaultData.zip");
@@ -493,6 +492,8 @@ public class MainActivity extends AppCompatActivity {
         } else {
             needCacheVideo = true;
         }
+
+        Log.d(TAG, "needCacheVideo: " + needCacheVideo);
         if (SharedPreferenceUtil.getInstance(this).contains(getResources().getString(R.string.need_screen_tips))) {
             needScreenTips = SharedPreferenceUtil.getInstance(this).getBoolean(getResources().getString(R.string.need_screen_tips));
         } else {

@@ -23,4 +23,7 @@
 
     <color name="thumb">#fffe7000</color>
 
+    <color name="mask_view_translucent">#00000000</color>
+    <color name="mask_view_color">#B2000000</color>
+
 </resources>

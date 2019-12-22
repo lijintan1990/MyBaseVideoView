@@ -519,6 +519,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
 
     @Override
     public void run() {
+        Log.d(TAG, "PlayersController start");
         int syncVideoTime = 0;
         //记录上一次的seek的时间，用于计算避免重复seek
         long lastSeekTime = 0;

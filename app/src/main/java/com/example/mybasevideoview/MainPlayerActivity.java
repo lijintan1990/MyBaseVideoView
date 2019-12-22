@@ -75,7 +75,7 @@ import retrofit2.Response;
 public class MainPlayerActivity extends Activity {
     public static final String TAG = "AIVideo";
     ArrayList<RelateButton> relateBtns = null;
-    ArrayList<View> maskViews = null;
+    //ArrayList<View> maskViews = null;
     PlayersController playersController = null;
     PlayControlHandler playControlHandler = null;
 
@@ -92,6 +92,11 @@ public class MainPlayerActivity extends Activity {
     @BindViews({R.id.chapter_title, R.id.chapter_content, R.id.chapter_num, R.id.chapter_name})
     List<TextView> chapterTextViewList;
 
+    @BindViews({R.id.arrow1, R.id.arrow2,R.id.arrow3,R.id.arrow4,R.id.arrow5,R.id.arrow6,R.id.arrow7,R.id.arrow8,R.id.arrow9,R.id.arrow10,R.id.arrow11,R.id.arrow12})
+    List<ImageView> maskArroy;
+
+    @BindViews({R.id.mask1, R.id.mask2,R.id.mask3,R.id.mask4,R.id.mask5,R.id.mask6,R.id.mask7,R.id.mask8,R.id.mask9,R.id.mask10,R.id.mask11,R.id.mask12})
+    List<View> maskViews;
     private MySeekBar mySeekBar;
 
     // 名物視頻的地址
@@ -104,8 +109,6 @@ public class MainPlayerActivity extends Activity {
 
     //当前播放的章节
     int curChapter;
-
-
     //中间窗口的字幕
     SubtitleView normalSubtitleView;
 
@@ -137,7 +140,6 @@ public class MainPlayerActivity extends Activity {
             createPlayCtrl();
         }
     }
-
 
     @Override
     public void setRequestedOrientation(int requestedOrientation) {
@@ -255,20 +257,22 @@ public class MainPlayerActivity extends Activity {
 
     public static ArrayList<String> smallVideoUrls = null;
     private void initLocal90Videos() {
-        File outDir = getExternalFilesDir("");
-        String videoDir = outDir.getAbsolutePath() + "/defaultData";
-        if (XslUtils.fileIsExists(videoDir + "/1.mp4")) {
-            smallVideoUrls = new ArrayList<>();
-            for (int i=0; i!=12; i++) {
-                smallVideoUrls.add(videoDir+"/" + i+".mp4");
-            }
-        }
+//        File outDir = getExternalFilesDir("");
+//        String videoDir = outDir.getAbsolutePath() + "/defaultData";
+//        if (XslUtils.fileIsExists(videoDir + "/1.mp4")) {
+//            smallVideoUrls = new ArrayList<>();
+//            for (int i=0; i!=12; i++) {
+//                smallVideoUrls.add(videoDir+"/" + i+".mp4");
+//            }
+//        }
+        smallVideoUrls = middleVideoUrls;
     }
 
     public static ArrayList<String> middleVideoUrls = null;
     private void init360Videos() {
         File outDir = getExternalFilesDir("");
-        String videoDir = outDir.getAbsolutePath() + "/360/";
+        //String videoDir = outDir.getAbsolutePath() + "/360/";
+        String videoDir =  Environment.getExternalStorageDirectory().getPath() + "/360/";
 
         middleVideoUrls = new ArrayList<>();
         for (int i=0; i!=12; i++) {
@@ -334,67 +338,85 @@ public class MainPlayerActivity extends Activity {
         reLayout();
         loadSubtitles();
         disableAllBtn();
-        initLocal90Videos();
         if (useLocalVideo)
             init360Videos();
+        initLocal90Videos();
         Log.d(TAG, "init thread id:%d" + Thread.currentThread().getId());
     }
 
-    /**
-     * 如果是点击事件，我们就更加严格一些，有遮罩的就不能让他点击
-     * @param view
-     */
-    @OnClick({R.id.p1, R.id.p2, R.id.p3, R.id.p4, R.id.p5, R.id.p6, R.id.p7, R.id.p8, R.id.p9, R.id.p10, R.id.p11, R.id.p12})
-    void videoViewOnClick(View view) {
-        BaseVideoView videoView = (BaseVideoView) view;
+    public void showArroy(int id) {
+        for (int i=0; i!=12; i++) {
+            if (i == id) {
+                maskArroy.get(i).setVisibility(View.VISIBLE);
+            } else {
+                maskArroy.get(i).setVisibility(View.INVISIBLE);
+            }
+        }
+    }
+    @OnClick({R.id.click_view1, R.id.click_view2, R.id.click_view3, R.id.click_view4, R.id.click_view5, R.id.click_view6, R.id.click_view7, R.id.click_view8, R.id.click_view9, R.id.click_view10, R.id.click_view11, R.id.click_view12})
+    void maskClick(View view) {
+        Log.w(TAG, "click");
+        int index = 0;
         boolean clickAble = false;
         switch (view.getId()) {
-            case R.id.p1:
-                if (maskViews.get(0).getVisibility() == View.GONE)
+            case R.id.click_view1:
+                index =0;
+                if (maskViews.get(0).getVisibility() == View.INVISIBLE)
                     clickAble = true;
                 break;
-            case R.id.p2:
-                if (maskViews.get(1).getVisibility() == View.GONE)
+            case R.id.click_view2:
+                index =1;
+                if (maskViews.get(1).getVisibility() == View.INVISIBLE)
                     clickAble = true;
                 break;
-            case R.id.p3:
-                if (maskViews.get(2).getVisibility() == View.GONE)
+            case R.id.click_view3:
+                index =2;
+                if (maskViews.get(2).getVisibility() == View.INVISIBLE)
                     clickAble = true;
                 break;
-            case R.id.p4:
-                if (maskViews.get(3).getVisibility() == View.GONE)
+            case R.id.click_view4:
+                index = 3;
+                if (maskViews.get(3).getVisibility() == View.INVISIBLE)
                     clickAble = true;
                 break;
-            case R.id.p5:
-                if (maskViews.get(4).getVisibility() == View.GONE)
+            case R.id.click_view5:
+                index = 4;
+                if (maskViews.get(4).getVisibility() == View.INVISIBLE)
                     clickAble = true;
                 break;
-            case R.id.p6:
-                if (maskViews.get(5).getVisibility() == View.GONE)
+            case R.id.click_view6:
+                index = 5;
+                if (maskViews.get(5).getVisibility() == View.INVISIBLE)
                     clickAble = true;
                 break;
-            case R.id.p7:
-                if (maskViews.get(6).getVisibility() == View.GONE)
+            case R.id.click_view7:
+                index = 6;
+                if (maskViews.get(6).getVisibility() == View.INVISIBLE)
                     clickAble = true;
                 break;
-            case R.id.p8:
-                if (maskViews.get(7).getVisibility() == View.GONE)
+            case R.id.click_view8:
+                index = 7;
+                if (maskViews.get(7).getVisibility() == View.INVISIBLE)
                     clickAble = true;
                 break;
-            case R.id.p9:
-                if (maskViews.get(8).getVisibility() == View.GONE)
+            case R.id.click_view9:
+                index = 8;
+                if (maskViews.get(8).getVisibility() == View.INVISIBLE)
                     clickAble = true;
                 break;
-            case R.id.p10:
-                if (maskViews.get(9).getVisibility() == View.GONE)
+            case R.id.click_view10:
+                index = 9;
+                if (maskViews.get(9).getVisibility() == View.INVISIBLE)
                     clickAble = true;
                 break;
-            case R.id.p11:
-                if (maskViews.get(10).getVisibility() == View.GONE)
+            case R.id.click_view11:
+                index = 10;
+                if (maskViews.get(10).getVisibility() == View.INVISIBLE)
                     clickAble = true;
                 break;
-            case R.id.p12:
-                if (maskViews.get(11).getVisibility() == View.GONE)
+            case R.id.click_view12:
+                index = 11;
+                if (maskViews.get(11).getVisibility() == View.INVISIBLE)
                     clickAble = true;
                 break;
         }
@@ -403,19 +425,21 @@ public class MainPlayerActivity extends Activity {
             return;
         }
 
-        int i = 0;
-        for (BaseVideoView v : videoViewArrayList) {
-            if (videoView == v) {
+//        for (BaseVideoView v : videoViewArrayList) {
+        for (int i=0; i!=12; i++) {
+            if (i == index) {
                 Log.d(TAG, "set index " + i + " white");
-                videoView.setBackgroundResource(R.drawable.xsl_video_shape_white);
-                int time = videoView.getCurrentPosition();
+                videoViewArrayList.get(i).setBackgroundResource(R.drawable.xsl_video_shape_white);
+                int time = videoViewArrayList.get(i).getCurrentPosition();
                 Message msg = playControlHandler.obtainMessage(OnPlayCtrlEventListener.PLAY_CTRL, time, i);
                 playControlHandler.sendMessage(msg);
+
+                showArroy(i);
             } else {
                 Log.d(TAG, "set index " + i + " black");
-                v.setBackgroundResource(R.drawable.xsl_video_shape);
+                videoViewArrayList.get(i).setBackgroundResource(R.drawable.xsl_video_shape);
             }
-            i++;
+
             if (i == 12) {
                 break;
             }
@@ -638,7 +662,7 @@ public class MainPlayerActivity extends Activity {
         //super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RequestCode.Mask_req) {
             mNeedStartTransactAty = false;
-            //createPlayCtrl();
+            createPlayCtrl();
 //            Intent intent = new Intent(MainPlayerActivity.this, DownloadActivity.class);
 //            startActivityForResult(intent, RequestCode.Download_req);
         } if (requestCode == RequestCode.Transact1_req) {
@@ -926,7 +950,7 @@ public class MainPlayerActivity extends Activity {
 //        centerHeight= findViewById(R.id.p13).getHeight();
 
         //添加遮罩
-        addMaskView();
+        //addMaskView();
 
         centerX = convertDpToPixel(58) + smallWidth;
         centerY = cotrollerHeight + smallHeight + 16;
@@ -937,35 +961,6 @@ public class MainPlayerActivity extends Activity {
 
     int centerX, centerY, centerWidth, centerHeight;
 
-    /**
-     * 给小窗口添加遮罩
-     */
-    private void addMaskView() {
-        if (maskViews == null) {
-            maskViews = new ArrayList<>();
-        }
-
-        for (int i = 0; i != 12; i++) {
-            View view = new View(videoViewArrayList.get(i).getContext());
-            maskViews.add(view);
-            //布局
-            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
-                    FrameLayout.LayoutParams.MATCH_PARENT);
-            view.setLayoutParams(layoutParams);
-            view.setVisibility(View.VISIBLE);
-
-            view.setBackgroundColor(Color.BLACK);
-            view.getBackground().setAlpha(180);
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                }
-            });
-            //和videoView关联
-            videoViewArrayList.get(i).addView(view);
-        }
-    }
 
     /**
      * 改变关联按钮的状态
@@ -1074,7 +1069,7 @@ public class MainPlayerActivity extends Activity {
         });
     }
 
-    public boolean useLocalVideo = false;
+    public boolean useLocalVideo = true;
     public static class PlayControlHandler extends Handler {
         WeakReference<List<BaseVideoView>> videoViewLst;
         WeakReference<MainPlayerActivity> mainPlayerActivityWeakReference;
@@ -1107,7 +1102,8 @@ public class MainPlayerActivity extends Activity {
                         mainPlayerActivityWeakReference.get().setListenVideoView(videoViewLst.get().get(12));
                         videoViewLst.get().get(12).setBackgroundResource(R.drawable.xsl_video_shape_white);
                         mainPlayerActivityWeakReference.get().videoViewOnClick_1(videoViewLst.get().get(msg.arg2));
-                        Log.d(TAG, "play main url: "+NetworkReq.getInstance().getVideoLstInfo().getData().get(msg.arg2).getVideoUrl360());
+                        mainPlayerActivityWeakReference.get().showArroy(msg.arg2);
+                        Log.d(TAG, "play main url: "+ uri);
                     }
                     break;
                 case OnPlayCtrlEventListener.STOP_CTRL:
@@ -1118,12 +1114,12 @@ public class MainPlayerActivity extends Activity {
                     break;
                 case OnMaskViewListener.ACTION_MASK_GONE:
                     if (mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).getVisibility() == View.VISIBLE) {
-                        mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).setVisibility(View.GONE);
+                        mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).setVisibility(View.INVISIBLE);
                         Log.d(TAG, "gone index:"+msg.arg1 + "id:"+msg.arg2);
                     }
                     break;
                 case OnMaskViewListener.ACTION_MASK_VISIABLE:
-                    if (mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).getVisibility() == View.GONE) {
+                    if (mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).getVisibility() == View.INVISIBLE) {
                         mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).setVisibility(View.VISIBLE);
                         Log.d(TAG, "visible index:"+msg.arg1 + "id:"+msg.arg2);
                     }

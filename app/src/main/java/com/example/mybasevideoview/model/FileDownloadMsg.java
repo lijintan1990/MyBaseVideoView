@@ -23,7 +23,7 @@ public class FileDownloadMsg {
             urls.add(dataBean.getVideoUrl360());
             names.add("" + dataBean.getIndex() +".mp4");
             //测试
-            break;
+            //break;
         }
     }
 
