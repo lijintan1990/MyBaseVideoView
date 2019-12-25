@@ -46,6 +46,7 @@ import com.example.mybasevideoview.utils.XslUtils;
 import com.example.mybasevideoview.utils.ZipUtils;
 import com.example.mybasevideoview.view.AboutActivity;
 import com.example.mybasevideoview.view.DownloadActivity;
+import com.example.mybasevideoview.view.PayNoticeActiviy;
 import com.example.mybasevideoview.view.langugueActivity;
 import com.example.mybasevideoview.view.subTitle.SubtitleView;
 import com.kk.taurus.playerbase.entity.DataSource;
@@ -208,6 +209,12 @@ public class MainActivity extends AppCompatActivity {
 //            if (ret == RequestCode.MainPlay_req) {
                 startMainPlayActivity();
 //            }
+        } else if (requestCode == RequestCode.Pay_req) {
+            if (needCacheVideo) {
+                startCacheActivity();
+            } else {
+                startMainPlayActivity();
+            }
         }
     }
 
@@ -216,6 +223,11 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, MainPlayerActivity.class);
         intent.putExtra(getResources().getString(R.string.langugue), curLangugue);
         startActivity(intent);
+    }
+
+    private void startCacheActivity() {
+        Intent intent = new Intent(MainActivity.this, DownloadActivity.class);
+        startActivityForResult(intent, RequestCode.Download_req);
     }
 
     void setImageViewBmp() {
@@ -485,7 +497,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean needCacheVideo;
     private boolean needScreenTips;
-    private boolean needPay;
+    private boolean needPay = true;
     private void getPreference() {
         if (SharedPreferenceUtil.getInstance(this).contains(getResources().getString(R.string.need_cache_view))) {
             needCacheVideo = SharedPreferenceUtil.getInstance(this).getBoolean(getResources().getString(R.string.need_cache_view));
@@ -503,7 +515,7 @@ public class MainActivity extends AppCompatActivity {
         if (SharedPreferenceUtil.getInstance(this).contains(getResources().getString(R.string.need_pay))) {
             needPay = SharedPreferenceUtil.getInstance(this).getBoolean(getResources().getString(R.string.need_pay));
         } else {
-            needPay = false;
+            needPay = true;
         }
     }
 
@@ -542,9 +554,13 @@ public class MainActivity extends AppCompatActivity {
         wholeVideoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (needPay) {
+                    Intent intent = new Intent(MainActivity.this, PayNoticeActiviy.class);
+                    startActivityForResult(intent, RequestCode.Pay_req);
+                    return;
+                }
                 if (needCacheVideo) {
-                    Intent intent = new Intent(MainActivity.this, DownloadActivity.class);
-                    startActivityForResult(intent, RequestCode.Download_req);
+                    startCacheActivity();
                 } else {
                     startMainPlayActivity();
                 }

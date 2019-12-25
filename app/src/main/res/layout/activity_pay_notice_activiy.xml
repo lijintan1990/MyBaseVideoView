@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.mybasevideoview.view.PayNoticeActiviy">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="46dp"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        android:text="资料库需付费观看"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/title"
+        android:layout_marginTop="24dp"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:text="高清缓存版本价格18元"/>
+
+    <Button
+        android:id="@+id/pay_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="80dp"
+        android:text="立即购买"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:background="@drawable/xsl_langugue_btn_color"
+        android:paddingLeft="@dimen/padding_left_size"
+        android:paddingRight="@dimen/padding_right_size"/>
+
+
+
+</RelativeLayout>

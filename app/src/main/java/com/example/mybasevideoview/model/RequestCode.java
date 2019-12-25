@@ -14,6 +14,7 @@ public interface RequestCode {
     int Mask_req = 10; //主播放页面引导页返回
     int Download_req = 11;
     int MainPlay_req = 12;
+    int Pay_req = 13;
 
     String Key_ret_code = "ret_code";
     String Key_about_req = "req_about";

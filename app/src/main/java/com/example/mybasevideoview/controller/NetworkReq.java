@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.example.mybasevideoview.model.ChapterListInfo;
 import com.example.mybasevideoview.model.ObtainNetWorkData;
+import com.example.mybasevideoview.model.PayInfo;
+import com.example.mybasevideoview.model.PayResult;
 import com.example.mybasevideoview.model.TimeLineInfo;
 import com.example.mybasevideoview.model.VideoListInfo;
 import com.example.mybasevideoview.model.WordMsgs;
@@ -15,17 +17,73 @@ import retrofit2.Response;
 import static com.example.mybasevideoview.MainPlayerActivity.TAG;
 
 public class NetworkReq {
+    private PayInterface payInterface = null;
+
     private TimeLineInfo mTimelineInfo = null;
     private WordMsgs wordMsgs = null;
     private VideoListInfo mVideolst = null;
     private ChapterListInfo chapterListInfo = null;
     private static NetworkReq networkReq;
 
+
     public static NetworkReq getInstance() {
         if (networkReq ==  null) {
             networkReq = new NetworkReq();
         }
         return networkReq;
+    }
+
+    public void setPayInterface(PayInterface payInterface) {
+        this.payInterface = payInterface;
+    }
+
+    public interface PayInterface {
+        void zhifubaoInfo(PayInfo payInfo);
+        void weixinInfo(PayInfo payInfo);
+
+        void payResult(boolean result);
+    }
+
+    public static final int weixinType = 1;
+    public static final int zhifubaoType = 2;
+
+    public void getPayInfo(String key, int payType) {
+        ObtainNetWorkData.getPayInfo(new Callback<PayInfo>() {
+            @Override
+            public void onResponse(Call<PayInfo> call, Response<PayInfo> response) {
+                PayInfo info = response.body();
+                Log.d(TAG, "zhifubao: " + info.getData().getApp());
+                if (payInterface != null) {
+                    if (payType == weixinType) {
+                        payInterface.weixinInfo(info);
+                    } else if (payType == zhifubaoType) {
+                        payInterface.zhifubaoInfo(info);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PayInfo> call, Throwable t) {
+                Log.d(TAG, "zhifubao failed");
+            }
+        }, key, payType);
+    }
+
+    public void getPayResult(String key) {
+        ObtainNetWorkData.getPayResult(new Callback<PayResult>() {
+            @Override
+            public void onResponse(Call<PayResult> call, Response<PayResult> response) {
+                PayResult info = response.body();
+                if (payInterface != null) {
+                    payInterface.payResult(info.isData());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PayResult> call, Throwable t) {
+                Log.d(TAG, "zhifubao failed");
+            }
+        }, key);
     }
 
     public void getTimeLine() {

@@ -66,4 +66,6 @@
     <string name="need_pay">need_pay</string>
     <string name="need_screen_tips">need_screen_tips</string>
     <string name="need_cache_view">need_cache_video</string>
+
+    <string name="pay_result">pay_result</string>
 </resources>

@@ -1,7 +1,10 @@
 package com.example.mybasevideoview.model;
 
 import retrofit2.Call;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface NetDataInterface {
@@ -23,4 +26,13 @@ public interface NetDataInterface {
 
     @GET("api/home/getVideoList")
     Call<VideoListInfo> getVideoListInfo();
+
+
+    @FormUrlEncoded
+    @POST("api/pay/appPay")
+    Call<PayInfo>getPayInfo(@Field("androidId") String androidId, @Field("payType") int payType);
+
+    @FormUrlEncoded
+    @POST("api/pay/getPay")
+    Call<PayResult>getPayResult(@Field("androidId") String androidId);
 }

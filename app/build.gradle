@@ -57,4 +57,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.arialyy.aria:core:3.8.1'
     annotationProcessor 'com.arialyy.aria:compiler:3.8'
+
+    // 支付宝
+    implementation (name: 'alipaySdk-15.6.8-20191021122514', ext: 'aar')
 }

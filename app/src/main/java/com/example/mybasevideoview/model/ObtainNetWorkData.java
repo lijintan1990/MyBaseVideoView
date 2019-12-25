@@ -37,6 +37,28 @@ public class ObtainNetWorkData {
 //        });
     }
 
+    public static void getPayInfo(Callback<PayInfo> callback, String key, int payType) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://www.hongmingyuan.net")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        NetDataInterface api = retrofit.create(NetDataInterface.class);
+        Call<PayInfo> call = api.getPayInfo(key, payType);
+        call.enqueue(callback);
+    }
+
+    public static void getPayResult(Callback<PayResult> callback, String key) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://www.hongmingyuan.net")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        NetDataInterface api = retrofit.create(NetDataInterface.class);
+        Call<PayResult> call = api.getPayResult(key);
+        call.enqueue(callback);
+    }
+
     public static void getTimelineData(Callback<TimeLineInfo> callback) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://www.hongmingyuan.net")
