@@ -207,12 +207,14 @@ public class MainActivity extends AppCompatActivity {
 //            Bundle bundle = data.getExtras();
 //            int ret = bundle.getInt(getResources().getString(R.string.download_result));
 //            if (ret == RequestCode.MainPlay_req) {
+            needCacheVideo = false;
                 startMainPlayActivity();
 //            }
         } else if (requestCode == RequestCode.Pay_req) {
             if (needCacheVideo) {
                 startCacheActivity();
             } else {
+                needPay = false;
                 startMainPlayActivity();
             }
         }
@@ -491,8 +493,6 @@ public class MainActivity extends AppCompatActivity {
 //                }
 //            }
  //       }
-
-
     }
 
     private boolean needCacheVideo;

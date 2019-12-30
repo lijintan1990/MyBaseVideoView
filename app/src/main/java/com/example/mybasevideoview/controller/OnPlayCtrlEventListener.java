@@ -11,9 +11,9 @@ public interface OnPlayCtrlEventListener {
     int PAUSE_CTRL = 3;
     int RESUME_CTRL = 4;
     int SEEK_CTRL = 5;
-    int PLAY_RELATE_HORIZON_CTRL = 10;
-    int PLAY_RELATE_VERTICAL_CTRL = 11;
-    int PLAY_RELATE_CLOSE_UI = 12;
+    int PLAY_TIMELINE_CHANGE = 6;
+    int PLAY_CHAPTER_CHANGE = 7;
+
     int PLAY_TIME_SET_CTRL = 13;
     int PLAY_ALL_CTRL = 14;
 

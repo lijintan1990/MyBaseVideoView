@@ -1,6 +1,7 @@
 package com.example.mybasevideoview.controller;
 
 import android.graphics.Color;
+import android.os.Bundle;
 import android.util.Log;
 import android.widget.VideoView;
 
@@ -10,6 +11,8 @@ import com.example.mybasevideoview.model.TimeLineInfo;
 import com.example.mybasevideoview.utils.XslUtils;
 import com.google.android.exoplayer2.Timeline;
 import com.kk.taurus.playerbase.entity.DataSource;
+import com.kk.taurus.playerbase.event.OnErrorEventListener;
+import com.kk.taurus.playerbase.event.OnPlayerEventListener;
 import com.kk.taurus.playerbase.player.IPlayer;
 import com.kk.taurus.playerbase.render.AspectRatio;
 import com.kk.taurus.playerbase.widget.BaseVideoView;
@@ -18,6 +21,8 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static java.lang.Math.abs;
 
@@ -44,6 +49,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
 
     //当前播放时间，这时间是当前播放时间相对于第一个视频起始播放的时间,单位是毫秒
     private int currentPlayTime = 0;
+
     private boolean running = false;
     private WeakReference<List<BaseVideoView>> videoViewList;
     OnPlayCtrlEventListener playCtrlEventListener;
@@ -147,7 +153,6 @@ public class PlayersController extends Thread implements IPlayerCtrl{
         return 0;
     }
 
-
     public void startPlay_() {
         synchronized (lockObj) {
             if (running) return;
@@ -168,6 +173,9 @@ public class PlayersController extends Thread implements IPlayerCtrl{
             lst.get(i).setDataSource(new DataSource(MainPlayerActivity.smallVideoUrls.get(i)));
             lst.get(i).start();
         }
+
+//        lst.get(12).setDataSource(new DataSource(MainPlayerActivity.middleVideoUrls.get(centerVideoViewIndex)));
+//        lst.get(12).start();
     }
 
     @Override
@@ -179,15 +187,8 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                     lst.get(i).pause();
                     Log.d(TAG, "xx pause " + i);
                 }
-            }
-        }
-    }
 
-    public void pauseNoLock() {
-        if (videoViewList.get() != null) {
-            List<BaseVideoView> lst = videoViewList.get();
-            for (int i=0; i!=12; i++) {
-                lst.get(i).pause();
+                lst.get(12).pause();
             }
         }
     }
@@ -202,6 +203,8 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                     lst.get(i).resume();
                     Log.d(TAG, "xx onResume " + i);
                 }
+
+                lst.get(12).resume();
             }
         }
     }
@@ -224,6 +227,43 @@ public class PlayersController extends Thread implements IPlayerCtrl{
         }
     }
 
+    public void seekChapter(int msc) {
+        synchronized (lockObj) {
+            bSeeking = true;
+            Log.d(TAG, "seekNotify after lock. bSeeking = true");
+            List<BaseVideoView> lst = videoViewList.get();
+            if (lst == null)
+                return;
+
+            //说明中间视频不用切换，也就不用去stop
+            if (msc >= centerStartTime && msc <= centerStartTime+centerDuration) {
+                lst.get(12).seekTo(msc);
+                currentPlayTime = msc;
+                Log.d(TAG, "seekNotify currentPlayTime: "+currentPlayTime);
+            } else {
+                Log.d(TAG, "stop window index:" + centerVideoViewIndex);
+                //结束中间视频播放
+                lst.get(12).stop();
+                playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CHAPTER_CHANGE, msc, -1);
+                //查找合适的视频进行播放
+                //重新设置
+                centerVideoViewIndex = -1;
+                seekTo_(msc);
+                TimerTask task = new TimerTask() {
+                    @Override
+                    public void run() {
+                        //要执行的操作
+                        pause_();
+                    }
+                };
+                Timer timer = new Timer();
+                timer.schedule(task, 1000);//2秒后执行TimeTask的run方法
+                //老的播放已经结束
+                bSeeking = false;
+                Log.d(TAG,  "set bSeeking false");
+            }
+        }
+    }
     /**
      * 几种情况下会被调用：
      * 1.拖动进度条
@@ -232,8 +272,10 @@ public class PlayersController extends Thread implements IPlayerCtrl{
      */
     @Override
     public void seekNotify(int msc) {
+        Log.d(TAG, "seekNotify lock");
         synchronized (lockObj) {
             bSeeking = true;
+            Log.d(TAG, "seekNotify after lock. bSeeking = true");
             List<BaseVideoView> lst = videoViewList.get();
             if (lst == null)
                 return;
@@ -241,27 +283,20 @@ public class PlayersController extends Thread implements IPlayerCtrl{
             //说明中间视频不用切换，也就不用去stop
             if (msc >= centerStartTime && msc <= centerStartTime+centerDuration) {
                 lst.get(12).seekTo(msc);
+                currentPlayTime = msc;
+                Log.d(TAG, "seekNotify currentPlayTime: "+currentPlayTime);
             } else {
-                Log.d(TAG, "stop window index:" + centerVideoViewIndex);
-                //结束中间视频播放
-                lst.get(12).stop();
-                int state = lst.get(12).getState();
-                //查找合适的视频进行播放
-                //重新设置
-                centerVideoViewIndex = -1;
-                //老的播放已经结束
-                bSeeking = false;
-                Log.d(TAG,  "set bSeeking false");
+//                Log.d(TAG, "stop window index:" + centerVideoViewIndex);
+//                //结束中间视频播放
+//                lst.get(12).stop();
+//                int state = lst.get(12).getState();
+//                //查找合适的视频进行播放
+//                //重新设置
+//                centerVideoViewIndex = -1;
+//                //老的播放已经结束
+//                bSeeking = false;
+//                Log.d(TAG,  "set bSeeking false");
             }
-
-            currentPlayTime = msc;
-            Log.d(TAG, "seekNotify currentPlayTime: "+currentPlayTime);
-        }
-    }
-
-    public void seekFinish() {
-        synchronized (lockObj) {
-            bSeeking = false;
         }
     }
 
@@ -289,28 +324,35 @@ public class PlayersController extends Thread implements IPlayerCtrl{
 
     }
 
-    //被点击的小窗口的id, -1是默认值，表示不需要做任何处理
-    private int clickedWindowIdex = -1;
-
-    public void setClickedWindowIndex(int windowIndex) {
-        synchronized (lockObj) {
-            clickedWindowIdex = windowIndex;
-        }
+    /**
+     * 获取当前播放的timeLine的开始时间
+     * @return
+     */
+    public int getCurTimeLineStartTime() {
+        return centerStartTime;
     }
 
+    /**
+     * 获取当前播放的timeLine的结束时间
+     * @return
+     */
+    public int getCurTimeLineEndTime() {
+        return centerDuration;
+    }
     public void updateCenterPlayerInfo(int centerPlayId, int playTime) {
         synchronized (lockObj) {
-
+            this.centerVideoViewIndex = centerPlayId;
             TimeLineInfo timeLineInfo = NetworkReq.getInstance().getTimelineInfo();
 
             for (TimeLineInfo.DataBean dataBean : timeLineInfo.getData()) {
-                if (dataBean.getType() == DataType.XSL_VIDEO &&
-                    dataBean.getStartTime() * 1000 < playTime &&
-                        (dataBean.getStartTime() + dataBean.getDuration()) * 1000 > playTime &&
-                    dataBean.getObjId() == centerPlayId) {
-                    centerVideoViewIndex = centerPlayId;
+                //查找这个时间段能够播放的视频timeline信息
+                if (dataBean.getStartTime() * 1000 <= playTime
+                        && (dataBean.getStartTime() + dataBean.getDuration()) * 1000 > playTime
+                        && (dataBean.getType() == DataType.XSL_VIDEO
+                        && dataBean.getObjId() - 1 == centerPlayId)) {
                     centerStartTime = dataBean.getStartTime() * 1000;
                     centerDuration = dataBean.getDuration() * 1000;
+                    Log.d(TAG, "update centerStarTime:"+ centerStartTime + " centerDuration: " + centerDuration);
                 }
             }
         }
@@ -360,34 +402,37 @@ public class PlayersController extends Thread implements IPlayerCtrl{
         List<BaseVideoView> lst = videoViewList.get();
         if (lst == null)
             return;
-        //首先要判断是否需要关闭当前播放的中间窗口
-        if (centerVideoViewIndex >= 0 && currentPlayTime > centerStartTime + centerDuration) {
-            playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.STOP_CTRL, 0, centerVideoViewIndex);
-            centerVideoViewIndex = -1;
+
+        if (centerVideoViewIndex >= 0 &&
+                currentPlayTime > centerStartTime + centerDuration &&
+                videoViewList.get().get(12).getState() == IPlayer.STATE_STARTED) {
+
+//            playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.STOP_CTRL, 0, centerVideoViewIndex);
+            // 当前timeline结束，需要关闭中间播放，然后暂停所有小窗口播放，并且去掉选中框
+            playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_TIMELINE_CHANGE, 0, centerVideoViewIndex);
+            //centerVideoViewIndex = -1;
         }
 
         //通知去掉遮罩
         maskViewListener.setMaskViewStatus(OnMaskViewListener.ACTION_MASK_GONE, dataBean.getObjId() - 1, dataBean.getId());
-
-
-        int windowIndex = dataBean.getObjId() - 1;
-        //中间播放窗口和当前轮询到的id不一致，那么通知界面播放这个id
-        if (centerVideoViewIndex == -1 && dataBean.getScale() == 2) {
-            //这里是有隐藏的bug，如果中间的因为某种原因导致播放失败，那需要继续播放，
-            centerVideoViewIndex = windowIndex;
-            centerStartTime = dataBean.getStartTime() * 1000;
-            centerDuration = dataBean.getDuration() * 1000;
-            Log.d(TAG, "change play id:"+windowIndex + " startTime:"+centerStartTime+" duration:"+centerDuration + " currentPlayTime:"+currentPlayTime);
-            playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL, currentPlayTime+500, windowIndex);
-        }
+//        int windowIndex = dataBean.getObjId() - 1;
+//        //中间播放窗口和当前轮询到的id不一致，那么通知界面播放这个id
+//        if (centerVideoViewIndex == -1 && dataBean.getScale() == 2) {
+//            //这里是有隐藏的bug，如果中间的因为某种原因导致播放失败，那需要继续播放，
+//            centerVideoViewIndex = windowIndex;
+//            centerStartTime = dataBean.getStartTime() * 1000;
+//            centerDuration = dataBean.getDuration() * 1000;
+//            Log.d(TAG, "change play id:"+windowIndex + " startTime:"+centerStartTime+" duration:"+centerDuration + " currentPlayTime:"+currentPlayTime);
+//            playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL, currentPlayTime+500, windowIndex);
+//        }
     }
 
-    private void chapterProc(TimeLineInfo.DataBean dataBean) {
-        if (btnStateListener == null || dataBean == null)
-            return;
-
-        btnStateListener.onChapterBtnTextUpdate(dataBean.getChapter().getCode(), dataBean.getChapter().getName());
-    }
+//    private void chapterProc(TimeLineInfo.DataBean dataBean) {
+//        if (btnStateListener == null || dataBean == null)
+//            return;
+//
+//        btnStateListener.onChapterBtnTextUpdate(dataBean.getChapter().getCode(), dataBean.getChapter().getName());
+//    }
 
     private void applienceProc(TimeLineInfo.DataBean dataBean, boolean enable) {
         if (btnStateListener == null)
@@ -446,7 +491,10 @@ public class PlayersController extends Thread implements IPlayerCtrl{
     private int lastSubtitleUpdateTime = 0;
     //字幕通知
     private void subTitleNotify() {
-        if (abs(currentPlayTime - lastSubtitleUpdateTime) > 300) {
+        if (abs(currentPlayTime - lastSubtitleUpdateTime) > 300 &&
+                videoViewList.get().get(12).getState() == IPlayer.STATE_STARTED &&
+                videoViewList.get().get(12).getState() != IPlayer.STATE_PAUSED) {
+            Log.d(TAG, "center player status:" + videoViewList.get().get(12).getState());
             playCtrlEventListener.onSubtitleUpdate(currentPlayTime);
             lastSubtitleUpdateTime = currentPlayTime;
         }
@@ -459,6 +507,11 @@ public class PlayersController extends Thread implements IPlayerCtrl{
     int centerStartTime = 0;
     int centerDuration = 0;
 
+    /**
+     * 开始的时候小窗口全部播放并暂停，大窗口只显示章节标题
+     * timeline到期之后全部暂停，点击小窗口才会继续播放
+     * 章节播放也会暂停，点击小窗口之后才会播放
+     */
     private void itemProc() {
         int type;
         boolean enableApplience = false;
@@ -479,14 +532,16 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                     if (!bSeeking) {
                         videoProc(dataBean);
                     }
-                } else if (type == DataType.XSL_CHAPTER) {
-                    chapterProc(dataBean);
-                } else if (type == DataType.XSL_APPLIANCES) {
-                    applienceProc(dataBean, true);
+                }
+//                else if (type == DataType.XSL_CHAPTER) {
+//                    chapterProc(dataBean);
+//                }
+                else if (type == DataType.XSL_APPLIANCES) {
+                    //applienceProc(dataBean, true);
                     enableApplience = true;
                 } else if (type == DataType.XSL_WORD) {
                     enableWord = true;
-                    wordProc(dataBean, true);
+                    //wordProc(dataBean, true);
                 } else if (type == DataType.XSL_ACTION) {
                     enableAction = true;
                 }
@@ -571,6 +626,11 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                                 lst.get(i).resume();
                             }
                         }
+                    } else if (centerVideoViewIndex == -1) {
+                        currentPlayTime = lst.get(0).getCurrentPosition();
+                        //Log.d(TAG, "小视频 play currentPlayTime: " + currentPlayTime + "use view index playTime:"+ lst.get(centerVideoViewIndex).getCurrentPosition());
+                        //通知更新进度条
+                        playCtrlEventListener.onPlayTimeCallback(OnPlayCtrlEventListener.PLAY_TIME_SET_CTRL, totalDuration, currentPlayTime);
                     }
                 }
 

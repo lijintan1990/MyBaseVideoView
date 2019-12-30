@@ -17,6 +17,7 @@ import com.example.mybasevideoview.R;
 import com.example.mybasevideoview.controller.NetworkReq;
 import com.example.mybasevideoview.model.PayInfo;
 import com.example.mybasevideoview.model.RequestCode;
+import com.example.mybasevideoview.model.SharedPreferenceUtil;
 import com.example.mybasevideoview.utils.CommonDialog;
 import com.example.mybasevideoview.utils.XslUtils;
 
@@ -44,6 +45,12 @@ public class PayNoticeActiviy extends Activity {
     void pay(View view) {
         initDialog();
     }
+
+    @OnClick(R.id.close_pay)
+    void closePay(View view) {
+        finish();
+    }
+
     private static final int SDK_PAY_FLAG = 1;
     private static final int SDK_AUTH_FLAG = 2;
     private Handler mHandler = new Handler() {
@@ -113,6 +120,7 @@ public class PayNoticeActiviy extends Activity {
                             Intent intent = new Intent();
                             intent.putExtra(getResources().getString(R.string.pay_result), result);
                             setResult(RESULT_OK, intent);
+                            SharedPreferenceUtil.getInstance(getApplicationContext()).putBoolean(getResources().getString(R.string.need_pay), false);
                             finish();
                         } else {
                             Toast.makeText(PayNoticeActiviy.this, "支付失败", LENGTH_LONG ).show();

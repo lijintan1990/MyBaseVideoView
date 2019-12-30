@@ -21,7 +21,7 @@ public class FileDownloadMsg {
         downloadPath = Environment.getExternalStorageDirectory().getPath() + "/360";
         for (VideoListInfo.DataBean dataBean : listInfo.getData()) {
             urls.add(dataBean.getVideoUrl360());
-            names.add("" + dataBean.getIndex() +".mp4");
+            names.add("" + (dataBean.getIndex() - 1) +".mp4");
             //测试
             //break;
         }

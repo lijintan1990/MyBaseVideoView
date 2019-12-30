@@ -50,6 +50,10 @@ public class DownloadActivity extends Activity {
     @BindView(R.id.back_btn)
     Button backBtn;
 
+    @BindView(R.id.download_btn)
+    Button downloadBtn;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,17 +61,6 @@ public class DownloadActivity extends Activity {
         setContentView(R.layout.activity_download);
         XslUtils.hideStausbar(new WeakReference<>(this), true);
         ButterKnife.bind(this);
-
-        bar.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                //直接消费掉触摸事件
-                return true;
-            }
-        });
-
-        bar.setMax(100);
-        startDownload();
     }
 
     void startDownload() {
@@ -218,11 +211,27 @@ public class DownloadActivity extends Activity {
     }
 
     @OnClick(R.id.entry_btn)
-    void entryMainPlay() {
+    void entryMainPlay(View view) {
         Intent intent = new Intent();
         intent.putExtra(getResources().getString(R.string.download_result), RequestCode.MainPlay_req);
         setResult(RESULT_OK, intent);
         finish();
+    }
+
+    @OnClick(R.id.download_btn)
+    void beginDownLoad(View view) {
+        startDownload();
+        downloadBtn.setVisibility(View.GONE);
+        bar.setVisibility(View.VISIBLE);
+        bar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                //直接消费掉触摸事件
+                return true;
+            }
+        });
+
+        bar.setMax(100);
     }
 
     @OnClick(R.id.back_btn)

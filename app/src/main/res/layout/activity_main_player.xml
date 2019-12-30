@@ -497,7 +497,6 @@
                     android:layout_above="@+id/bottom"
                     android:layout_toRightOf="@+id/left"
                     android:layout_toLeftOf="@+id/right"
-                    android:background="@mipmap/main_player_bkg"
                     android:id="@+id/p13">
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -520,7 +519,16 @@
                             android:layout_marginTop="8dp"/>
                     </LinearLayout>
 
+                    <TextView
+                        android:id="@+id/play_time_info"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="20sp"
+                        android:textColor="@color/white"/>
+
                     <RelativeLayout
+                        android:id="@+id/center_black"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
                         <com.example.mybasevideoview.view.subTitle.SubtitleView
@@ -535,6 +543,15 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:clickable="true"/>
+                    <ImageButton
+                        android:id="@+id/resume_btn"
+                        android:src="@mipmap/play"
+                        android:background="#00000000"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:visibility="gone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
                 </com.kk.taurus.playerbase.widget.BaseVideoView>
             </RelativeLayout>
         </FrameLayout>

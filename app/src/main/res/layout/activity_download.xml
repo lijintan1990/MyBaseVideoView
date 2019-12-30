@@ -56,6 +56,7 @@
         android:focusable="false"
         android:splitTrack="false"
         android:duplicateParentState="true"
+        android:visibility="gone"
         android:progressDrawable="@drawable/style_video_player_video_seekbar"
         android:thumb="@null"/>
     <Button
@@ -68,6 +69,17 @@
         android:layout_centerHorizontal="true"
         android:text="点击进入"
         android:visibility="gone"
+        android:textColor="#FE7000"/>
+
+    <Button
+        android:id="@+id/download_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/entry_play_btn"
+        android:layout_below="@id/big_shadow"
+        android:layout_marginTop="37dp"
+        android:layout_centerHorizontal="true"
+        android:text="开始缓存"
         android:textColor="#FE7000"/>
     <LinearLayout
         android:layout_width="220dp"

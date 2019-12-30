@@ -23,12 +23,13 @@ public class PlayControlMaskView extends AppCompatTextView {
         super(context, attrs, defStyleAttr);
     }
     private float lastDownPos;
-
+    private float downPos;
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 lastDownPos = event.getX();
+                downPos = lastDownPos;
                 break;
             case MotionEvent.ACTION_MOVE:
                 Log.d(TAG, "touch move event X:" + event.getX());
@@ -46,6 +47,10 @@ public class PlayControlMaskView extends AppCompatTextView {
                 lastDownPos = event.getX();
                 break;
             case MotionEvent.ACTION_UP:
+                if (Math.abs(event.getX() - downPos) < 5) {
+                    MainPlayerActivity activity1 = (MainPlayerActivity) getContext();
+                    activity1.touchMaskView();
+                }
                 break;
         }
         return super.onTouchEvent(event);
