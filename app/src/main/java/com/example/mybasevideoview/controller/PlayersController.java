@@ -332,6 +332,9 @@ public class PlayersController extends Thread implements IPlayerCtrl{
         return centerStartTime;
     }
 
+    public int getCenterVideoViewIndex() {
+        return centerVideoViewIndex;
+    }
     /**
      * 获取当前播放的timeLine的结束时间
      * @return

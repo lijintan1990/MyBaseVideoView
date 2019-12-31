@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -360,65 +362,104 @@ public class MainPlayerActivity extends Activity {
         Log.w(TAG, "click");
         int index = 0;
         boolean clickAble = false;
+
+        Drawable drawable;
+        ColorDrawable dra;
         switch (view.getId()) {
             case R.id.click_view1:
                 index =0;
-                if (maskViews.get(0).getVisibility() == View.INVISIBLE)
+//                if (maskViews.get(0).getVisibility() == View.INVISIBLE)
+                drawable = maskViews.get(index).getBackground();
+                dra = (ColorDrawable) drawable;
+                if (dra.getColor() == getResources().getColor(R.color.translucent))
                     clickAble = true;
                 break;
             case R.id.click_view2:
                 index =1;
-                if (maskViews.get(1).getVisibility() == View.INVISIBLE)
+                drawable = maskViews.get(index).getBackground();
+                dra = (ColorDrawable) drawable;
+                //if (maskViews.get(1).getVisibility() == View.INVISIBLE)
+                if (dra.getColor() == getResources().getColor(R.color.translucent))
                     clickAble = true;
                 break;
             case R.id.click_view3:
                 index =2;
-                if (maskViews.get(2).getVisibility() == View.INVISIBLE)
+                drawable = maskViews.get(index).getBackground();
+                dra = (ColorDrawable) drawable;
+//                if (maskViews.get(2).getVisibility() == View.INVISIBLE)
+                if (dra.getColor() == getResources().getColor(R.color.translucent))
                     clickAble = true;
                 break;
             case R.id.click_view4:
                 index = 3;
-                if (maskViews.get(3).getVisibility() == View.INVISIBLE)
+                drawable = maskViews.get(index).getBackground();
+                dra = (ColorDrawable) drawable;
+//                if (maskViews.get(3).getVisibility() == View.INVISIBLE)
+                if (dra.getColor() == getResources().getColor(R.color.translucent))
                     clickAble = true;
                 break;
             case R.id.click_view5:
                 index = 4;
-                if (maskViews.get(4).getVisibility() == View.INVISIBLE)
+                drawable = maskViews.get(index).getBackground();
+                dra = (ColorDrawable) drawable;
+//                if (maskViews.get(4).getVisibility() == View.INVISIBLE)
+                if (dra.getColor() == getResources().getColor(R.color.translucent))
                     clickAble = true;
                 break;
             case R.id.click_view6:
                 index = 5;
-                if (maskViews.get(5).getVisibility() == View.INVISIBLE)
+                drawable = maskViews.get(index).getBackground();
+                dra = (ColorDrawable) drawable;
+//                if (maskViews.get(5).getVisibility() == View.INVISIBLE)
+                if (dra.getColor() == getResources().getColor(R.color.translucent))
                     clickAble = true;
                 break;
             case R.id.click_view7:
                 index = 6;
-                if (maskViews.get(6).getVisibility() == View.INVISIBLE)
+                drawable = maskViews.get(index).getBackground();
+                dra = (ColorDrawable) drawable;
+//                if (maskViews.get(6).getVisibility() == View.INVISIBLE)
+                if (dra.getColor() == getResources().getColor(R.color.translucent))
                     clickAble = true;
                 break;
             case R.id.click_view8:
                 index = 7;
-                if (maskViews.get(7).getVisibility() == View.INVISIBLE)
+                drawable = maskViews.get(index).getBackground();
+                dra = (ColorDrawable) drawable;
+//                if (maskViews.get(7).getVisibility() == View.INVISIBLE)
+                if (dra.getColor() == getResources().getColor(R.color.translucent))
                     clickAble = true;
                 break;
             case R.id.click_view9:
                 index = 8;
-                if (maskViews.get(8).getVisibility() == View.INVISIBLE)
+                drawable = maskViews.get(index).getBackground();
+                dra = (ColorDrawable) drawable;
+//                if (maskViews.get(8).getVisibility() == View.INVISIBLE)
+                if (dra.getColor() == getResources().getColor(R.color.translucent))
                     clickAble = true;
                 break;
             case R.id.click_view10:
                 index = 9;
-                if (maskViews.get(9).getVisibility() == View.INVISIBLE)
+                drawable = maskViews.get(index).getBackground();
+                dra = (ColorDrawable) drawable;
+//                if (maskViews.get(9).getVisibility() == View.INVISIBLE)
+                if (dra.getColor() == getResources().getColor(R.color.translucent))
                     clickAble = true;
                 break;
             case R.id.click_view11:
                 index = 10;
-                if (maskViews.get(10).getVisibility() == View.INVISIBLE)
+                drawable = maskViews.get(index).getBackground();
+                dra = (ColorDrawable) drawable;
+//                if (maskViews.get(10).getVisibility() == View.INVISIBLE)
+                if (dra.getColor() == getResources().getColor(R.color.translucent))
                     clickAble = true;
                 break;
             case R.id.click_view12:
                 index = 11;
-                if (maskViews.get(11).getVisibility() == View.INVISIBLE)
+                drawable = maskViews.get(index).getBackground();
+                dra = (ColorDrawable) drawable;
+//                if (maskViews.get(11).getVisibility() == View.INVISIBLE)
+                if (dra.getColor() == getResources().getColor(R.color.translucent))
                     clickAble = true;
                 break;
         }
@@ -429,16 +470,18 @@ public class MainPlayerActivity extends Activity {
 
         for (int i=0; i!=12; i++) {
             if (i == index) {
-                Log.d(TAG, "set index " + i + " white");
-//                videoViewArrayList.get(i).setBackgroundResource(R.drawable.xsl_video_shape_white);
                 int time = videoViewArrayList.get(i).getCurrentPosition();
-//                Message msg = playControlHandler.obtainMessage(OnPlayCtrlEventListener.PLAY_CTRL, time, i);
-//                playControlHandler.sendMessage(msg);
                 videoViewArrayList.get(12).stop();
                 centerBlackLayout.setBackgroundColor(Color.TRANSPARENT);
-
                 videoViewArrayList.get(12).setDataSource(new DataSource(smallVideoUrls.get(i)));
                 videoViewArrayList.get(12).start(time);
+                //把之前播放的窗口设置成透明
+                int curIndex = playersController.getCenterVideoViewIndex();
+                if (curIndex != -1) {
+                    maskViews.get(curIndex).setBackgroundColor(getResources().getColor(R.color.translucent));
+                }
+                //当前点击的窗口设置成遮罩
+                maskViews.get(index).setBackgroundColor(getResources().getColor(R.color.mask_view_play));
                 playersController.updateCenterPlayerInfo(i, time);
                 resumeBtn.setVisibility(View.GONE);
                 //隐藏章节标题信息
@@ -446,14 +489,7 @@ public class MainPlayerActivity extends Activity {
                 chapterTextViewList.get(3).setText("");
                 showArroy(i);
             }
-//            else {
-//                Log.d(TAG, "set index " + i + " black");
-//                videoViewArrayList.get(i).setBackgroundResource(R.drawable.xsl_video_shape_white);
-//            }
-
-            if (i == 12) {
-                break;
-            }
+            Log.d(TAG, "set index " + index + " red");
         }
 
         playersController.resume_();
@@ -1137,6 +1173,28 @@ public class MainPlayerActivity extends Activity {
     @BindView(R.id.center_black)
     RelativeLayout centerBlackLayout;
 
+
+    /**
+     * 如果当前颜色是加了遮罩70%透明度，那么不能让他透明
+     * @param index
+     * @param state -1 透明 0 纯黑 1遮罩 70%透明度
+     */
+    private void updateSmallPlayerMaskViewBkg(int index, int state) {
+        Drawable drawable = maskViews.get(index).getBackground();
+        ColorDrawable dra = (ColorDrawable) drawable;
+        if (state == -1) {
+            if (dra.getColor() == getResources().getColor(R.color.mask_view_play)) {
+                return;
+            }
+
+            maskViews.get(index).setBackgroundColor(getResources().getColor(R.color.translucent));
+        } else if (state == 0) {
+            maskViews.get(index).setBackgroundColor(getResources().getColor(R.color.mask_view_color));
+        } else {
+            maskViews.get(index).setBackgroundColor(getResources().getColor(R.color.mask_view_play));
+        }
+    }
+
     public boolean useLocalVideo = true;
     public static class PlayControlHandler extends Handler {
         WeakReference<List<BaseVideoView>> videoViewLst;
@@ -1210,16 +1268,21 @@ public class MainPlayerActivity extends Activity {
                     mainPlayerActivityWeakReference.get().updatePlayCtroller(msg.arg1, msg.arg2);
                     break;
                 case OnMaskViewListener.ACTION_MASK_GONE:
-                    if (mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).getVisibility() == View.VISIBLE) {
-                        mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).setVisibility(View.INVISIBLE);
-                        Log.d(TAG, "gone index:"+msg.arg1 + "id:"+msg.arg2);
-                    }
+//                    if (mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).getVisibility() == View.VISIBLE) {
+//                        mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).setVisibility(View.INVISIBLE);
+//                        //mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).setBackgroundColor(mainPlayerActivityWeakReference.get().getResources().getColor(R.color.translucent));
+//                        Log.d(TAG, "gone index:"+msg.arg1 + "id:"+msg.arg2);
+//                    }
+//                    state -1 透明 0 纯黑 1遮罩 70%透明度
+                    mainPlayerActivityWeakReference.get().updateSmallPlayerMaskViewBkg(msg.arg1, -1);
                     break;
                 case OnMaskViewListener.ACTION_MASK_VISIABLE:
-                    if (mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).getVisibility() == View.INVISIBLE) {
-                        mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).setVisibility(View.VISIBLE);
-                        Log.d(TAG, "visible index:"+msg.arg1 + "id:"+msg.arg2);
-                    }
+//                    if (mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).getVisibility() == View.INVISIBLE) {
+//                        mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).setVisibility(View.VISIBLE);
+//                        //mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).setBackgroundColor(mainPlayerActivityWeakReference.get().getResources().getColor(R.color.black));
+//                        Log.d(TAG, "visible index:"+msg.arg1 + "id:"+msg.arg2);
+//                    }
+                    mainPlayerActivityWeakReference.get().updateSmallPlayerMaskViewBkg(msg.arg1, 0);
                     break;
                 case OnPlayCtrlEventListener.SUBTITLE_UPDATE:
                     mainPlayerActivityWeakReference.get().updateSubtitle(msg.arg1);
