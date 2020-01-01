@@ -52,6 +52,8 @@ public class PlayersController extends Thread implements IPlayerCtrl{
 
     private boolean running = false;
     private WeakReference<List<BaseVideoView>> videoViewList;
+    //当前正在播放的窗口
+    private ArrayList<Integer> videoTimeLinePlaying;
     OnPlayCtrlEventListener playCtrlEventListener;
     OnBtnStateListener btnStateListener;
     OnMaskViewListener maskViewListener;
@@ -60,6 +62,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
     private Object lockObj;
 
     public PlayersController(List<BaseVideoView> videoViewList) {
+        videoTimeLinePlaying = new ArrayList<>();
         this.videoViewList = new WeakReference<>(videoViewList);
         lockObj = new Object();
     }
@@ -185,7 +188,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                 List<BaseVideoView> lst = videoViewList.get();
                 for (int i=0; i!=12; i++) {
                     lst.get(i).pause();
-                    Log.d(TAG, "xx pause " + i);
+                    //Log.d(TAG, "xx pause " + i);
                 }
 
                 lst.get(12).pause();
@@ -201,7 +204,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
 
                 for (int i=0; i!=12; i++) {
                     lst.get(i).resume();
-                    Log.d(TAG, "xx onResume " + i);
+                    //Log.d(TAG, "xx onResume " + i);
                 }
 
                 lst.get(12).resume();
@@ -415,27 +418,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
             playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_TIMELINE_CHANGE, 0, centerVideoViewIndex);
             //centerVideoViewIndex = -1;
         }
-
-        //通知去掉遮罩
-        maskViewListener.setMaskViewStatus(OnMaskViewListener.ACTION_MASK_GONE, dataBean.getObjId() - 1, dataBean.getId());
-//        int windowIndex = dataBean.getObjId() - 1;
-//        //中间播放窗口和当前轮询到的id不一致，那么通知界面播放这个id
-//        if (centerVideoViewIndex == -1 && dataBean.getScale() == 2) {
-//            //这里是有隐藏的bug，如果中间的因为某种原因导致播放失败，那需要继续播放，
-//            centerVideoViewIndex = windowIndex;
-//            centerStartTime = dataBean.getStartTime() * 1000;
-//            centerDuration = dataBean.getDuration() * 1000;
-//            Log.d(TAG, "change play id:"+windowIndex + " startTime:"+centerStartTime+" duration:"+centerDuration + " currentPlayTime:"+currentPlayTime);
-//            playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CTRL, currentPlayTime+500, windowIndex);
-//        }
     }
-
-//    private void chapterProc(TimeLineInfo.DataBean dataBean) {
-//        if (btnStateListener == null || dataBean == null)
-//            return;
-//
-//        btnStateListener.onChapterBtnTextUpdate(dataBean.getChapter().getCode(), dataBean.getChapter().getName());
-//    }
 
     private void applienceProc(TimeLineInfo.DataBean dataBean, boolean enable) {
         if (btnStateListener == null)
@@ -497,7 +480,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
         if (abs(currentPlayTime - lastSubtitleUpdateTime) > 300 &&
                 videoViewList.get().get(12).getState() == IPlayer.STATE_STARTED &&
                 videoViewList.get().get(12).getState() != IPlayer.STATE_PAUSED) {
-            Log.d(TAG, "center player status:" + videoViewList.get().get(12).getState());
+            //Log.d(TAG, "center player status:" + videoViewList.get().get(12).getState());
             playCtrlEventListener.onSubtitleUpdate(currentPlayTime);
             lastSubtitleUpdateTime = currentPlayTime;
         }
@@ -510,6 +493,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
     int centerStartTime = 0;
     int centerDuration = 0;
 
+    int timesCount = 0;
     /**
      * 开始的时候小窗口全部播放并暂停，大窗口只显示章节标题
      * timeline到期之后全部暂停，点击小窗口才会继续播放
@@ -522,18 +506,19 @@ public class PlayersController extends Thread implements IPlayerCtrl{
         boolean enableWord = false;
         boolean enableChapter = false;
         TimeLineInfo timeLineInfo = NetworkReq.getInstance().getTimelineInfo();
+        //每次循环一次清除之前的数据
+        videoTimeLinePlaying.clear();
 
         for (TimeLineInfo.DataBean dataBean : timeLineInfo.getData()) {
             if (dataBean.getStartTime() * 1000 <= currentPlayTime
                     && (dataBean.getStartTime() + dataBean.getDuration()) * 1000 > currentPlayTime) {
                 type = dataBean.getType();
-                //这个循环里面有任何一个需要激活的按钮我们都把他激活，
-                //就算激活多次也无所谓(除了关联视频），如果轮询完成，有的按钮没有被激活
-                //那么enableXXX变量肯定是false,在for循环之后关闭即可
+
                 if (type == DataType.XSL_VIDEO) {
                     //关联视频以及中间视频播放处理
                     if (!bSeeking) {
                         videoProc(dataBean);
+                        videoTimeLinePlaying.add(dataBean.getObjId() - 1);
                     }
                 }
 //                else if (type == DataType.XSL_CHAPTER) {
@@ -548,15 +533,17 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                 } else if (type == DataType.XSL_ACTION) {
                     enableAction = true;
                 }
-            } else if(dataBean.getType() == DataType.XSL_VIDEO && currentPlayTime > (dataBean.getStartTime() + dataBean.getDuration()) * 1000 &&
-                        currentPlayTime < (dataBean.getStartTime() + dataBean.getDuration() + 1) * 1000) {
-                //播放完一秒内加上遮罩
-                maskViewListener.setMaskViewStatus(OnMaskViewListener.ACTION_MASK_VISIABLE, dataBean.getObjId() - 1, dataBean.getId());
             }
 
             //当前时间还没轮询到开始，直接跳出循环
             if (dataBean.getStartTime() * 1000 > currentPlayTime)
                 break;
+        }
+
+        if (timesCount++ % 20 == 0) {
+            if (!bSeeking) {
+                maskViewListener.setMaskViewStatus(OnMaskViewListener.ACTION_PLAY_MASK, videoTimeLinePlaying);
+            }
         }
 
         if (!enableAction) {

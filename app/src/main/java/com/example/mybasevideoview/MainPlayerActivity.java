@@ -216,43 +216,21 @@ public class MainPlayerActivity extends Activity {
             }
         }
 
-        mySeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        mySeekBar.setSeekChapterListener(new MySeekBar.SeekChapterListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-            }
+            public void seekToChapter(int time, String chapterId, String chapterTitle) {
+                bNativeSeekFinish = false;
+                videoViewArrayList.get(12).stop();
+                setCenterPlayerBlack(true);
+                setLastCenterPlayerMaskTransact();
+                playersController.seekChapter(time * 1000);
+                curChapter = Integer.parseInt(chapterId);
+                updateChapterTxt(curChapter, chapterTitle);
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                //bNativeSeekFinish = false;
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                if (bNativeSeekFinish == false) {
-                    return;
-                }
-                Log.d(TAG, "seekBar stop touch:"+seekBar.getProgress());
-                if (playersController == null)
-                    return;
-                int d = playersController.getDuration();
-                int p = seekBar.getProgress();
-                //1000是进度条总共1000等份
-                int sec = seekBar.getProgress() * (playersController.getDuration() / 1000) / 1000;
-                Log.d(TAG, "mySeek time:" + sec);
-
-                for (ChapterListInfo.DataBean data : NetworkReq.getInstance().getChapterListInfo().getData()) {
-                    int rangeBegin = data.getStartTime() - 80;
-                    int rangeEnd = rangeBegin + 80;
-
-                    if (sec > rangeBegin && sec < rangeEnd) {
-                        Log.w(TAG, "seek sec:" + sec + " begin:" + rangeBegin + " rangeEnd:" + rangeEnd);
-
-                        bNativeSeekFinish = false;
-                        playersController.seekChapter(data.getStartTime() * 1000);
-                        curChapter = Integer.parseInt(data.getCode());
-                        updateChapterTxt(data.getCode(), data.getName());
-                        break;
-                    }
+                if (playersController.getDuration() > 0) {
+                    int progress = time * 1000 / (playersController.getDuration() / 1000);
+                    Log.d(TAG, "time: " + time + " seek to progress: " + progress + " duration:" + playersController.getDuration());
+                    mySeekBar.setProgress(progress);
                 }
             }
         });
@@ -472,14 +450,11 @@ public class MainPlayerActivity extends Activity {
             if (i == index) {
                 int time = videoViewArrayList.get(i).getCurrentPosition();
                 videoViewArrayList.get(12).stop();
-                centerBlackLayout.setBackgroundColor(Color.TRANSPARENT);
+                setCenterPlayerBlack(false);
                 videoViewArrayList.get(12).setDataSource(new DataSource(smallVideoUrls.get(i)));
                 videoViewArrayList.get(12).start(time);
                 //把之前播放的窗口设置成透明
-                int curIndex = playersController.getCenterVideoViewIndex();
-                if (curIndex != -1) {
-                    maskViews.get(curIndex).setBackgroundColor(getResources().getColor(R.color.translucent));
-                }
+                setLastCenterPlayerMaskTransact();
                 //当前点击的窗口设置成遮罩
                 maskViews.get(index).setBackgroundColor(getResources().getColor(R.color.mask_view_play));
                 playersController.updateCenterPlayerInfo(i, time);
@@ -565,9 +540,10 @@ public class MainPlayerActivity extends Activity {
 
         playersController.setMaskViewListener(new OnMaskViewListener() {
             @Override
-            public void setMaskViewStatus(int action, int index, int id) {
-                Message msg = playControlHandler.obtainMessage(action, index, id);
+            public void setMaskViewStatus(int action, ArrayList<Integer> idLst) {
+                Message msg = playControlHandler.obtainMessage(action, idLst);
                 playControlHandler.sendMessage(msg);
+
             }
         });
 
@@ -579,9 +555,7 @@ public class MainPlayerActivity extends Activity {
         startPlay();
     }
 
-    public void updateChapterTxt(String text, String content) {
-        int chapter = Integer.parseInt(text);
-
+    public void updateChapterTxt(int chapter, String content) {
         String title = "第";
 
         switch (chapter) {
@@ -770,7 +744,7 @@ public class MainPlayerActivity extends Activity {
     public void touchMoveSeek(int jumpTime) {
         if (bNativeSeekFinish == false)
             return;
-        int curPlayTime = videoViewArrayList.get(12).getCurrentPosition() + jumpTime * 1000;
+        int curPlayTime = videoViewArrayList.get(0).getCurrentPosition() + jumpTime * 1000;
         int startTime = 0, endTime = 0;
         if (videoViewArrayList.get(12).getState() == IPlayer.STATE_STOPPED ||
                 videoViewArrayList.get(12).getState() == IPlayer.STATE_IDLE) {
@@ -1070,11 +1044,16 @@ public class MainPlayerActivity extends Activity {
         return statusBarHeight1;
     }
 
+    int k = 0;
     void updatePlayCtroller(int duration, int curTime) {
         //Log.d(TAG, "main player statues:"+videoViewArrayList.get(12).getState());
         if (duration <= 0)
             return;
-        mySeekBar.setProgress(curTime * 1000 / duration);
+        int progress = curTime  / (duration / 1000);
+        if (++k % 20 == 0) {
+            Log.d(TAG, "progress: " + progress);
+        }
+        mySeekBar.setProgress(progress);
         //当前时间设置
         textViews.get(0).setText(XslUtils.convertSecToTimeString(curTime / 1000));
         //总时间设置
@@ -1150,8 +1129,6 @@ public class MainPlayerActivity extends Activity {
                 }
             }, 1000);//3秒后执行Runnable中的run方法
 
-
-
             //如果没有播放，说明第一次播放，那么延时1s暂停，
             playControlHandler.postDelayed(new Runnable() {
                 @Override
@@ -1160,7 +1137,7 @@ public class MainPlayerActivity extends Activity {
                     ChapterListInfo infos = NetworkReq.getInstance().getChapterListInfo();
                     for (ChapterListInfo.DataBean dataBean : infos.getData()) {
                         if (Integer.parseInt(dataBean.getCode()) == 1) {
-                            updateChapterTxt(dataBean.getCode(), dataBean.getName());
+                            updateChapterTxt(Integer.parseInt(dataBean.getCode()), dataBean.getName());
                             break;
                         }
                     }
@@ -1175,7 +1152,6 @@ public class MainPlayerActivity extends Activity {
 
 
     /**
-     * 如果当前颜色是加了遮罩70%透明度，那么不能让他透明
      * @param index
      * @param state -1 透明 0 纯黑 1遮罩 70%透明度
      */
@@ -1183,15 +1159,61 @@ public class MainPlayerActivity extends Activity {
         Drawable drawable = maskViews.get(index).getBackground();
         ColorDrawable dra = (ColorDrawable) drawable;
         if (state == -1) {
-            if (dra.getColor() == getResources().getColor(R.color.mask_view_play)) {
-                return;
+            if (dra.getColor() != getResources().getColor(R.color.translucent)) {
+                Log.w(TAG, "set index:" + index + " translucent");
+                maskViews.get(index).setBackgroundColor(getResources().getColor(R.color.translucent));
+            }
+        } else if (state == 0) {
+            if (dra.getColor() != getResources().getColor(R.color.mask_view_color)) {
+                Log.i(TAG, "set index:" + index + " black");
+                maskArroy.get(index).setVisibility(View.INVISIBLE);
+                maskViews.get(index).setBackgroundColor(getResources().getColor(R.color.mask_view_color));
+            }
+        } else {
+            if (dra.getColor() != getResources().getColor(R.color.mask_view_play)) {
+                Log.d(TAG, "set index:" + index + " alpha");
+                maskViews.get(index).setBackgroundColor(getResources().getColor(R.color.mask_view_play));
+            }
+        }
+    }
+
+    private void updateAllSmallPlayerMaskView(ArrayList<Integer> idLst) {
+        for (Integer m : idLst) {
+            Log.d(TAG, "id list elem " + m);
+        }
+
+        resumeBtn.setVisibility(View.GONE);
+        for (int i=0; i!=12; i++) {
+            boolean isIdFounded = false;
+            for (Integer id : idLst) {
+                if (i == id) {
+                    isIdFounded = true;
+//                    Log.d(TAG, "i:" + i +" id:" + id + " true");
+                    break;
+                } else {
+                    isIdFounded = false;
+//                    Log.d(TAG, "i:" + i +" id:" + id + " false");
+                }
             }
 
-            maskViews.get(index).setBackgroundColor(getResources().getColor(R.color.translucent));
-        } else if (state == 0) {
-            maskViews.get(index).setBackgroundColor(getResources().getColor(R.color.mask_view_color));
-        } else {
-            maskViews.get(index).setBackgroundColor(getResources().getColor(R.color.mask_view_play));
+            if (isIdFounded) {
+                if (playersController.getCenterVideoViewIndex() == i) {
+                    updateSmallPlayerMaskViewBkg(i, 1);
+                } else {
+                    updateSmallPlayerMaskViewBkg(i, -1);
+                }
+            } else {
+                updateSmallPlayerMaskViewBkg(i, 0);
+            }
+        }
+    }
+
+    private void setLastCenterPlayerMaskTransact() {
+        //把之前播放的窗口设置成透明
+        int curIndex = playersController.getCenterVideoViewIndex();
+        if (curIndex != -1) {
+            Log.i(TAG, "set play index " + curIndex + " translucent");
+            maskViews.get(curIndex).setBackgroundColor(getResources().getColor(R.color.translucent));
         }
     }
 
@@ -1267,22 +1289,9 @@ public class MainPlayerActivity extends Activity {
                 case OnPlayCtrlEventListener.PLAY_TIME_SET_CTRL:
                     mainPlayerActivityWeakReference.get().updatePlayCtroller(msg.arg1, msg.arg2);
                     break;
-                case OnMaskViewListener.ACTION_MASK_GONE:
-//                    if (mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).getVisibility() == View.VISIBLE) {
-//                        mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).setVisibility(View.INVISIBLE);
-//                        //mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).setBackgroundColor(mainPlayerActivityWeakReference.get().getResources().getColor(R.color.translucent));
-//                        Log.d(TAG, "gone index:"+msg.arg1 + "id:"+msg.arg2);
-//                    }
-//                    state -1 透明 0 纯黑 1遮罩 70%透明度
-                    mainPlayerActivityWeakReference.get().updateSmallPlayerMaskViewBkg(msg.arg1, -1);
-                    break;
-                case OnMaskViewListener.ACTION_MASK_VISIABLE:
-//                    if (mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).getVisibility() == View.INVISIBLE) {
-//                        mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).setVisibility(View.VISIBLE);
-//                        //mainPlayerActivityWeakReference.get().maskViews.get(msg.arg1).setBackgroundColor(mainPlayerActivityWeakReference.get().getResources().getColor(R.color.black));
-//                        Log.d(TAG, "visible index:"+msg.arg1 + "id:"+msg.arg2);
-//                    }
-                    mainPlayerActivityWeakReference.get().updateSmallPlayerMaskViewBkg(msg.arg1, 0);
+                case OnMaskViewListener.ACTION_PLAY_MASK:
+
+                    mainPlayerActivityWeakReference.get().updateAllSmallPlayerMaskView((ArrayList<Integer>) msg.obj);
                     break;
                 case OnPlayCtrlEventListener.SUBTITLE_UPDATE:
                     mainPlayerActivityWeakReference.get().updateSubtitle(msg.arg1);
