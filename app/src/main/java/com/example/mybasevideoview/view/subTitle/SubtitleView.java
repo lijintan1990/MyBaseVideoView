@@ -24,7 +24,7 @@ public class SubtitleView extends LinearLayout implements ISubtitleControl, Subt
     /**
      * 显示中文
      */
-    public final static int LANGUAGE_TYPE_CHINA = 0;
+    public final static int LANGUAGE_TYPE_CHINA = 1;
 
     /**
      * 粤语显示

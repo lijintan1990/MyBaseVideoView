@@ -72,6 +72,29 @@ public class AppliancesActivity extends Activity {
                 finish();
             }
         });
+
+        videoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                videoView.pause();
+                findViewById(R.id.centerPlay).setVisibility(View.VISIBLE);
+            }
+        });
+
+        findViewById(R.id.centerPlay).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                videoView.resume();
+                findViewById(R.id.centerPlay).setVisibility(View.GONE);
+            }
+        });
+    }
+
+    @Override
+    protected void onStop() {
+        videoView.pause();
+        findViewById(R.id.centerPlay).setVisibility(View.VISIBLE);
+        super.onStop();
     }
 
     @Override

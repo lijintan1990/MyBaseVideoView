@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
         NetworkReq.getInstance().getVideoList();
     }
     //当前选择的语言
-    int curLangugue = langugueActivity.chinese;
+    public static int curLangugue = langugueActivity.chinese;
     @OnClick({R.id.about, R.id.langugue})
     void textViewOnClick(View view) {
         switch (view.getId()) {
@@ -203,13 +203,22 @@ public class MainActivity extends AppCompatActivity {
             langugueSelector = bd.getInt(langugueActivity.langugue_key);
             if (langugueSelector < langugueActivity.unknow)
                 curLangugue = langugueSelector;
+            if (curLangugue == langugueActivity.chinese) {
+                textViewList.get(1).setText("字幕选择: 简体中文");
+            } else if (curLangugue == langugueActivity.cantonese) {
+                textViewList.get(1).setText("字幕选择: 正体中文");
+            } else {
+                textViewList.get(1).setText("字幕选择: ENGLISH");
+            }
         } else if (requestCode == RequestCode.Download_req) {
-//            Bundle bundle = data.getExtras();
-//            int ret = bundle.getInt(getResources().getString(R.string.download_result));
-//            if (ret == RequestCode.MainPlay_req) {
-            needCacheVideo = false;
+            Bundle bundle = data.getExtras();
+            int ret = bundle.getInt(getResources().getString(R.string.download_result));
+            if (ret == -1) {
+                needCacheVideo = true;
+            } else if (ret == RequestCode.MainPlay_req) {
+                needCacheVideo = false;
                 startMainPlayActivity();
-//            }
+            }
         } else if (requestCode == RequestCode.Pay_req) {
             if (needCacheVideo) {
                 startCacheActivity();
@@ -573,6 +582,7 @@ public class MainActivity extends AppCompatActivity {
                 if (videoView.getState() == STATE_PAUSED) {
                     videoView.resume();
                     playCtrView.setSelected(false);
+                    playBtn.setVisibility(View.GONE);
                 } else if (videoView.getState() == STATE_STARTED) {
                     videoView.pause();
                     playBtn.setVisibility(View.VISIBLE);
@@ -625,7 +635,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        videoView.resume();
+//        if (STATE_PAUSED == videoView.getState()) {
+//            playBtn.setVisibility(View.GONE);
+//        }
+//        videoView.resume();
     }
 
     @Override

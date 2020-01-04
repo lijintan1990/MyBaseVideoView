@@ -3,7 +3,6 @@
     android:id="@+id/cover_player_controller_bottom_container"
     android:layout_width="match_parent"
     android:layout_height="30dp"
-    android:visibility="gone"
     android:layout_alignParentBottom="true"
     android:gravity="center_vertical"
     android:orientation="horizontal">

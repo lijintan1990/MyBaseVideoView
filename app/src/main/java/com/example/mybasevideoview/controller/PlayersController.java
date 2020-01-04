@@ -525,11 +525,11 @@ public class PlayersController extends Thread implements IPlayerCtrl{
 //                    chapterProc(dataBean);
 //                }
                 else if (type == DataType.XSL_APPLIANCES) {
-                    //applienceProc(dataBean, true);
+                    applienceProc(dataBean, true);
                     enableApplience = true;
                 } else if (type == DataType.XSL_WORD) {
                     enableWord = true;
-                    //wordProc(dataBean, true);
+                    wordProc(dataBean, true);
                 } else if (type == DataType.XSL_ACTION) {
                     enableAction = true;
                 }

@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import com.example.mybasevideoview.R;
@@ -30,9 +31,11 @@ public class langugueActivity extends Activity {
     public static final String langugue_key = "langugue";
     private Intent intent = null;
 
-    @BindViews({R.id.close_btn, R.id.chinese_btn, R.id.cantonese_btn, R.id.english_btn})
+    @BindViews({R.id.chinese_btn, R.id.cantonese_btn, R.id.english_btn})
     List<Button> buttonList;
 
+    @BindView(R.id.close_btn)
+    ImageButton closeBtn;
     @BindView(R.id.linear_layout)
     LinearLayout linearLayout;
 
@@ -68,14 +71,16 @@ public class langugueActivity extends Activity {
         buttonList.get(type).setBackgroundResource(R.drawable.xsl_langugue_btn_color);
     }
 
-    @OnClick({R.id.close_btn, R.id.chinese_btn, R.id.cantonese_btn, R.id.english_btn})
+    @OnClick(R.id.close_btn)
+    void clickCloseBtn(View view) {
+        intent.putExtra(langugue_key, unknow);
+        setResult(RequestCode.Languge_req, intent);
+        finish();
+    }
+
+    @OnClick({R.id.chinese_btn, R.id.cantonese_btn, R.id.english_btn})
     void click(View view) {
         switch (view.getId()) {
-            case R.id.close_btn:
-                intent.putExtra(langugue_key, unknow);
-                setResult(RequestCode.Languge_req, intent);
-                finish();
-                break;
             case R.id.chinese_btn:
                 intent.putExtra(langugue_key, chinese);
                 buttonList.get(1).getBackground().setAlpha(255);

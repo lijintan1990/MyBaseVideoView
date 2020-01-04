@@ -32,7 +32,7 @@
             android:paddingLeft="@dimen/padding_left_size"
             android:paddingRight="@dimen/padding_right_size"
             android:textColor="@color/white"
-            android:text="中文简体"/>
+            android:text="简体中文"/>
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
             android:paddingLeft="@dimen/padding_left_size"
             android:paddingRight="@dimen/padding_right_size"
             android:textColor="@color/white"
-            android:text="中文繁体"/>
+            android:text="正体中文"/>
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -60,16 +60,13 @@
             android:text="ENGLISH"/>
     </LinearLayout>
 
-    <Button
-        android:layout_width="@dimen/close_btn_size"
-        android:layout_height="@dimen/close_btn_size"
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:id="@+id/close_btn"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_marginRight="134dp"
-        android:layout_marginTop="30dp"
         android:textColor="@color/white"
-        android:background="@mipmap/icon_close"/>
-
-
+        android:src="@mipmap/close_pay"
+        android:background="@color/translucent"/>
 </RelativeLayout>

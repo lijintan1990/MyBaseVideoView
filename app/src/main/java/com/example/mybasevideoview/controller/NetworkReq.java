@@ -115,20 +115,20 @@ public class NetworkReq {
         return mTimelineInfo;
     }
 
-    public void getWordMsgs(int index) {
-        ObtainNetWorkData.getWordListData(new Callback<WordMsgs>() {
-            @Override
-            public void onResponse(Call<WordMsgs> call, Response<WordMsgs> response) {
-                wordMsgs = response.body();
-                Log.d(TAG, "get word list ok. info:" + response.toString());
-            }
-
-            @Override
-            public void onFailure(Call<WordMsgs> call, Throwable t) {
-                Log.w(TAG, "get word list failed, "+t.toString());
-            }
-        }, index);
-    }
+//    public void getWordMsgs(int index) {
+//        ObtainNetWorkData.getWordListData(new Callback<WordMsgs>() {
+//            @Override
+//            public void onResponse(Call<WordMsgs> call, Response<WordMsgs> response) {
+//                wordMsgs = response.body();
+//                Log.d(TAG, "get word list ok. info:" + response.toString());
+//            }
+//
+//            @Override
+//            public void onFailure(Call<WordMsgs> call, Throwable t) {
+//                Log.w(TAG, "get word list failed, "+t.toString());
+//            }
+//        }, index);
+//    }
 
     public void getChapter() {
         ObtainNetWorkData.getChapterListData(new Callback<ChapterListInfo>() {

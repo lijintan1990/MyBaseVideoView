@@ -18,7 +18,7 @@
         android:id="@+id/tips"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="正在缓存中"
+        android:text="支付成功"
         android:layout_marginTop="46dp"
         android:textSize="22sp"
         android:textColor="@color/white"
@@ -81,29 +81,32 @@
         android:layout_centerHorizontal="true"
         android:text="开始缓存"
         android:textColor="#FE7000"/>
-    <LinearLayout
+    <RelativeLayout
+        android:layout_below="@+id/bar"
+        android:layout_centerHorizontal="true"
         android:layout_width="220dp"
+        android:layout_marginTop="3dp"
         android:layout_height="wrap_content">
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_alignParentLeft="true"
             android:id="@+id/speed"
             android:textColor="@color/white"
             android:textSize="11sp"/>
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:id="@+id/need_time"
+            android:layout_centerInParent="true"
+            android:id="@+id/relay_time"
             android:textColor="@color/white"
             android:textSize="11sp"/>
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_alignParentRight="true"
             android:id="@+id/load_size"
             android:textColor="@color/white"
             android:textSize="11sp"/>
-    </LinearLayout>
+    </RelativeLayout>
 </RelativeLayout>

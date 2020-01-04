@@ -18,6 +18,7 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.mybasevideoview.MainActivity;
 import com.example.mybasevideoview.R;
 import com.example.mybasevideoview.model.ObtainNetWorkData;
 import com.example.mybasevideoview.model.RequestCode;
@@ -55,7 +56,7 @@ public class WordActivity extends Activity {
 
         Intent intent = getIntent();
         int index = intent.getIntExtra(String.valueOf(R.string.activity_value), 0);
-        getWordMsgs(index);
+        getWordMsgs(index, MainActivity.curLangugue);
     }
 
     private ArrayList<WordNode> dataLst;
@@ -77,7 +78,7 @@ public class WordActivity extends Activity {
         }
     }
 
-    private void getWordMsgs(int index) {
+    private void getWordMsgs(int index, int langugueType) {
         ObtainNetWorkData.getWordListData(new Callback<WordMsgs>() {
             @Override
             public void onResponse(Call<WordMsgs> call, Response<WordMsgs> response) {
@@ -92,7 +93,7 @@ public class WordActivity extends Activity {
             public void onFailure(Call<WordMsgs> call, Throwable t) {
                 Log.w(TAG, "get word list failed, "+t.toString());
             }
-        }, index);
+        }, index, langugueType);
     }
 
     void updateImageView() {

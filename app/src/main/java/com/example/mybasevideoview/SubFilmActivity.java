@@ -24,6 +24,7 @@ import com.example.mybasevideoview.view.subTitle.SubtitleView;
 import com.kk.taurus.playerbase.entity.DataSource;
 import com.kk.taurus.playerbase.event.EventKey;
 import com.kk.taurus.playerbase.event.OnPlayerEventListener;
+import com.kk.taurus.playerbase.player.IPlayer;
 import com.kk.taurus.playerbase.widget.BaseVideoView;
 
 import java.io.IOException;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import butterknife.BindView;
 import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -58,6 +60,8 @@ public class SubFilmActivity extends AppCompatActivity {
     boolean bNativeSeekFinish = true;
     private String playUrl = null;
 
+    @BindView(R.id.centerPlay)
+    ImageButton centerPlay;
     @BindViews({R.id.about_btn, R.id.langugue_btn})
     List<Button> buttonList;
     @Override
@@ -96,6 +100,13 @@ public class SubFilmActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    @OnClick(R.id.centerPlay)
+    void play(View view) {
+        videoView.resume();
+        playCtrView.setSelected(false);
+        centerPlay.setVisibility(View.GONE);
+    }
+
     void init() {
         videoView = findViewById(R.id.one);
         playCtrView = findViewById(R.id.player_controller_image_view_play_state);
@@ -103,15 +114,24 @@ public class SubFilmActivity extends AppCompatActivity {
         curTimeTextView = findViewById(R.id.player_controller_text_view_curr_time);
         durationTextView = findViewById(R.id.player_controller_text_view_total_time);
 
+        videoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                videoView.pause();
+                centerPlay.setVisibility(View.VISIBLE);
+            }
+        });
         playCtrView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (videoView.getState() == STATE_PAUSED) {
                     videoView.resume();
                     playCtrView.setSelected(false);
+                    centerPlay.setVisibility(View.GONE);
                 } else if (videoView.getState() == STATE_STARTED) {
                     videoView.pause();
                     playCtrView.setSelected(true);
+                    centerPlay.setVisibility(View.VISIBLE);
                 } else if (videoView.getState() == STATE_PLAYBACK_COMPLETE) {
                     videoView.start();
                     playCtrView.setSelected(false);
@@ -250,13 +270,8 @@ public class SubFilmActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         videoView.pause();
+        centerPlay.setVisibility(View.VISIBLE);
         super.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        videoView.resume();
-        super.onResume();
     }
 
     private ArrayList<SubtitlesModel> subtitleLstCN;

@@ -16,15 +16,14 @@
         android:text="文本介绍"
         android:textColor="@color/white"
         android:textSize="18sp"/>
-    <Button
-        android:layout_width="@dimen/close_btn_size"
-        android:layout_height="@dimen/close_btn_size"
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:id="@+id/close_btn"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_marginRight="125dp"
-        android:layout_marginTop="30dp"
-        android:background="@mipmap/icon_close"/>
+        android:src="@mipmap/close_pay"
+        android:background="@color/translucent"/>
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"

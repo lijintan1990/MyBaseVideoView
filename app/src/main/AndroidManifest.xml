@@ -27,8 +27,7 @@
             android:name=".view.maskActivity"
             android:theme="@style/translucent" />
         <activity
-            android:name=".view.DownloadActivity"
-            android:theme="@style/translucent" />
+            android:name=".view.DownloadActivity"/>
         <activity
             android:name=".view.Transact2Activity"
             android:theme="@style/translucent" />

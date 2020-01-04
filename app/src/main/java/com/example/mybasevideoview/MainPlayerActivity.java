@@ -132,8 +132,7 @@ public class MainPlayerActivity extends Activity {
         }
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        Intent intent = getIntent();
-        curLangugue = intent.getIntExtra(getResources().getString(R.string.langugue), SubtitleView.LANGUAGE_TYPE_CHINA);
+        curLangugue = MainActivity.curLangugue;
         //这个一定要在createPlayCtrl之前调用，不然重复进入主面板之后就会内存泄漏或者崩溃，
         // 因为设置的videolist为空，_stop实际上无法调用videoView的stop函数
         init();
@@ -459,6 +458,7 @@ public class MainPlayerActivity extends Activity {
                 maskViews.get(index).setBackgroundColor(getResources().getColor(R.color.mask_view_play));
                 playersController.updateCenterPlayerInfo(i, time);
                 resumeBtn.setVisibility(View.GONE);
+                Log.d(TAG, "resumeBtn setVisibility(View.GONE);");
                 //隐藏章节标题信息
                 chapterTextViewList.get(2).setText("");
                 chapterTextViewList.get(3).setText("");
@@ -534,8 +534,8 @@ public class MainPlayerActivity extends Activity {
             public void onWordStateChange(int action, boolean enable, int objId) {
                 setBtnState(enable, 2);
                 mWordId = objId;
+                Log.i(TAG, "Word id:" + mWordId);
             }
-
         });
 
         playersController.setMaskViewListener(new OnMaskViewListener() {
@@ -1182,7 +1182,6 @@ public class MainPlayerActivity extends Activity {
             Log.d(TAG, "id list elem " + m);
         }
 
-        resumeBtn.setVisibility(View.GONE);
         for (int i=0; i!=12; i++) {
             boolean isIdFounded = false;
             for (Integer id : idLst) {

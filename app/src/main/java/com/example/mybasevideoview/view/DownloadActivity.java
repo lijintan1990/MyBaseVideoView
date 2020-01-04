@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.arialyy.annotations.Download;
 import com.arialyy.annotations.DownloadGroup;
@@ -21,13 +22,16 @@ import com.arialyy.aria.core.task.DownloadTask;
 import com.arialyy.aria.core.wrapper.ITaskWrapper;
 import com.arialyy.aria.util.ALog;
 import com.arialyy.aria.util.CommonUtil;
+import com.arialyy.aria.util.FileUtil;
 import com.example.mybasevideoview.R;
 import com.example.mybasevideoview.model.FileDownloadMsg;
 import com.example.mybasevideoview.model.RequestCode;
 import com.example.mybasevideoview.model.SharedPreferenceUtil;
 import com.example.mybasevideoview.utils.XslUtils;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -52,7 +56,12 @@ public class DownloadActivity extends Activity {
 
     @BindView(R.id.download_btn)
     Button downloadBtn;
-
+    @BindView(R.id.speed)
+    TextView speedView;
+    @BindView(R.id.relay_time)
+    TextView relayTimeView;
+    @BindView(R.id.load_size)
+    TextView sizeView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +72,7 @@ public class DownloadActivity extends Activity {
         ButterKnife.bind(this);
     }
 
+    long taskId = 0;
     void startDownload() {
         Aria.download(this).register();
         setTitle("下载列表");
@@ -84,7 +94,7 @@ public class DownloadActivity extends Activity {
                     " names:"+downloadMsg.getNames() + " path:" + downloadMsg.getDownloadPath()
                     + " aliasName:" + downloadMsg.getAliasName());
 
-            long taskId = Aria.download(getContext())
+            taskId = Aria.download(getContext())
                     .loadGroup(downloadMsg.getUrls())
                     .setSubFileName(downloadMsg.getNames())
                     .setDirPath(downloadMsg.getDownloadPath())
@@ -106,6 +116,26 @@ public class DownloadActivity extends Activity {
                     resume(mData.get(i));
                 }
             }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (taskId != 0) {
+            Aria.download(this)
+                    .load(taskId)     //读取任务id
+                    .resume();    // 恢复任务
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (taskId != 0) {
+            Aria.download(this)
+                    .load(taskId)     //读取任务id
+                    .stop();    // 恢复任务
         }
     }
 
@@ -178,6 +208,16 @@ public class DownloadActivity extends Activity {
                 + "current_p = "
                 + task.getCurrentProgress());
         bar.setProgress(task.getPercent());
+        String formatSpeed = formatFileSize(task.getSpeed());
+        speedView.setText(formatSpeed);
+        long speed = task.getSpeed();
+        if (speed != 0) {
+            int relayTime = (int) ((task.getFileSize() - task.getCurrentProgress()) / speed);
+            String strRelayTime = "剩余时间:";
+            relayTimeView.setText(strRelayTime + relayTime);
+        }
+
+        sizeView.setText("" + (int) (task.getCurrentProgress()>>20) + "MB");
 //        getBinding().setProgress(task.getPercent());
 //        getBinding().setSpeed(task.getConvertSpeed());
 //        //Log.d(TAG, "sub_len = " + task.getEntity().getSubEntities().size());
@@ -218,10 +258,13 @@ public class DownloadActivity extends Activity {
         finish();
     }
 
+    @BindView(R.id.tips)
+    TextView textView;
     @OnClick(R.id.download_btn)
     void beginDownLoad(View view) {
         startDownload();
         downloadBtn.setVisibility(View.GONE);
+        textView.setText("正在缓存");
         bar.setVisibility(View.VISIBLE);
         bar.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -234,8 +277,46 @@ public class DownloadActivity extends Activity {
         bar.setMax(100);
     }
 
+    /**
+     * 格式化文件大小
+     *
+     * @param size file.length() 获取文件大小
+     */
+    public static String formatFileSize(double size) {
+        if (size < 0) {
+            return "0kb";
+        }
+        double kiloByte = size / 1024;
+        if (kiloByte < 1) {
+            return size + "b";
+        }
+
+        double megaByte = kiloByte / 1024;
+        if (megaByte < 1) {
+            BigDecimal result1 = new BigDecimal(Double.toString(kiloByte));
+            return result1.setScale(1, BigDecimal.ROUND_HALF_UP).toPlainString() + "KB";
+        }
+
+        double gigaByte = megaByte / 1024;
+        if (gigaByte < 1) {
+            BigDecimal result2 = new BigDecimal(Double.toString(megaByte));
+            return result2.setScale(1, BigDecimal.ROUND_HALF_UP).toPlainString() + "MB";
+        }
+
+        double teraBytes = gigaByte / 1024;
+        if (teraBytes < 1) {
+            BigDecimal result3 = new BigDecimal(Double.toString(gigaByte));
+            return result3.setScale(1, BigDecimal.ROUND_HALF_UP).toPlainString() + "GB";
+        }
+        BigDecimal result4 = new BigDecimal(teraBytes);
+        return result4.setScale(1, BigDecimal.ROUND_HALF_UP).toPlainString() + "TB";
+    }
+
     @OnClick(R.id.back_btn)
     void back() {
+        Intent intent = new Intent();
+        intent.putExtra(getResources().getString(R.string.download_result), -1);
+        setResult(RESULT_OK, intent);
         finish();
     }
 

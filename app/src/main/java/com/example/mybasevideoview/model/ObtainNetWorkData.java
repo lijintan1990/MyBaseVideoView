@@ -81,14 +81,14 @@ public class ObtainNetWorkData {
         call.enqueue(callback);
     }
 
-    public static void getWordListData(Callback<WordMsgs> callback, int index) {
+    public static void getWordListData(Callback<WordMsgs> callback, int index, int langugueType) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://www.hongmingyuan.net")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         NetDataInterface api = retrofit.create(NetDataInterface.class);
-        Call<WordMsgs> call = api.getWordMsgs(index);
+        Call<WordMsgs> call = api.getWordMsgs(index, langugueType);
         call.enqueue(callback);
     }
 

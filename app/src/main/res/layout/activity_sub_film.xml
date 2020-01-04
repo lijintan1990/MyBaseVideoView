@@ -8,13 +8,29 @@
     android:background="@color/black"
     tools:context=".SubFilmActivity">
 
-    <Button
-        android:id="@+id/back_btn"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginHorizontal="20dp"
-        android:background="@mipmap/back"/>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+        <Button
+            android:id="@+id/back_btn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginHorizontal="20dp"
+            android:background="@mipmap/back"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:text="乡射礼简介"
+            android:layout_centerInParent="true"
+            android:ems="1"/>
+
+    </RelativeLayout>
+
 
     <LinearLayout
         android:layout_width="0dp"
@@ -38,6 +54,14 @@
                     android:layout_alignParentBottom="true"
                     android:layout_marginBottom="6dp"/>
             </RelativeLayout>
+            <ImageButton
+                android:id="@+id/centerPlay"
+                android:visibility="gone"
+                android:background="@null"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/play"
+                android:layout_gravity="center"/>
         </com.kk.taurus.playerbase.widget.BaseVideoView>
         <include layout="@layout/layout_progress"></include>
     </LinearLayout>
@@ -46,6 +70,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:visibility="gone"
         android:layout_marginRight="30dp">
         <Button
             android:layout_width="30dp"

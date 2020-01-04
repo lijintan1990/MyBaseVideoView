@@ -581,6 +581,13 @@
             android:id="@+id/langugue_btn"
             android:background="@drawable/xsl_langugue"/-->
         <Button
+            android:id="@+id/chapter_btn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginVertical="10dp"
+            android:background="@drawable/xsl_chapter"
+            android:text="01" />
+        <Button
             android:id="@+id/appliances_btn"
             android:layout_width="match_parent"
             android:layout_height="30dp"
@@ -598,13 +605,7 @@
             android:id="@+id/word_btn"
             android:layout_marginVertical="10dp"
             android:background="@drawable/xsl_word"/>
-        <!--Button
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:id="@+id/chapter_btn"
-            android:layout_marginVertical="10dp"
-            android:text="01"
-            android:background="@drawable/xsl_chapter"/-->
+
 
     </LinearLayout>
 </LinearLayout>

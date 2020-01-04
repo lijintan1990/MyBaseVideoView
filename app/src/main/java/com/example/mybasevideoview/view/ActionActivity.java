@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import com.example.mybasevideoview.R;
 import com.example.mybasevideoview.model.HomePageInfo;
 import com.example.mybasevideoview.model.RequestCode;
+import com.example.mybasevideoview.model.VideoListInfo;
 import com.example.mybasevideoview.utils.XslUtils;
 import com.kk.taurus.playerbase.entity.DataSource;
 import com.kk.taurus.playerbase.event.EventKey;
@@ -20,6 +22,10 @@ import com.kk.taurus.playerbase.event.OnPlayerEventListener;
 import com.kk.taurus.playerbase.widget.BaseVideoView;
 
 import java.lang.ref.WeakReference;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 import static com.kk.taurus.playerbase.player.IPlayer.STATE_PAUSED;
 import static com.kk.taurus.playerbase.player.IPlayer.STATE_PLAYBACK_COMPLETE;
@@ -45,7 +51,7 @@ public class ActionActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_action);
-
+        ButterKnife.bind(this);
         XslUtils.hideStausbar(new WeakReference<>(this), true);
         Intent intent = getIntent();
         playUrl = (String) intent.getSerializableExtra(String.valueOf(R.string.action_url));
@@ -63,6 +69,32 @@ public class ActionActivity extends Activity {
                 finish();
             }
         });
+
+        videoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                videoView.pause();
+                playButton.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    @BindView(R.id.centerPlay)
+    ImageButton playButton;
+
+    @OnClick(R.id.centerPlay)
+    void clickCenterPlay(View view) {
+        if (videoView.getState() == STATE_PAUSED) {
+            videoView.resume();
+            playButton.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        videoView.pause();
+        playButton.setVisibility(View.VISIBLE);
+        super.onStop();
     }
 
     @Override

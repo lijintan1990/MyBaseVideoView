@@ -19,7 +19,7 @@ public interface NetDataInterface {
     Call<ChapterListInfo> getChapterList();
 
     @GET("api/home/getTextItemList")
-    Call<WordMsgs> getWordMsgs(@Query("textId") int textId);
+    Call<WordMsgs> getWordMsgs(@Query("textId") int textId, @Query("type") int type);
 
     @GET("api/home/timeline")
     Call<TimeLineInfo> getTimelineInfo();
