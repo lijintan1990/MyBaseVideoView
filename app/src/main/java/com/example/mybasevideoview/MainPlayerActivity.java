@@ -84,7 +84,7 @@ public class MainPlayerActivity extends Activity {
     @BindViews({R.id.p1, R.id.p2, R.id.p3, R.id.p4, R.id.p5, R.id.p6, R.id.p7, R.id.p8, R.id.p9, R.id.p10, R.id.p11, R.id.p12, R.id.p13})
     List<BaseVideoView> videoViewArrayList;
 
-    @BindViews({R.id.appliances_btn, R.id.action_btn, R.id.word_btn, R.id.back_btn})
+    @BindViews({R.id.chapter_btn, R.id.appliances_btn, R.id.action_btn, R.id.word_btn, R.id.back_btn})
     List<Button> buttonList;
     @BindViews({R.id.main_controller_text_view_curr_time, R.id.main_controller_text_view_total_time})
     List<TextView> textViews;
@@ -160,16 +160,16 @@ public class MainPlayerActivity extends Activity {
         resumeBtn.setVisibility(View.GONE);
     }
 
-    @OnClick({R.id.appliances_btn, R.id.action_btn, R.id.word_btn, R.id.back_btn})
+    @OnClick({R.id.chapter_btn, R.id.appliances_btn, R.id.action_btn, R.id.word_btn, R.id.back_btn})
     void buttonClick(View view) {
         switch (view.getId()) {
             case R.id.action_btn:
                 break;
             case R.id.appliances_btn:
-                if (buttonList.get(0).isSelected()) {
-                    buttonList.get(0).setSelected(false);
+                if (buttonList.get(1).isSelected()) {
+                    buttonList.get(1).setSelected(false);
                 } else {
-                    buttonList.get(0).setSelected(true);
+                    buttonList.get(1).setSelected(true);
                 }
 
                 playersController.pause_();
@@ -177,14 +177,36 @@ public class MainPlayerActivity extends Activity {
                 createActivity(AppliancesActivity.class, RequestCode.Appliance_req, mApplienceUrl);
                 break;
             case R.id.word_btn:
-                if (buttonList.get(2).isSelected()) {
-                    buttonList.get(2).setSelected(false);
+                if (buttonList.get(3).isSelected()) {
+                    buttonList.get(3).setSelected(false);
                 } else {
-                    buttonList.get(2).setSelected(true);
+                    buttonList.get(3).setSelected(true);
                 }
                 playersController.pause_();
                 resumeBtn.setVisibility(View.VISIBLE);
                 createActivity(WordActivity.class, RequestCode.Word_req, mWordId);
+                break;
+            case R.id.chapter_btn:
+                if (buttonList.get(0).isSelected()) {
+                    buttonList.get(0).setSelected(false);
+                } else {
+                    buttonList.get(0).setSelected(true);
+                }
+
+                List<ChapterListInfo.DataBean> data  = NetworkReq.getInstance().getChapterListInfo().getData();
+                int size = data.size();
+                int chapterInRecycleIndex = curChapter - 1;
+                if (chapterInRecycleIndex < (size+1) / 2) {
+                    chapterInRecycleIndex = chapterInRecycleIndex * 2;
+                } else {
+                    //计算右边的
+                    chapterInRecycleIndex = (chapterInRecycleIndex - (size + 1) / 2) * 2 + 1;
+                }
+
+//                playersController.pause_();
+//                videoViewArrayList.get(12).pause();
+                Log.d(TAG, "curChapter:"+curChapter + " index:"+chapterInRecycleIndex);
+                createActivity(ChapterActivity.class, RequestCode.Chapter_req, chapterInRecycleIndex);
                 break;
             case R.id.back_btn:
                 if (playersController != null)
