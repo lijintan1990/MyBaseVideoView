@@ -521,9 +521,9 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                         videoTimeLinePlaying.add(dataBean.getObjId() - 1);
                     }
                 }
-//                else if (type == DataType.XSL_CHAPTER) {
-//                    chapterProc(dataBean);
-//                }
+                else if (type == DataType.XSL_CHAPTER) {
+                    chapterProc(dataBean);
+                }
                 else if (type == DataType.XSL_APPLIANCES) {
                     applienceProc(dataBean, true);
                     enableApplience = true;
