@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     tools:context="com.example.mybasevideoview.view.DownloadActivity">
     <Button
         android:layout_width="28dp"
@@ -74,11 +75,13 @@
     <Button
         android:id="@+id/download_btn"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
+        android:paddingHorizontal="30dp"
         android:background="@drawable/entry_play_btn"
         android:layout_below="@id/big_shadow"
         android:layout_marginTop="37dp"
         android:layout_centerHorizontal="true"
+        android:textSize="15sp"
         android:text="开始缓存"
         android:textColor="#FE7000"/>
     <RelativeLayout

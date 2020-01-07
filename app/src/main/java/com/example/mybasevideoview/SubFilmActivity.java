@@ -102,9 +102,18 @@ public class SubFilmActivity extends AppCompatActivity {
 
     @OnClick(R.id.centerPlay)
     void play(View view) {
-        videoView.resume();
-        playCtrView.setSelected(false);
-        centerPlay.setVisibility(View.GONE);
+        if (videoView.getState() == STATE_PAUSED) {
+            videoView.resume();
+            playCtrView.setSelected(false);
+            centerPlay.setVisibility(View.GONE);
+        } else if (videoView.getState() == STATE_STARTED) {
+            videoView.pause();
+            playCtrView.setSelected(true);
+            centerPlay.setVisibility(View.VISIBLE);
+        } else if (videoView.getState() == STATE_PLAYBACK_COMPLETE) {
+            videoView.start();
+            playCtrView.setSelected(false);
+        }
     }
 
     void init() {

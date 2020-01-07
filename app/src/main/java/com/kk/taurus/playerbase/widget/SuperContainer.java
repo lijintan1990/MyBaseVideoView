@@ -172,18 +172,18 @@ public class SuperContainer extends FrameLayout implements OnTouchGestureListene
 
     private DelegateReceiverEventSender mDelegateReceiverEventSender =
             new DelegateReceiverEventSender() {
-        @Override
-        public void sendEvent(int eventCode, Bundle bundle,
-                              IReceiverGroup.OnReceiverFilter receiverFilter) {
-            if(mEventDispatcher!=null)
-                mEventDispatcher.dispatchProducerEvent(eventCode, bundle, receiverFilter);
-        }
-        @Override
-        public void sendObject(String key, Object value, IReceiverGroup.OnReceiverFilter receiverFilter) {
-            if(mEventDispatcher!=null)
-                mEventDispatcher.dispatchProducerData(key, value, receiverFilter);
-        }
-    };
+                @Override
+                public void sendEvent(int eventCode, Bundle bundle,
+                                      IReceiverGroup.OnReceiverFilter receiverFilter) {
+                    if(mEventDispatcher!=null)
+                        mEventDispatcher.dispatchProducerEvent(eventCode, bundle, receiverFilter);
+                }
+                @Override
+                public void sendObject(String key, Object value, IReceiverGroup.OnReceiverFilter receiverFilter) {
+                    if(mEventDispatcher!=null)
+                        mEventDispatcher.dispatchProducerData(key, value, receiverFilter);
+                }
+            };
 
     public final void setReceiverGroup(IReceiverGroup receiverGroup){
         if(receiverGroup==null
@@ -220,15 +220,15 @@ public class SuperContainer extends FrameLayout implements OnTouchGestureListene
     //detach a receiver when user remove it.
     private IReceiverGroup.OnReceiverGroupChangeListener mInternalReceiverGroupChangeListener =
             new IReceiverGroup.OnReceiverGroupChangeListener() {
-        @Override
-        public void onReceiverAdd(String key, IReceiver receiver) {
-            attachReceiver(receiver);
-        }
-        @Override
-        public void onReceiverRemove(String key, IReceiver receiver) {
-            detachReceiver(receiver);
-        }
-    };
+                @Override
+                public void onReceiverAdd(String key, IReceiver receiver) {
+                    attachReceiver(receiver);
+                }
+                @Override
+                public void onReceiverRemove(String key, IReceiver receiver) {
+                    detachReceiver(receiver);
+                }
+            };
 
     //attach receiver, bind receiver event listener
     // and add cover container if it is a cover instance.
@@ -261,14 +261,14 @@ public class SuperContainer extends FrameLayout implements OnTouchGestureListene
     //receiver event listener, a bridge for some receivers communication.
     private OnReceiverEventListener mInternalReceiverEventListener =
             new OnReceiverEventListener() {
-        @Override
-        public void onReceiverEvent(int eventCode, Bundle bundle) {
-            if(mOnReceiverEventListener!=null)
-                mOnReceiverEventListener.onReceiverEvent(eventCode, bundle);
-            if(mEventDispatcher !=null)
-                mEventDispatcher.dispatchReceiverEvent(eventCode, bundle);
-        }
-    };
+                @Override
+                public void onReceiverEvent(int eventCode, Bundle bundle) {
+                    if(mOnReceiverEventListener!=null)
+                        mOnReceiverEventListener.onReceiverEvent(eventCode, bundle);
+                    if(mEventDispatcher !=null)
+                        mEventDispatcher.dispatchReceiverEvent(eventCode, bundle);
+                }
+            };
 
     public void destroy(){
         //clear ReceiverGroupChangeListener

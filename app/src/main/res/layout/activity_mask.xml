@@ -4,10 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/mask"
-    android:id="@+id/mask_view"
     tools:context="com.example.mybasevideoview.view.maskActivity">
 
+    <ImageView
+        android:src="@mipmap/mask"
+        android:scaleType="centerCrop"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/imageView"/>
     <Button
         android:layout_width="100dp"
         android:layout_height="50dp"

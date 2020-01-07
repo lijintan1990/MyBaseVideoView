@@ -10,5 +10,6 @@ public interface OnBtnStateListener {
     //主面板右侧按钮状态更改
     void onStateChange(int action, boolean enable, String url);
     void onWordStateChange(int action, boolean enable, int objId);
-   // void onChapterBtnTextUpdate(String text, String content);
+    void onChapterBtnTextUpdate(int chpaterStartTime, String text, String chapterName);
+    void onApplience(int action, boolean enable, String url, String name);
 }

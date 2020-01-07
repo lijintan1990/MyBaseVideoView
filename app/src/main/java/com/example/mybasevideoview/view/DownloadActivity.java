@@ -322,6 +322,7 @@ public class DownloadActivity extends Activity {
 
     @DownloadGroup.onTaskComplete() void taskComplete(DownloadGroupTask task) {
         Log.d(TAG, "任务组下载完成");
+        textView.setText("缓存成功");
         entryBtn.setVisibility(View.VISIBLE);
         bar.setVisibility(View.GONE);
 

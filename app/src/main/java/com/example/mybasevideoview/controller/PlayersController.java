@@ -215,7 +215,6 @@ public class PlayersController extends Thread implements IPlayerCtrl{
     @Override
     public void seekTo_(int msc) {
         synchronized (lockObj) {
-            msc = msc + 1000;
             if (videoViewList.get() != null) {
                 List<BaseVideoView> lst = videoViewList.get();
                 Log.d(TAG, "mySeek to:" + msc);
@@ -260,7 +259,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                     }
                 };
                 Timer timer = new Timer();
-                timer.schedule(task, 1000);//2秒后执行TimeTask的run方法
+                timer.schedule(task, 1500);//2秒后执行TimeTask的run方法
                 //老的播放已经结束
                 bSeeking = false;
                 Log.d(TAG,  "set bSeeking false");
@@ -425,17 +424,26 @@ public class PlayersController extends Thread implements IPlayerCtrl{
             return;
 
         if (dataBean == null || !enable) {
-            btnStateListener.onStateChange(OnBtnStateListener.XSL_APPLIANCE_BTN_STATE, false, null);
+            btnStateListener.onApplience(OnBtnStateListener.XSL_APPLIANCE_BTN_STATE, false, null, null);
             return;
         }
 
         if (dataBean.getVideo().getVideoUrl360() != null && !dataBean.getVideo().getVideoUrl360().isEmpty())
-            btnStateListener.onStateChange(OnBtnStateListener.XSL_APPLIANCE_BTN_STATE , enable, dataBean.getVideo().getVideoUrl360());
+            btnStateListener.onApplience(OnBtnStateListener.XSL_APPLIANCE_BTN_STATE , enable, dataBean.getVideo().getVideoUrl360(), dataBean.getVideo().getName());
         else if (dataBean.getVideo().getVideoUrl720() != null && !dataBean.getVideo().getVideoUrl720().isEmpty()) {
-            btnStateListener.onStateChange(OnBtnStateListener.XSL_APPLIANCE_BTN_STATE, enable, dataBean.getVideo().getVideoUrl720());
+            btnStateListener.onApplience(OnBtnStateListener.XSL_APPLIANCE_BTN_STATE, enable, dataBean.getVideo().getVideoUrl720(), dataBean.getVideo().getName());
         } else if (dataBean.getVideo().getVideoUrl1080() != null && !dataBean.getVideo().getVideoUrl1080().isEmpty()) {
-            btnStateListener.onStateChange(OnBtnStateListener.XSL_APPLIANCE_BTN_STATE, enable, dataBean.getVideo().getVideoUrl1080());
+            btnStateListener.onApplience(OnBtnStateListener.XSL_APPLIANCE_BTN_STATE, enable, dataBean.getVideo().getVideoUrl1080(), dataBean.getVideo().getName());
         }
+    }
+
+    private void chapterProc(TimeLineInfo.DataBean dataBean) {
+        if (btnStateListener == null || dataBean == null)
+            return;
+
+        btnStateListener.onChapterBtnTextUpdate(dataBean.getStartTime(),
+                dataBean.getChapter().getCode(),
+                dataBean.getChapter().getName());
     }
 
     private void actionProc(TimeLineInfo.DataBean dataBean, boolean enable) {
@@ -518,13 +526,12 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                     //关联视频以及中间视频播放处理
                     if (!bSeeking) {
                         videoProc(dataBean);
+                        //Log.d(TAG, "currentPlayTime:" + currentPlayTime + " startTime:" + dataBean.getStartTime() + " duration:" + dataBean.getDuration() + " id:" + dataBean.getObjId());
                         videoTimeLinePlaying.add(dataBean.getObjId() - 1);
                     }
-                }
-                else if (type == DataType.XSL_CHAPTER) {
+                } else if (type == DataType.XSL_CHAPTER) {
                     chapterProc(dataBean);
-                }
-                else if (type == DataType.XSL_APPLIANCES) {
+                } else if (type == DataType.XSL_APPLIANCES) {
                     applienceProc(dataBean, true);
                     enableApplience = true;
                 } else if (type == DataType.XSL_WORD) {
@@ -540,11 +547,11 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                 break;
         }
 
-        if (timesCount++ % 20 == 0) {
+
             if (!bSeeking) {
                 maskViewListener.setMaskViewStatus(OnMaskViewListener.ACTION_PLAY_MASK, videoTimeLinePlaying);
             }
-        }
+
 
         if (!enableAction) {
             actionProc(null, false);
@@ -616,7 +623,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                                 lst.get(i).resume();
                             }
                         }
-                    } else if (centerVideoViewIndex == -1) {
+                    } else {
                         currentPlayTime = lst.get(0).getCurrentPosition();
                         //Log.d(TAG, "小视频 play currentPlayTime: " + currentPlayTime + "use view index playTime:"+ lst.get(centerVideoViewIndex).getCurrentPosition());
                         //通知更新进度条

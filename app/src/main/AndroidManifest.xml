@@ -27,7 +27,8 @@
             android:name=".view.maskActivity"
             android:theme="@style/translucent" />
         <activity
-            android:name=".view.DownloadActivity"/>
+            android:name=".view.DownloadActivity"
+            android:screenOrientation="landscape"/>
         <activity
             android:name=".view.Transact2Activity"
             android:theme="@style/translucent" />

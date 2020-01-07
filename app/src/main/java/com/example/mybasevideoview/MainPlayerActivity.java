@@ -34,6 +34,7 @@ import com.example.mybasevideoview.controller.PlayersController;
 import com.example.mybasevideoview.model.ChapterListInfo;
 import com.example.mybasevideoview.model.ObtainNetWorkData;
 import com.example.mybasevideoview.model.RequestCode;
+import com.example.mybasevideoview.model.SharedPreferenceUtil;
 import com.example.mybasevideoview.model.SubtitlesDataCoding;
 import com.example.mybasevideoview.model.SubtitlesModel;
 import com.example.mybasevideoview.model.TimeLineInfo;
@@ -78,7 +79,7 @@ public class MainPlayerActivity extends Activity {
     PlayersController playersController = null;
     PlayControlHandler playControlHandler = null;
 
-    static boolean mNeedStartTransactAty = true;
+    static boolean hadShowPager = false;
     public static final String RELATE_INFO = "RELATE_IHFO";
 
     @BindViews({R.id.p1, R.id.p2, R.id.p3, R.id.p4, R.id.p5, R.id.p6, R.id.p7, R.id.p8, R.id.p9, R.id.p10, R.id.p11, R.id.p12, R.id.p13})
@@ -106,8 +107,9 @@ public class MainPlayerActivity extends Activity {
     List<View> maskViews;
     private MySeekBar mySeekBar;
 
-    // 名物視頻的地址
+    // 名物視頻的地址和名称
     String mApplienceUrl = null;
+    String applienceName = null;
     // 動作視頻的地址
     String mActionUrl = null;
 
@@ -115,7 +117,7 @@ public class MainPlayerActivity extends Activity {
     int mWordId = -1;
 
     //当前播放的章节
-    int curChapter = 0;
+    int curChapter = 1;
     //中间窗口的字幕
     SubtitleView normalSubtitleView;
 
@@ -137,11 +139,11 @@ public class MainPlayerActivity extends Activity {
         // 因为设置的videolist为空，_stop实际上无法调用videoView的stop函数
         init();
         //buttonList.get(2).getBackground().setAlpha(50);
-        if (mNeedStartTransactAty) {
+        hadShowPager = SharedPreferenceUtil.getInstance(getApplicationContext()).getBoolean(getResources().getString(R.string.had_show_boot_paper));
+        if (!hadShowPager) {
             Log.d(TAG, "start transactActivity");
             //createActivity(TransactActivity.class, RequestCode.Transact1_req);
             createActivity(maskActivity.class, RequestCode.Mask_req);
-            mNeedStartTransactAty = false;
         } else {
             createPlayCtrl();
         }
@@ -172,9 +174,9 @@ public class MainPlayerActivity extends Activity {
                     buttonList.get(1).setSelected(true);
                 }
 
-                playersController.pause_();
-                resumeBtn.setVisibility(View.VISIBLE);
-                createActivity(AppliancesActivity.class, RequestCode.Appliance_req, mApplienceUrl);
+//                playersController.pause_();
+//                resumeBtn.setVisibility(View.VISIBLE);
+                createActivity(AppliancesActivity.class, RequestCode.Appliance_req, mApplienceUrl, applienceName);
                 break;
             case R.id.word_btn:
                 if (buttonList.get(3).isSelected()) {
@@ -182,8 +184,8 @@ public class MainPlayerActivity extends Activity {
                 } else {
                     buttonList.get(3).setSelected(true);
                 }
-                playersController.pause_();
-                resumeBtn.setVisibility(View.VISIBLE);
+//                playersController.pause_();
+//                resumeBtn.setVisibility(View.VISIBLE);
                 createActivity(WordActivity.class, RequestCode.Word_req, mWordId);
                 break;
             case R.id.chapter_btn:
@@ -240,21 +242,30 @@ public class MainPlayerActivity extends Activity {
         mySeekBar.setSeekChapterListener(new MySeekBar.SeekChapterListener() {
             @Override
             public void seekToChapter(int time, String chapterId, String chapterTitle) {
-                bNativeSeekFinish = false;
-                videoViewArrayList.get(12).stop();
-                setCenterPlayerBlack(true);
-                setLastCenterPlayerMaskTransact();
-                playersController.seekChapter(time * 1000);
-                curChapter = Integer.parseInt(chapterId);
-                updateChapterTxt(curChapter, chapterTitle);
-
-                if (playersController.getDuration() > 0) {
-                    int progress = time * 1000 / (playersController.getDuration() / 1000);
-                    Log.d(TAG, "time: " + time + " seek to progress: " + progress + " duration:" + playersController.getDuration());
-                    mySeekBar.setProgress(progress);
-                }
+                seekChapter(time, chapterId, chapterTitle);
             }
         });
+    }
+
+    private void seekChapter(int time, String chapterId, String chapterTitle) {
+        //bNativeSeekFinish = false;
+        videoViewArrayList.get(12).stop();
+        setCenterPlayerBlack(true);
+        setLastCenterPlayerMaskTransact();
+        time = time * 1000 + 500;
+        Log.d(TAG, "stop center player, seekChapter time" + time + "code:" + chapterId + " name:" + chapterTitle);
+
+        playersController.seekChapter(time);
+        curChapter = Integer.parseInt(chapterId);
+        updateChapterTxt(curChapter, chapterTitle);
+        resumeBtn.setVisibility(View.GONE);
+        showArroy(-1);
+
+        if (playersController.getDuration() > 0) {
+            int progress = time / (playersController.getDuration() / 1000);
+            Log.d(TAG, "time: " + time + " seek to progress: " + progress + " duration:" + playersController.getDuration());
+            mySeekBar.setProgress(progress);
+        }
     }
 
     public static ArrayList<String> smallVideoUrls = null;
@@ -350,6 +361,7 @@ public class MainPlayerActivity extends Activity {
         for (int i=0; i!=12; i++) {
             if (i == id) {
                 maskArroy.get(i).setVisibility(View.VISIBLE);
+                Log.w(TAG, "show arroy index:" + i);
             } else {
                 maskArroy.get(i).setVisibility(View.INVISIBLE);
             }
@@ -539,13 +551,12 @@ public class MainPlayerActivity extends Activity {
                     @Override
                     public void run() {
                         switch (action) {
-                            case OnBtnStateListener.XSL_APPLIANCE_BTN_STATE:
-                                setBtnState(enable, 0);
-                                mApplienceUrl = url;
-                                break;
                             case OnBtnStateListener.XSL_ACTION_BTN_STATE:
-                                setBtnState(enable, 1);
+                                setBtnState(enable, 2);
                                 mActionUrl = url;
+                                break;
+                            case OnBtnStateListener.XSL_CHAPTER_BTN_STATE:
+                                setBtnState(enable, 0);
                                 break;
                         }
                     }
@@ -554,9 +565,34 @@ public class MainPlayerActivity extends Activity {
 
             @Override
             public void onWordStateChange(int action, boolean enable, int objId) {
-                setBtnState(enable, 2);
+                setBtnState(enable, 3);
                 mWordId = objId;
                 Log.i(TAG, "Word id:" + mWordId);
+            }
+
+            @Override
+            public void onChapterBtnTextUpdate(int startTime, String text, String chapterName) {
+                int chapter = Integer.parseInt(text);
+                if (chapter == curChapter)
+                    return;
+
+                Log.w(TAG, "onChapterBtnTextUpdate startTime:" + startTime + " text:" + text + " name:" + chapterName);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.i(TAG, "update chapter startTime:" + startTime +" text:" + text);
+                        buttonList.get(0).setText(text);
+                        curChapter = chapter;
+                        seekChapter(startTime, text, chapterName);
+                    }
+                });
+            }
+
+            @Override
+            public void onApplience(int action, boolean enable, String url, String name) {
+                setBtnState(enable, 1);
+                mApplienceUrl = url;
+                applienceName = name;
             }
         });
 
@@ -636,6 +672,7 @@ public class MainPlayerActivity extends Activity {
         title += "章";
         chapterTextViewList.get(0).setText(title);
         chapterTextViewList.get(2).setText(title);
+        content.replace("-", " ");
         chapterTextViewList.get(1).setText(content);
         chapterTextViewList.get(3).setText(content);
         curChapter = chapter;
@@ -666,10 +703,12 @@ public class MainPlayerActivity extends Activity {
         startActivityForResult(intent, requestCode);
     }
 
-    private void createActivity(Class<?> cls, int requestCode, String url) {
+    private void createActivity(Class<?> cls, int requestCode, String url, String applienceName) {
         Intent intent = new Intent(MainPlayerActivity.this, cls);
         Bundle bundle = new Bundle();
         bundle.putSerializable(String.valueOf(R.string.applience_url), url);
+        bundle.putSerializable(String.valueOf(R.string.applience_name), applienceName);
+
         intent.putExtras(bundle);
         startActivityForResult(intent, requestCode);
     }
@@ -678,7 +717,7 @@ public class MainPlayerActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RequestCode.Mask_req) {
-            mNeedStartTransactAty = false;
+            hadShowPager = true;
             createPlayCtrl();
 //            Intent intent = new Intent(MainPlayerActivity.this, DownloadActivity.class);
 //            startActivityForResult(intent, RequestCode.Download_req);
@@ -699,16 +738,36 @@ public class MainPlayerActivity extends Activity {
             Log.d(TAG, "centerX:" + centerX + " centerY:" + centerY + " width:" + centerWidth);
             startActivityForResult(intent, RequestCode.Transact3_req);
         } if (requestCode == RequestCode.Transact3_req) {
-            mNeedStartTransactAty = false;
+            hadShowPager = true;
             createPlayCtrl();
         } else if (requestCode == RequestCode.Appliance_req) {
             buttonList.get(0).setSelected(false);
-            playersController.resume_();
-            videoViewArrayList.get(12).resume();
+//            playersController.resume_();
+//            videoViewArrayList.get(12).resume();
         } else if (requestCode == RequestCode.Word_req) {
-            buttonList.get(2).setSelected(false);
-            playersController.resume_();
-            videoViewArrayList.get(12).resume();
+            buttonList.get(3).setSelected(false);
+//            playersController.resume_();
+//            videoViewArrayList.get(12).resume();
+        } else if (requestCode == RequestCode.Chapter_req) {
+            Bundle bd = data.getExtras();
+            int chapterIndex = bd.getInt(ChapterActivity.chapter_key);
+            Log.d(TAG, "chapter_req return chapterIndex:" + chapterIndex);
+            if (chapterIndex < 0) {
+                buttonList.get(0).setSelected(false);
+                return;
+            }
+            ChapterListInfo.DataBean dataBean = NetworkReq.getInstance().getChapterListInfo().getData().get(chapterIndex - 1);
+
+            String text;
+            if (chapterIndex < 10) {
+                text = "0" + chapterIndex;
+            } else {
+                text = "" + chapterIndex;
+            }
+            buttonList.get(0).setText(text);
+            buttonList.get(0).setSelected(false);
+            bNativeSeekFinish = false;
+            seekChapter(dataBean.getStartTime(), dataBean.getCode(), dataBean.getName());
         }
     }
 
@@ -779,9 +838,9 @@ public class MainPlayerActivity extends Activity {
                         curPlayTime = startTime;
                         Log.i(TAG, "centerPlayer stoped. seekTo chapter " + curChapter + " chapterStartTime " + startTime);
                         setCenterPlayerBlack(false);
-                    } else if (curPlayTime > endTime) {
+                    } else if (curPlayTime >= endTime) {
                         curPlayTime = endTime - 1000;
-                        Log.i(TAG, "centerPlayer stoped. seekTo chapter " + curChapter + " endTime " + endTime + " - 1000");
+                        Log.i(TAG, "centerPlayer stoped. seekTo chapter " + curChapter + " endTime " + curPlayTime);
                         setCenterPlayerBlack(true);
                     }
                     playersController.seekTo_(curPlayTime);
@@ -800,7 +859,8 @@ public class MainPlayerActivity extends Activity {
             }
         }
 
-        int duration = playersController.getDuration();
+//        int duration = playersController.getDuration();
+        int duration = videoViewArrayList.get(0).getDuration();
         String strCurPlayTime = XslUtils.convertSecToTimeString(curPlayTime / 1000);
         String strDuration = XslUtils.convertSecToTimeString(duration / 1000);
         timeView.setText(strCurPlayTime + "/" + strDuration);
@@ -837,10 +897,10 @@ public class MainPlayerActivity extends Activity {
 //            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 //
 //        }
-        if (videoViewArrayList.get(12).getState() == IPlayer.STATE_PAUSED) {
-            playersController.resume_();
-            videoViewArrayList.get(12).resume();
-        }
+//        if (videoViewArrayList.get(12).getState() == IPlayer.STATE_PAUSED) {
+//            playersController.resume_();
+//            videoViewArrayList.get(12).resume();
+//        }
         super.onResume();
         Log.d(TAG, "xx onResume");
     }
@@ -854,14 +914,17 @@ public class MainPlayerActivity extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
+
         Log.d(TAG, "xx onStop");
     }
 
     @Override
     protected void onPause() {
-        if (videoViewArrayList.get(12).isPlaying()) {
-            playersController.pause_();
+
+        Log.d(TAG, "videoViewArrayList.get(12).getState(): " + videoViewArrayList.get(12).getState());
+        if (videoViewArrayList.get(0).getState() == IPlayer.STATE_STARTED) {
             resumeBtn.setVisibility(View.VISIBLE);
+            playersController.pause_();
         }
         super.onPause();
         Log.d(TAG, "xx onPause");
@@ -1188,7 +1251,7 @@ public class MainPlayerActivity extends Activity {
         } else if (state == 0) {
             if (dra.getColor() != getResources().getColor(R.color.mask_view_color)) {
                 Log.i(TAG, "set index:" + index + " black");
-                maskArroy.get(index).setVisibility(View.INVISIBLE);
+                //showArroy(index);
                 maskViews.get(index).setBackgroundColor(getResources().getColor(R.color.mask_view_color));
             }
         } else {
@@ -1200,9 +1263,9 @@ public class MainPlayerActivity extends Activity {
     }
 
     private void updateAllSmallPlayerMaskView(ArrayList<Integer> idLst) {
-        for (Integer m : idLst) {
-            Log.d(TAG, "id list elem " + m);
-        }
+//        for (Integer m : idLst) {
+//            Log.d(TAG, "id list elem " + m);
+//        }
 
         for (int i=0; i!=12; i++) {
             boolean isIdFounded = false;
@@ -1302,7 +1365,7 @@ public class MainPlayerActivity extends Activity {
                     break;
                 case OnPlayCtrlEventListener.PLAY_CHAPTER_CHANGE:
                     mainPlayerActivityWeakReference.get().setCenterPlayerBlack(true);
-                    mainPlayerActivityWeakReference.get().resumeBtn.setVisibility(View.VISIBLE);
+                    //mainPlayerActivityWeakReference.get().resumeBtn.setVisibility(View.VISIBLE);
                     break;
                 case OnPlayCtrlEventListener.STOP_CTRL:
                     videoViewLst.get().get(12).stop();

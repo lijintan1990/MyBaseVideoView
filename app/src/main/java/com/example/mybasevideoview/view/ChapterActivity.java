@@ -85,7 +85,7 @@ public class ChapterActivity extends Activity {
                 }
                 Log.d(TAG, "ret chapterIndex:" + selectedIndex);
                 Intent intent = new Intent();
-                intent.putExtra(chapter_key, selectedIndex);
+                intent.putExtra(chapter_key, -1);
                 setResult(RequestCode.Chapter_req, intent);
                 finish();
             }

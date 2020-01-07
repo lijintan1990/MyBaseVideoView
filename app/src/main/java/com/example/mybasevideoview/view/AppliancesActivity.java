@@ -48,6 +48,7 @@ public class AppliancesActivity extends Activity {
     // seek finish回调在设置成true，继续更新进度条
     boolean bNativeSeekFinish = true;
     private String playUrl = null;
+    private String name = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +59,8 @@ public class AppliancesActivity extends Activity {
         XslUtils.hideStausbar(new WeakReference<>(this), true);
         Intent intent = getIntent();
         playUrl = (String) intent.getSerializableExtra(String.valueOf(R.string.applience_url));
+        name = (String) intent.getSerializableExtra(String.valueOf(R.string.applience_name));
+        ((TextView)findViewById(R.id.name)).setText(name);
         if (playUrl != null) {
             init();
             videoPlay();

@@ -53,18 +53,18 @@ public class langugueActivity extends Activity {
 
         Drawable drawable = getResources().getDrawable(R.mipmap.xsl_langugue_simple);
         drawable.setBounds(0,0,65,65);
-        buttonList.get(1).setCompoundDrawablePadding(10);
-        buttonList.get(1).setCompoundDrawables(drawable,null,null,null);
+        buttonList.get(0).setCompoundDrawablePadding(10);
+        buttonList.get(0).setCompoundDrawables(drawable,null,null,null);
 
         Drawable drawable1 = getResources().getDrawable(R.mipmap.xsl_langugue_complex);
         drawable1.setBounds(0,0,65,65);
-        buttonList.get(2).setCompoundDrawablePadding(10);
-        buttonList.get(2).setCompoundDrawables(drawable1,null,null,null);
+        buttonList.get(1).setCompoundDrawablePadding(10);
+        buttonList.get(1).setCompoundDrawables(drawable1,null,null,null);
 
         Drawable drawable2 = getResources().getDrawable(R.mipmap.xsl_langugue_english);
         drawable2.setBounds(0,0,65,65);
-        buttonList.get(3).setCompoundDrawablePadding(10);
-        buttonList.get(3).setCompoundDrawables(drawable2,null,null,null);
+        buttonList.get(2).setCompoundDrawablePadding(10);
+        buttonList.get(2).setCompoundDrawables(drawable2,null,null,null);
 
         Intent intent = getIntent();
         int type = intent.getIntExtra(String.valueOf(R.string.activity_value), 0);

@@ -42,6 +42,7 @@
     </string>
 
 
+    <string name="applience_name">applience_name</string>
     <string name="applience_url"> applience_url </string>
     <string name="action_url"> action_url </string>
     <string name="subFile_url"> sub_file_url </string>
@@ -66,6 +67,7 @@
     <string name="need_pay">need_pay</string>
     <string name="need_screen_tips">need_screen_tips</string>
     <string name="need_cache_view">need_cache_video</string>
+    <string name="had_show_boot_paper">had_show_boot_paper</string>
 
     <string name="pay_result">pay_result</string>
 </resources>

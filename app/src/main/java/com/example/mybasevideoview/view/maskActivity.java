@@ -1,11 +1,14 @@
 package com.example.mybasevideoview.view;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.example.mybasevideoview.R;
@@ -19,8 +22,8 @@ import butterknife.OnClick;
 
 public class maskActivity extends Activity {
 
-    @BindView(R.id.mask_view)
-    RelativeLayout layoutView;
+    @BindView(R.id.imageView)
+    ImageView imageView;
 
     int pagerTag = 1;
     @Override
@@ -36,14 +39,17 @@ public class maskActivity extends Activity {
     void next(View view) {
         pagerTag++;
         if (pagerTag == 2) {
-            layoutView.setBackgroundResource(R.mipmap.mask_2);
+            //layoutView.setBackgroundResource(R.mipmap.mask_2);
+            imageView.setImageResource(R.mipmap.mask_2);
             view.setBackgroundColor(Color.TRANSPARENT);
         } else if (pagerTag == 3) {
-            layoutView.setBackgroundResource(R.mipmap.mask_3);
+            //layoutView.setBackgroundResource(R.mipmap.mask_3);
+            imageView.setImageResource(R.mipmap.mask_3);
             view.setBackgroundColor(Color.TRANSPARENT);
 
         } else {
             finish();
         }
     }
+
 }

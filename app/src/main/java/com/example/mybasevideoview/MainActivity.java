@@ -543,6 +543,25 @@ public class MainActivity extends AppCompatActivity {
         curTimeTextView = findViewById(R.id.player_controller_text_view_curr_time);
         durationTextView = findViewById(R.id.player_controller_text_view_total_time);
 
+        videoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                videoView.pause();
+                playBtn.setVisibility(View.VISIBLE);
+                playCtrView.setSelected(true);
+
+//                if (videoView.getState() == STATE_PAUSED) {
+//                    videoView.resume();
+//                    playCtrView.setSelected(false);
+//                    playBtn.setVisibility(View.GONE);
+//                } else if (videoView.getState() == STATE_STARTED) {
+//                    videoView.pause();
+//                    playBtn.setVisibility(View.VISIBLE);
+//                    playCtrView.setSelected(true);
+//                }
+            }
+        });
+
         subVideoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

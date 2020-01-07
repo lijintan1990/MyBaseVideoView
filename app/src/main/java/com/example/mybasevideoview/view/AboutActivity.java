@@ -19,7 +19,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class AboutActivity extends Activity {
-//    @BindView(R.id.close_btn)
+    //    @BindView(R.id.close_btn)
 //    Button closeBtn;
     @BindView(R.id.text_content)
     TextView textView;

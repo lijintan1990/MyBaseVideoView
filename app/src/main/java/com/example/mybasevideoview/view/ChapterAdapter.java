@@ -52,6 +52,65 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
         });
     }
 
+    public String getIndex(int chapter) {
+        String title = "";
+
+        switch (chapter) {
+            case 1:
+                title += "一";
+                break;
+            case 2:
+                title += "二";
+                break;
+            case 3:
+                title += "三";
+                break;
+            case 4:
+                title += "四";
+                break;
+            case 5:
+                title += "五";
+                break;
+            case 6:
+                title += "六";
+                break;
+            case 7:
+                title += "七";
+                break;
+            case 8:
+                title += "八";
+                break;
+            case 9:
+                title += "九";
+                break;
+            case 10:
+                title += "十";
+                break;
+            case 11:
+                title += "十一";
+                break;
+            case 12:
+                title += "十二";
+                break;
+            case 13:
+                title += "十三";
+                break;
+            case 14:
+                title += "十四";
+                break;
+            case 15:
+                title += "十五";
+                break;
+            case 16:
+                title += "十六";
+                break;
+            case 17:
+                title += "十七";
+                break;
+        }
+        return title;
+    }
+
     @Override
     public int getItemCount() {
         if (mDatas == null) {
@@ -62,13 +121,15 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
                 int mid = (data.size() + 1) / 2;
                 int right;
                 int chapterNum;
+                String strChapterNum;
                 for (int i=0; i!=mid; i++) {
                     String str = "第";
                     chapterNum = i+1;
+                    strChapterNum = getIndex(chapterNum);
                     if(i < 10) {
-                        str = str + "0" + chapterNum+ "章   ";
+                        str = str + strChapterNum + "章   ";
                     } else {
-                        str = str + chapterNum + "章   ";
+                        str = str + strChapterNum + "章   ";
                     }
 
                     str = str + data.get(i).getName();
