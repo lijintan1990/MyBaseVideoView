@@ -71,9 +71,12 @@ public class WordActivity extends Activity {
 
     private void initRecyDataLst(WordMsgs msgs) {
         dataLst = new ArrayList<>();
+        Log.i(TAG, "msgs:" + msgs.toString());
+        Log.i(TAG, "msgs:" + msgs.getData().toString());
         List<WordMsgs.DataBean> dataBeanLst = msgs.getData();
         for (WordMsgs.DataBean dataBean : dataBeanLst) {
             //Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.main_player_bkg);
+            Log.d(TAG, "word content:" + dataBean.getContent());
             dataLst.add(new WordNode(dataBean.getContent(), dataBean.getImgUrl(), null));
         }
     }

@@ -8,7 +8,7 @@
         android:layout_height="38dp"
         android:textSize="15sp"
         android:textColor="@color/white"
-        android:paddingLeft="28dp"
-        android:gravity="center"
+        android:paddingLeft="50dp"
+        android:gravity="left|center_vertical"
         android:id="@+id/chapter_item"/>
 </LinearLayout>

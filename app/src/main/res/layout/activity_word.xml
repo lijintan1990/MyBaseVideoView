@@ -26,10 +26,11 @@
         android:background="@color/translucent"/>
 
     <android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_below="@id/title"
+        android:layout_centerHorizontal="true"
         android:id="@+id/word_recycle_view">
 
     </android.support.v7.widget.RecyclerView>

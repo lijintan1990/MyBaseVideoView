@@ -140,11 +140,8 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
                     if (right >= data.size())
                         break;
                     chapterNum = right + 1;
-                    if (right < 10) {
-                        strRight = strRight + "0" + chapterNum + "章   ";
-                    } else {
-                        strRight = strRight + chapterNum + "章   ";
-                    }
+                    strChapterNum = getIndex(chapterNum);
+                    strRight = strRight + strChapterNum + "章   ";
                     strRight = strRight + data.get(right).getName();
                     mDatas.add(strRight);
                 }

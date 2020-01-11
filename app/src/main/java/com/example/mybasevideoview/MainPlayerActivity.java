@@ -89,7 +89,7 @@ public class MainPlayerActivity extends Activity {
     List<Button> buttonList;
     @BindViews({R.id.main_controller_text_view_curr_time, R.id.main_controller_text_view_total_time})
     List<TextView> textViews;
-    @BindViews({R.id.chapter_title, R.id.chapter_content, R.id.chapter_num, R.id.chapter_name})
+    @BindViews({R.id.chapter_title, R.id.chapter_title_content, R.id.chapter_content, R.id.chapter_num, R.id.chapter_name})
     List<TextView> chapterTextViewList;
 
     @BindViews({R.id.arrow1, R.id.arrow2,R.id.arrow3,R.id.arrow4,R.id.arrow5,R.id.arrow6,R.id.arrow7,R.id.arrow8,R.id.arrow9,R.id.arrow10,R.id.arrow11,R.id.arrow12})
@@ -497,8 +497,8 @@ public class MainPlayerActivity extends Activity {
                 resumeBtn.setVisibility(View.GONE);
                 Log.d(TAG, "resumeBtn setVisibility(View.GONE);");
                 //隐藏章节标题信息
-                chapterTextViewList.get(2).setText("");
                 chapterTextViewList.get(3).setText("");
+                chapterTextViewList.get(4).setText("");
                 showArroy(i);
             }
             Log.d(TAG, "set index " + index + " red");
@@ -561,6 +561,8 @@ public class MainPlayerActivity extends Activity {
                             case OnBtnStateListener.XSL_CHAPTER_BTN_STATE:
                                 setBtnState(enable, 0);
                                 break;
+                            case OnBtnStateListener.XSL_WORD_BTN_STATE:
+                                setBtnState(enable, 3);
                         }
                     }
                 });
@@ -674,10 +676,13 @@ public class MainPlayerActivity extends Activity {
         }
         title += "章";
         chapterTextViewList.get(0).setText(title);
-        chapterTextViewList.get(2).setText(title);
-        content.replace("-", " ");
-        chapterTextViewList.get(1).setText(content);
-        chapterTextViewList.get(3).setText(content);
+        chapterTextViewList.get(3).setText(title);
+        chapterTextViewList.get(4).setText(content);
+        int index = content.indexOf(" – ");
+        String titleContent = content.substring(0, index);
+        content = content.substring(index + 3);
+        chapterTextViewList.get(1).setText(titleContent);
+        chapterTextViewList.get(2).setText(content);
         curChapter = chapter;
     }
 

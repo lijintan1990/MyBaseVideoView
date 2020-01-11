@@ -4,9 +4,9 @@
     <dimen name="instructor_len">54dp</dimen>
     <dimen name="close_btn_size">20dp</dimen>
     <!-- 语言选择界面，语言选择按钮图标和文字的间隔 -->
-    <dimen name="draw_padding_text">50dp</dimen>
+    <dimen name="draw_padding_text">40dp</dimen>
     <!-- 语言选择界面，左侧图标距离按钮左边界的距离 -->
-    <dimen name="padding_left_size">65dp</dimen>
-    <dimen name="padding_right_size">65dp</dimen>
+    <dimen name="padding_left_size">80dp</dimen>
+    <dimen name="padding_right_size">80dp</dimen>
     <dimen name="indicator_height">30dp</dimen>
 </resources>
