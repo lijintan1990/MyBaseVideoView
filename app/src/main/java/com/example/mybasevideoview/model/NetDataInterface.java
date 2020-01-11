@@ -33,6 +33,10 @@ public interface NetDataInterface {
     Call<PayInfo>getPayInfo(@Field("androidId") String androidId, @Field("payType") int payType);
 
     @FormUrlEncoded
+    @POST("api/pay/appPay")
+    Call<WeinxinPayInfo>getWeixinPayInfo(@Field("androidId") String androidId, @Field("payType") int payType);
+
+    @FormUrlEncoded
     @POST("api/pay/getPay")
     Call<PayResult>getPayResult(@Field("androidId") String androidId);
 }

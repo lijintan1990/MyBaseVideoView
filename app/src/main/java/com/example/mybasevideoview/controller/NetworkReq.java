@@ -8,6 +8,7 @@ import com.example.mybasevideoview.model.PayInfo;
 import com.example.mybasevideoview.model.PayResult;
 import com.example.mybasevideoview.model.TimeLineInfo;
 import com.example.mybasevideoview.model.VideoListInfo;
+import com.example.mybasevideoview.model.WeinxinPayInfo;
 import com.example.mybasevideoview.model.WordMsgs;
 
 import retrofit2.Call;
@@ -39,7 +40,7 @@ public class NetworkReq {
 
     public interface PayInterface {
         void zhifubaoInfo(PayInfo payInfo);
-        void weixinInfo(PayInfo payInfo);
+        void weixinInfo(WeinxinPayInfo payInfo);
 
         void payResult(boolean result);
     }
@@ -54,17 +55,30 @@ public class NetworkReq {
                 PayInfo info = response.body();
                 Log.d(TAG, "zhifubao: " + info.getData().getApp());
                 if (payInterface != null) {
-                    if (payType == weixinType) {
-                        payInterface.weixinInfo(info);
-                    } else if (payType == zhifubaoType) {
                         payInterface.zhifubaoInfo(info);
-                    }
                 }
             }
 
             @Override
             public void onFailure(Call<PayInfo> call, Throwable t) {
                 Log.d(TAG, "zhifubao failed");
+            }
+        }, key, payType);
+    }
+
+    public void getWeixinPayInfo(String key, int payType) {
+        ObtainNetWorkData.getWeixinPayInfo(new Callback<WeinxinPayInfo>() {
+            @Override
+            public void onResponse(Call<WeinxinPayInfo> call, Response<WeinxinPayInfo> response) {
+                WeinxinPayInfo info = response.body();
+                if (payInterface != null) {
+                    payInterface.weixinInfo(info);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WeinxinPayInfo> call, Throwable t) {
+                Log.d(TAG, "weixin pay failed");
             }
         }, key, payType);
     }

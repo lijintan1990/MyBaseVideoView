@@ -8,20 +8,12 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.widget.Toast;
-
-import com.example.mybasevideoview.MainPlayerActivity;
 import com.example.mybasevideoview.R;
 import com.example.mybasevideoview.controller.NetworkReq;
-import com.example.mybasevideoview.model.ChapterListInfo;
 import com.example.mybasevideoview.model.RequestCode;
 import com.example.mybasevideoview.utils.XslUtils;
 
 import java.lang.ref.WeakReference;
-import java.util.List;
-
-import butterknife.ButterKnife;
-
 public class ChapterActivity extends Activity {
     RecyclerView recyclerView;
     int selectedIndex = 0;
@@ -71,7 +63,6 @@ public class ChapterActivity extends Activity {
             }
         });
         recyclerView.setAdapter(chapterAdapter);
-
 
         findViewById(R.id.close_btn).setOnClickListener(new View.OnClickListener() {
             @Override

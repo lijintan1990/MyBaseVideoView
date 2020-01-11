@@ -534,7 +534,7 @@ public class MainActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_PERMISSION_CODE);
             }
         }
-        unZipRes();
+        //unZipRes();
         videoView = findViewById(R.id.one);
         wholeVideoView = findViewById(R.id.statics);
         subVideoView= findViewById(R.id.sub_video);

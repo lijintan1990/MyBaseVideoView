@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('E:\\business\\MyBaseVideoView\\xsl.jks')
+            storePassword 'culture'
+            keyAlias = 'key0'
+            keyPassword 'culture'
+        }
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.xsl.culture"
@@ -59,5 +67,6 @@ dependencies {
     annotationProcessor 'com.arialyy.aria:compiler:3.8.1'
 
     // 支付宝
-    implementation (name: 'alipaySdk-15.6.8-20191021122514', ext: 'aar')
+    implementation(name: 'alipaySdk-15.6.8-20191021122514', ext: 'aar')
+    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
 }

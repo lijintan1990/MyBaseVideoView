@@ -48,6 +48,17 @@ public class ObtainNetWorkData {
         call.enqueue(callback);
     }
 
+    public static void getWeixinPayInfo(Callback<WeinxinPayInfo> callback, String key, int payType) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://www.hongmingyuan.net")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        NetDataInterface api = retrofit.create(NetDataInterface.class);
+        Call<WeinxinPayInfo> call = api.getWeixinPayInfo(key, payType);
+        call.enqueue(callback);
+    }
+
     public static void getPayResult(Callback<PayResult> callback, String key) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://www.hongmingyuan.net")

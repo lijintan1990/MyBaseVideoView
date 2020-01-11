@@ -286,7 +286,8 @@ public class MainPlayerActivity extends Activity {
     private void init360Videos() {
         File outDir = getExternalFilesDir("");
         //String videoDir = outDir.getAbsolutePath() + "/360/";
-        String videoDir =  Environment.getExternalStorageDirectory().getPath() + "/360/";
+        String videoDir = getExternalFilesDir("") + "/360";
+//        String videoDir =  Environment.getExternalStorageDirectory().getPath() + "/360/";
 
         middleVideoUrls = new ArrayList<>();
         for (int i=0; i!=12; i++) {
@@ -727,6 +728,7 @@ public class MainPlayerActivity extends Activity {
         if (requestCode == RequestCode.Mask_req) {
             hadShowPager = true;
             createPlayCtrl();
+            SharedPreferenceUtil.getInstance(getApplicationContext()).putBoolean(getResources().getString(R.string.had_show_boot_paper), true);
 //            Intent intent = new Intent(MainPlayerActivity.this, DownloadActivity.class);
 //            startActivityForResult(intent, RequestCode.Download_req);
         } if (requestCode == RequestCode.Transact1_req) {

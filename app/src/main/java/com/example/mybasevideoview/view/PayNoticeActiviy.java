@@ -18,8 +18,13 @@ import com.example.mybasevideoview.controller.NetworkReq;
 import com.example.mybasevideoview.model.PayInfo;
 import com.example.mybasevideoview.model.RequestCode;
 import com.example.mybasevideoview.model.SharedPreferenceUtil;
+import com.example.mybasevideoview.model.WeinxinPayInfo;
 import com.example.mybasevideoview.utils.CommonDialog;
 import com.example.mybasevideoview.utils.XslUtils;
+import com.tencent.mm.opensdk.modelpay.PayReq;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+import com.xapp.jjh.logtools.config.Constant;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;
@@ -39,6 +44,7 @@ public class PayNoticeActiviy extends Activity {
         setContentView(R.layout.activity_pay_notice_activiy);
         XslUtils.hideStausbar(new WeakReference<>(this), true);
         ButterKnife.bind(this);
+
     }
 
     @OnClick(R.id.pay_btn)
@@ -58,7 +64,7 @@ public class PayNoticeActiviy extends Activity {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case SDK_PAY_FLAG: {
-                    Log.d(TAG, "pay  result from zhifubao success");
+                    Log.d(TAG, "pay  result from zhifubao result:" + msg.arg1);
                     //这里接收支付宝的回调信息
                     //需要注意的是，支付结果一定要调用自己的服务端来确定，不能通过支付宝的回调结果来判断
                     NetworkReq.getInstance().getPayResult("2019120669763089");
@@ -86,9 +92,34 @@ public class PayNoticeActiviy extends Activity {
             }
         };
 
-// 必须异步调用
+    // 必须异步调用
         Thread payThread = new Thread(payRunnable);
         payThread.start();
+    }
+
+    private void callWeixin(WeinxinPayInfo payInfo) {
+        Log.i(TAG, "callWeixin");
+        String appId = payInfo.getData().getAppid();
+        IWXAPI api = WXAPIFactory.createWXAPI(this, appId);
+        boolean ret = api.registerApp(appId);
+        Log.i(TAG, "registerApp ret:" + ret);
+        //这里的bean，是服务器返回的json生成的bean
+        PayReq payRequest = new PayReq();
+        payRequest.appId = appId;
+        payRequest.partnerId = payInfo.getData().getPartnerid();
+        payRequest.prepayId = payInfo.getData().getPrepayid();
+        payRequest.packageValue = payInfo.getData().getPackageX();//"Sign=WXPay";//固定值
+        payRequest.nonceStr = payInfo.getData().getNoncestr();
+        payRequest.timeStamp = payInfo.getData().getTimestamp();
+        payRequest.sign = payInfo.getData().getSign();
+
+
+        Log.i(TAG, "payRequest:" + payInfo.getData().getNoncestr() + " " + payInfo.getData().getSign() + " " + payInfo.getData().getPartnerid() +
+                " " + payInfo.getData().getAppid() + " " + payInfo.getData().getPackageX());
+        Log.i(TAG, "check arg:" + payRequest.checkArgs());
+        //发起请求，调起微信前去支付
+        ret = api.sendReq(payRequest);
+        Log.d(TAG, "ret :" + ret);
     }
 
     private void initDialog() {
@@ -108,7 +139,7 @@ public class PayNoticeActiviy extends Activity {
                     }
 
                     @Override
-                    public void weixinInfo(PayInfo payInfo) {
+                    public void weixinInfo(WeinxinPayInfo payInfo) {
 
                     }
 
@@ -136,6 +167,34 @@ public class PayNoticeActiviy extends Activity {
                 dialog.dismiss();
                 Toast.makeText(PayNoticeActiviy.this,"微信", Toast.LENGTH_SHORT).show();
 
+                NetworkReq.getInstance().setPayInterface(new NetworkReq.PayInterface() {
+                    @Override
+                    public void zhifubaoInfo(PayInfo payInfo) {
+                        callZhifubao(payInfo.getData().getApp());
+                    }
+
+                    @Override
+                    public void weixinInfo(WeinxinPayInfo payInfo) {
+                        callWeixin(payInfo);
+                    }
+
+                    @Override
+                    public void payResult(boolean result) {
+                        Log.d(TAG, "pay result from service " + result);
+                        if (result == true) {
+                            dialog.dismiss();
+                            Intent intent = new Intent();
+                            intent.putExtra(getResources().getString(R.string.pay_result), result);
+                            setResult(RESULT_OK, intent);
+                            SharedPreferenceUtil.getInstance(getApplicationContext()).putBoolean(getResources().getString(R.string.need_pay), false);
+                            finish();
+                        } else {
+                            Toast.makeText(PayNoticeActiviy.this, "支付失败", LENGTH_LONG ).show();
+                        }
+                    }
+                });
+
+                NetworkReq.getInstance().getWeixinPayInfo("2019120669763089", 1);
             }
 
             @Override
