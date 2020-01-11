@@ -47,10 +47,12 @@ public class PlayControlMaskView extends AppCompatTextView {
                 lastDownPos = event.getX();
                 break;
             case MotionEvent.ACTION_UP:
+                MainPlayerActivity activity1 = (MainPlayerActivity) getContext();
                 if (Math.abs(event.getX() - downPos) < 5) {
-                    MainPlayerActivity activity1 = (MainPlayerActivity) getContext();
                     activity1.touchMaskView();
                 }
+
+                activity1.touchUp();
                 break;
         }
         return super.onTouchEvent(event);

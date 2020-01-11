@@ -29,7 +29,7 @@
     <TextView
         android:id="@+id/name"
         android:layout_marginBottom="3dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
@@ -69,7 +69,7 @@
             android:layout_height="30dp"
             android:layout_alignParentBottom="true"
             android:gravity="center_vertical"
-            android:background="#88FFFFFF"
+            android:background="#88000000"
             android:orientation="horizontal">
 
             <ImageView

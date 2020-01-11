@@ -500,13 +500,7 @@
                     android:id="@+id/p13">
 
 
-                    <TextView
-                        android:id="@+id/play_time_info"
-                        android:layout_gravity="center"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="20sp"
-                        android:textColor="@color/white"/>
+
 
                     <RelativeLayout
                         android:id="@+id/center_black"
@@ -540,6 +534,16 @@
                                 android:layout_marginTop="8dp"/>
                         </LinearLayout>
                     </RelativeLayout>
+                    <TextView
+                        android:id="@+id/play_time_info"
+                        android:layout_gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="#aa000000"
+                        android:visibility="gone"
+                        android:gravity="center"
+                        android:textSize="20sp"
+                        android:textColor="@color/white"/>
                     <com.example.mybasevideoview.view.PlayControlMaskView
                         android:id="@+id/play_touch_mask"
                         android:layout_width="match_parent"

@@ -26,6 +26,8 @@ public interface ISubtitleControl
      */
     void seekTo(int position);
 
+    void hide();
+
     /**
      * 设置数据
      *

@@ -259,7 +259,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                     }
                 };
                 Timer timer = new Timer();
-                timer.schedule(task, 1500);//2秒后执行TimeTask的run方法
+                timer.schedule(task, 1000);//2秒后执行TimeTask的run方法
                 //老的播放已经结束
                 bSeeking = false;
                 Log.d(TAG,  "set bSeeking false");
@@ -489,7 +489,9 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                 videoViewList.get().get(12).getState() == IPlayer.STATE_STARTED &&
                 videoViewList.get().get(12).getState() != IPlayer.STATE_PAUSED) {
             //Log.d(TAG, "center player status:" + videoViewList.get().get(12).getState());
-            playCtrlEventListener.onSubtitleUpdate(currentPlayTime);
+            if (centerVideoViewIndex > 0) {
+                playCtrlEventListener.onSubtitleUpdate(currentPlayTime);
+            }
             lastSubtitleUpdateTime = currentPlayTime;
         }
     }

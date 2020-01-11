@@ -252,13 +252,14 @@ public class MainPlayerActivity extends Activity {
         videoViewArrayList.get(12).stop();
         setCenterPlayerBlack(true);
         setLastCenterPlayerMaskTransact();
-        time = time * 1000 + 500;
+        time = time * 1000 + 1000;
         Log.d(TAG, "stop center player, seekChapter time" + time + "code:" + chapterId + " name:" + chapterTitle);
 
         playersController.seekChapter(time);
         curChapter = Integer.parseInt(chapterId);
         updateChapterTxt(curChapter, chapterTitle);
         resumeBtn.setVisibility(View.GONE);
+        normalSubtitleView.hide();
         showArroy(-1);
 
         if (playersController.getDuration() > 0) {
@@ -474,6 +475,8 @@ public class MainPlayerActivity extends Activity {
                     clickAble = true;
                 break;
         }
+
+        timeView.setVisibility(View.INVISIBLE);
 
         if (!clickAble) {
             return;
@@ -741,7 +744,7 @@ public class MainPlayerActivity extends Activity {
             hadShowPager = true;
             createPlayCtrl();
         } else if (requestCode == RequestCode.Appliance_req) {
-            buttonList.get(0).setSelected(false);
+            buttonList.get(1).setSelected(false);
 //            playersController.resume_();
 //            videoViewArrayList.get(12).resume();
         } else if (requestCode == RequestCode.Word_req) {
@@ -839,12 +842,12 @@ public class MainPlayerActivity extends Activity {
                         Log.i(TAG, "centerPlayer stoped. seekTo chapter " + curChapter + " chapterStartTime " + startTime);
                         setCenterPlayerBlack(false);
                     } else if (curPlayTime >= endTime) {
-                        curPlayTime = endTime - 1000;
+                        curPlayTime = endTime - 500;
                         Log.i(TAG, "centerPlayer stoped. seekTo chapter " + curChapter + " endTime " + curPlayTime);
                         setCenterPlayerBlack(true);
                     }
                     playersController.seekTo_(curPlayTime);
-                    return;
+                    break;
                 }
             }
         } else {
@@ -854,27 +857,32 @@ public class MainPlayerActivity extends Activity {
                 curPlayTime = startTime;
                 Log.i(TAG, "centerPlayer seekTo timeLine startTime" + curPlayTime);
             } else if (curPlayTime > endTime) {
-                curPlayTime = endTime - 1000;
+                curPlayTime = endTime - 500;
                 Log.i(TAG, "centerPlayer seekTo timeLine endTime " + curPlayTime);
             }
+
+            playersController.seekNotify(curPlayTime);
+            bNativeSeekFinish = false;
         }
 
 //        int duration = playersController.getDuration();
-        int duration = videoViewArrayList.get(0).getDuration();
+        int duration = endTime;
         String strCurPlayTime = XslUtils.convertSecToTimeString(curPlayTime / 1000);
         String strDuration = XslUtils.convertSecToTimeString(duration / 1000);
         timeView.setText(strCurPlayTime + "/" + strDuration);
         timeView.setVisibility(View.VISIBLE);
-        playersController.seekNotify(curPlayTime);
-        bNativeSeekFinish = false;
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //要执行的操作
-                timeView.setVisibility(View.GONE);
-            }
-        }, 1000);
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                //要执行的操作
+//                timeView.setVisibility(View.GONE);
+//            }
+//        }, 1000);
+    }
+
+    public void touchUp() {
+        timeView.setVisibility(View.INVISIBLE);
     }
 
     public void touchMaskView() {
