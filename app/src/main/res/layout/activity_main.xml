@@ -82,7 +82,7 @@
                             android:background="@mipmap/player_icon_start_play"
                             android:layout_centerInParent="true"/>
 
-                        <com.example.mybasevideoview.view.subTitle.SubtitleView
+                        <com.xsl.culture.mybasevideoview.view.subTitle.SubtitleView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:id="@+id/subtitle"

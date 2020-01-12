@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.mybasevideoview">
+    package="com.xsl.culture">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -16,10 +16,8 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
-
-
     <application
-        android:name=".CustomApp"
+        android:name="com.xsl.culture.mybasevideoview.CustomApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -40,59 +38,59 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.PayNoticeActiviy"
+            android:name=".mybasevideoview.view.PayNoticeActiviy"
             android:theme="@style/translucent"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTop"/>
         <activity
-            android:name=".view.maskActivity"
+            android:name=".mybasevideoview.view.maskActivity"
             android:theme="@style/translucent" />
         <activity
-            android:name=".view.DownloadActivity"
+            android:name=".mybasevideoview.view.DownloadActivity"
             android:screenOrientation="landscape" />
         <activity
-            android:name=".view.Transact2Activity"
+            android:name=".mybasevideoview.view.Transact2Activity"
             android:theme="@style/translucent" />
         <activity
-            android:name=".view.Transact3Activity"
+            android:name=".mybasevideoview.view.Transact3Activity"
             android:theme="@style/translucent" />
         <activity
-            android:name=".view.WordActivity"
+            android:name=".mybasevideoview.view.WordActivity"
             android:theme="@style/translucent" />
         <activity
-            android:name=".view.ActionActivity"
+            android:name=".mybasevideoview.view.ActionActivity"
             android:theme="@style/translucent" />
         <activity
-            android:name=".view.AppliancesActivity"
+            android:name=".mybasevideoview.view.AppliancesActivity"
             android:theme="@style/translucent" />
         <activity
-            android:name=".view.AboutActivity"
+            android:name=".mybasevideoview.view.AboutActivity"
             android:theme="@style/translucent" />
         <activity
-            android:name=".view.RelateVerticalActivity"
+            android:name=".mybasevideoview.view.RelateVerticalActivity"
             android:theme="@style/translucent" />
         <activity
-            android:name=".view.RelateHorizonActivity"
+            android:name=".mybasevideoview.view.RelateHorizonActivity"
             android:theme="@style/translucent" />
         <activity
-            android:name=".view.ChapterActivity"
+            android:name=".mybasevideoview.view.ChapterActivity"
             android:theme="@style/translucent" />
         <activity
-            android:name=".view.TransactActivity"
+            android:name=".mybasevideoview.view.TransactActivity"
             android:theme="@style/translucent" />
         <activity
-            android:name=".SubFilmActivity"
+            android:name=".mybasevideoview.SubFilmActivity"
             android:screenOrientation="landscape" /> <!-- android:theme="@android:style/Theme.Translucent" 设置activity透明! -->
         <activity
-            android:name=".view.langugueActivity"
+            android:name=".mybasevideoview.view.langugueActivity"
             android:theme="@style/translucent" />
-        <activity android:name=".ButterTestActivity" />
+        <activity android:name=".mybasevideoview.ButterTestActivity" />
         <activity
-            android:name=".MainPlayerActivity"
+            android:name=".mybasevideoview.MainPlayerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="landscape" />
         <activity
-            android:name=".MainActivity"
+            android:name=".mybasevideoview.MainActivity"
             android:launchMode="singleTask"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="landscape">

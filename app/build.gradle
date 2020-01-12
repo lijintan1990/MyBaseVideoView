@@ -1,14 +1,6 @@
 apply plugin: 'com.android.application'
 
 android {
-    signingConfigs {
-        debug {
-            storeFile file('E:\\business\\MyBaseVideoView\\xsl.jks')
-            storePassword 'culture'
-            keyAlias = 'key0'
-            keyPassword 'culture'
-        }
-    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.xsl.culture"

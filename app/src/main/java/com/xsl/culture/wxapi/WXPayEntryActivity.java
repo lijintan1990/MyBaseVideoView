@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.mybasevideoview.R;
 import com.tencent.mm.opensdk.constants.ConstantsAPI;
 import com.tencent.mm.opensdk.modelbase.BaseReq;
 import com.tencent.mm.opensdk.modelbase.BaseResp;
@@ -28,6 +27,7 @@ public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
         //setContentView(R.layout.activity_langugue);
         Log.d(TAG, "WXPayEntryActivity");
         api = WXAPIFactory.createWXAPI(this, app_id, false);
+//        api.registerApp(app_id);
         api.handleIntent(getIntent(), this);
     }
 
@@ -68,8 +68,26 @@ public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
                     break;
             }
 
+            if (weixinPayResult != null) {
+                weixinPayResult.onWeixinPayResult(resp.errCode);
+            }
+
             finish();//这里需要关闭该页面
         }
+    }
+
+    private static WeixinPayResult weixinPayResult;
+
+    public static WeixinPayResult getWeixinPayResult() {
+        return weixinPayResult;
+    }
+
+    public static void setWeixinPayResult(WeixinPayResult weixinPayResult) {
+        WXPayEntryActivity.weixinPayResult = weixinPayResult;
+    }
+
+    public interface WeixinPayResult {
+        void onWeixinPayResult(int ret);
     }
 }
 

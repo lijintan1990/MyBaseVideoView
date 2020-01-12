@@ -5,7 +5,7 @@
     android:gravity="bottom"
     android:orientation="vertical">
 
-    <com.example.mybasevideoview.view.subTitle.SubtitleTextView
+    <com.xsl.culture.mybasevideoview.view.subTitle.SubtitleTextView
         android:id="@+id/subTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

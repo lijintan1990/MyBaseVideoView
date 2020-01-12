@@ -32,7 +32,7 @@
             android:textColor="#ffffff"
             android:gravity="center"
             android:text="00:00:00"/>
-        <com.example.mybasevideoview.view.MySeekBar
+        <com.xsl.culture.mybasevideoview.view.MySeekBar
             android:id="@+id/main_controller_seek_bar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
