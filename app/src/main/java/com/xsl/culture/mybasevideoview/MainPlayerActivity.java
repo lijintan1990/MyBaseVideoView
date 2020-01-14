@@ -243,7 +243,6 @@ public class MainPlayerActivity extends Activity {
     }
 
     private void seekChapter(int time, String chapterId, String chapterTitle) {
-        videoViewArrayList.get(12).stop();
         setCenterPlayerBlack(true);
         setLastCenterPlayerMaskTransact();
         time = time * 1000 + 1000;
@@ -478,7 +477,7 @@ public class MainPlayerActivity extends Activity {
 
         for (int i=0; i!=12; i++) {
             if (i == index) {
-                int time = videoViewArrayList.get(i).getCurrentPosition();
+                int time = videoViewArrayList.get(i).getCurrentPosition() + 1000;
                 videoViewArrayList.get(12).stop();
                 setCenterPlayerBlack(false);
                 Log.i(TAG, "play index " + i+ " in center");
@@ -698,6 +697,8 @@ public class MainPlayerActivity extends Activity {
         chapterTextViewList.get(0).setText(title);
         chapterTextViewList.get(3).setText(title);
         chapterTextViewList.get(4).setText(content);
+        //出现章节的时候要隐藏字幕
+        normalSubtitleView.hide();
         int index = content.indexOf(" – ");
         String titleContent = content.substring(0, index);
         content = content.substring(index + 3);
@@ -795,7 +796,16 @@ public class MainPlayerActivity extends Activity {
             }
             buttonList.get(0).setText(text);
             buttonList.get(0).setSelected(false);
+            bNativeSeekFinish = false;
             seekChapter(dataBean.getStartTime(), dataBean.getCode(), dataBean.getName());
+            //下下策，防止底层seek不回调
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+                    // do something
+                    bNativeSeekFinish = true;
+                }
+
+            },  1000);
         }
     }
 
@@ -835,6 +845,12 @@ public class MainPlayerActivity extends Activity {
     PlayControlMaskView maskView;
 
     private void updateSubtitle(int pts) {
+        //反正有标题的时候还出现字幕
+        if (chapterTextViewList.get(3).getText().length() > 0) {
+            normalSubtitleView.hide();
+            return;
+        }
+
         normalSubtitleView.seekTo(pts);
     }
 
@@ -898,6 +914,14 @@ public class MainPlayerActivity extends Activity {
 
             playersController.seekNotify(curPlayTime);
             bNativeSeekFinish = false;
+            //下下策，防止底层seek不回调
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+                    // do something
+                    bNativeSeekFinish = true;
+                }
+
+            },  1000);
         }
 
 //        int duration = playersController.getDuration();

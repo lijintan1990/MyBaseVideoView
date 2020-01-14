@@ -234,37 +234,30 @@ public class PlayersController extends Thread implements IPlayerCtrl{
             if (lst == null)
                 return;
 
-            //说明中间视频不用切换，也就不用去stop
-            if (msc >= centerStartTime && msc <= centerStartTime+centerDuration) {
-                lst.get(12).seekTo(msc);
-                currentPlayTime = msc;
-                Log.d(TAG, "seekNotify currentPlayTime: "+currentPlayTime);
-            } else {
-                Log.d(TAG, "stop window index:" + centerVideoViewIndex);
-                //结束中间视频播放
-                lst.get(12).stop();
-                playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CHAPTER_CHANGE, msc, -1);
-                //查找合适的视频进行播放
-                //重新设置
-                centerVideoViewIndex = -1;
+            Log.d(TAG, "stop window index:" + centerVideoViewIndex);
+            //结束中间视频播放
+            lst.get(12).stop();
+            playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CHAPTER_CHANGE, msc, -1);
+            //查找合适的视频进行播放
+            //重新设置
+            centerVideoViewIndex = -1;
 
-                Log.d(TAG, "mySeek to:" + msc);
-                for (int i = 0; i != 12; i++) {
-                    Log.d(TAG, "player status:" + lst.get(i).getState());
-                    lst.get(i).seekTo(msc);
-                }
-
-                TimerTask task = new TimerTask() {
-                    @Override
-                    public void run() {
-                        //要执行的操作
-                        pause_();
-                    }
-                };
-                Timer timer = new Timer();
-                timer.schedule(task, 1000);//2秒后执行TimeTask的run方法
-                //老的播放已经结束
+            Log.d(TAG, "mySeek to:" + msc);
+            for (int i = 0; i != 12; i++) {
+                Log.d(TAG, "player status:" + lst.get(i).getState());
+                lst.get(i).seekTo(msc);
             }
+
+            TimerTask task = new TimerTask() {
+                @Override
+                public void run() {
+                    //要执行的操作
+                    pause_();
+                }
+            };
+            Timer timer = new Timer();
+            timer.schedule(task, 1000);//2秒后执行TimeTask的run方法
+            //老的播放已经结束
         }
     }
     /**
