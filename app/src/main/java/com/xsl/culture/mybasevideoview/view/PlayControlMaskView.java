@@ -33,13 +33,13 @@ public class PlayControlMaskView extends AppCompatTextView {
                 downPos = lastDownPos;
                 break;
             case MotionEvent.ACTION_MOVE:
-                Log.d(TAG, "touch move event X:" + event.getX());
+                //Log.d(TAG, "touch move event X:" + event.getX());
                 int jumpTime;
                 //每次seek，需要等上一次seek完毕才能进行
                 if (event.getX() - lastDownPos > 20) {
-                    jumpTime = 10;
+                    jumpTime = 5;
                 } else if (event.getX() - lastDownPos < -20) {
-                    jumpTime = -10;
+                    jumpTime = -5;
                 } else {
                     return false;
                 }

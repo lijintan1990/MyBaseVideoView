@@ -161,6 +161,11 @@ public class MainPlayerActivity extends Activity {
     void buttonClick(View view) {
         switch (view.getId()) {
             case R.id.action_btn:
+                if (buttonList.get(2).isSelected()) {
+                    buttonList.get(2).setSelected(false);
+                } else {
+                    buttonList.get(2).setSelected(true);
+                }
                 break;
             case R.id.appliances_btn:
                 if (buttonList.get(1).isSelected()) {
@@ -278,8 +283,8 @@ public class MainPlayerActivity extends Activity {
     private void init360Videos() {
         File outDir = getExternalFilesDir("");
         //String videoDir = outDir.getAbsolutePath() + "/360/";
-        String videoDir = getExternalFilesDir("") + "/360/";
-//        String videoDir =  Environment.getExternalStorageDirectory().getPath() + "/360/";
+        //String videoDir = getExternalFilesDir("") + "/360/";
+        String videoDir =  Environment.getExternalStorageDirectory().getPath() + "/360/";
 
         middleVideoUrls = new ArrayList<>();
         for (int i=0; i!=12; i++) {
@@ -615,6 +620,16 @@ public class MainPlayerActivity extends Activity {
                     int state = 0;
                     if (isIdFounded) {
                         if (playersController.getCenterVideoViewIndex() == i) {
+
+                            Drawable drawable = centerBlackLayout.getBackground();
+                            ColorDrawable dra = (ColorDrawable) drawable;
+                            if (dra.getColor() == Color.TRANSPARENT) {
+//                                maskViews.get(index).setBackgroundColor(getResources().getColor(R.color.translucent));
+                            } else {
+                                playersController.updateCenterPlayerInfo(-1, videoViewArrayList.get(i).getCurrentPosition());
+                                normalSubtitleView.hide();
+                            }
+
                             state = 1;
                         } else {
                             state = -1;
@@ -871,13 +886,15 @@ public class MainPlayerActivity extends Activity {
     public void touchMoveSeek(int jumpTime) {
         if (bNativeSeekFinish == false)
             return;
-//        if (lastTouchTime == 0) {
-//            lastTouchTime = System.currentTimeMillis();
-//        } else {
-//            if (System.currentTimeMillis() - lastTouchTime < 200) {
-//                return;
-//            }
-//        }
+        if (lastTouchTime == 0) {
+            lastTouchTime = System.currentTimeMillis();
+        } else {
+            if (System.currentTimeMillis() - lastTouchTime < 200) {
+                return;
+            }
+
+            lastTouchTime = System.currentTimeMillis();
+        }
 
         int curPlayTime = videoViewArrayList.get(0).getCurrentPosition() + jumpTime * 1000;
         int startTime = 0, endTime = 0;
@@ -1202,9 +1219,9 @@ public class MainPlayerActivity extends Activity {
         if (duration <= 0)
             return;
         int progress = curTime  / (duration / 1000);
-        if (++k % 30 == 0) {
-            Log.d(TAG, "progress: " + progress + " curTime:" + curTime);
-        }
+//        if (++k % 30 == 0) {
+//            Log.d(TAG, "progress: " + progress + " curTime:" + curTime);
+//        }
         mySeekBar.setProgress(progress);
         //当前时间设置
         textViews.get(0).setText(XslUtils.convertSecToTimeString(curTime / 1000));

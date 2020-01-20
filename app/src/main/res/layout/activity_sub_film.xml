@@ -47,7 +47,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-                <com.example.mybasevideoview.view.subTitle.SubtitleView
+                <com.xsl.culture.mybasevideoview.view.subTitle.SubtitleView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/subtitle"

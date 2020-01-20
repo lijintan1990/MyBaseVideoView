@@ -238,7 +238,6 @@ public class PlayersController extends Thread implements IPlayerCtrl{
             //结束中间视频播放
             lst.get(12).stop();
             playCtrlEventListener.onPlayCtrlCallback(OnPlayCtrlEventListener.PLAY_CHAPTER_CHANGE, msc, -1);
-            //查找合适的视频进行播放
             //重新设置
             centerVideoViewIndex = -1;
 
@@ -329,6 +328,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
     }
     public void updateCenterPlayerInfo(int centerPlayId, int playTime) {
         synchronized (lockObj) {
+            Log.d(TAG, "update centerPlayId:" + centerPlayId + " playTime："+ playTime);
             this.centerVideoViewIndex = centerPlayId;
             TimeLineInfo timeLineInfo = NetworkReq.getInstance().getTimelineInfo();
 
@@ -504,8 +504,8 @@ public class PlayersController extends Thread implements IPlayerCtrl{
         videoTimeLinePlaying.clear();
 
         for (TimeLineInfo.DataBean dataBean : timeLineInfo.getData()) {
-            if (dataBean.getStartTime() * 1000 < currentPlayTime
-                    && (dataBean.getStartTime() + dataBean.getDuration()) * 1000 > currentPlayTime
+            if (dataBean.getStartTime() * 1000 <= currentPlayTime
+                    && (dataBean.getStartTime() + dataBean.getDuration()) * 1000 >= currentPlayTime
                     && dataBean.getDuration() > 0) {
                 type = dataBean.getType();
 
@@ -517,7 +517,11 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                         videoTimeLinePlaying.add(dataBean.getObjId() - 1);
                     }
                 } else if (type == DataType.XSL_CHAPTER) {
-                    chapterProc(dataBean);
+                    //防止seek的时候这里有事件触发，导致错乱, 在当前章节末尾十秒内就不再回调
+                    if ((dataBean.getStartTime() + dataBean.getDuration()) * 1000 - 10000 > currentPlayTime) {
+                        chapterProc(dataBean);
+
+                    }
                 } else if (type == DataType.XSL_APPLIANCES) {
                     applienceProc(dataBean, true);
                     enableApplience = true;
@@ -526,6 +530,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                     wordProc(dataBean, true);
                 } else if (type == DataType.XSL_ACTION) {
                     enableAction = true;
+                    actionProc(dataBean, true);
                 }
             }
 
@@ -534,9 +539,8 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                 break;
         }
 
-        if (MainPlayerActivity.bNativeSeekFinish) {
-            maskViewListener.setMaskViewStatus(OnMaskViewListener.ACTION_PLAY_MASK, videoTimeLinePlaying);
-        }
+        maskViewListener.setMaskViewStatus(OnMaskViewListener.ACTION_PLAY_MASK, videoTimeLinePlaying);
+
 
         if (!enableAction) {
             actionProc(null, false);
@@ -611,7 +615,6 @@ public class PlayersController extends Thread implements IPlayerCtrl{
 //                            }
 //                        }
                     } else {
-
                         currentPlayTime = lst.get(0).getCurrentPosition();
                         //Log.d(TAG, "小视频 play currentPlayTime: " + currentPlayTime + "use view index playTime:"+ lst.get(centerVideoViewIndex).getCurrentPosition());
                         //通知更新进度条

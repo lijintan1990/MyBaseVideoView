@@ -129,6 +129,7 @@ public class SubFilmActivity extends AppCompatActivity {
             public void onClick(View v) {
                 videoView.pause();
                 centerPlay.setVisibility(View.VISIBLE);
+                playCtrView.setSelected(true);
             }
         });
         playCtrView.setOnClickListener(new View.OnClickListener() {

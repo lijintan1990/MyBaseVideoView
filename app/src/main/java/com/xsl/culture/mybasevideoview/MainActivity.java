@@ -13,6 +13,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -46,6 +47,7 @@ import com.xsl.culture.mybasevideoview.model.RequestCode;
 import com.xsl.culture.mybasevideoview.model.SharedPreferenceUtil;
 import com.xsl.culture.mybasevideoview.model.SubtitlesDataCoding;
 import com.xsl.culture.mybasevideoview.model.SubtitlesModel;
+import com.xsl.culture.mybasevideoview.utils.FileUtils;
 import com.xsl.culture.mybasevideoview.utils.NetworkCheck;
 import com.xsl.culture.mybasevideoview.utils.XslUtils;
 import com.xsl.culture.mybasevideoview.utils.ZipUtils;
@@ -222,7 +224,15 @@ public class MainActivity extends AppCompatActivity {
             }
         } else if (requestCode == RequestCode.Pay_req) {
             if (needCacheVideo) {
-                startCacheActivity();
+//                String strFile = getExternalFilesDir("").getAbsolutePath() + "/360/1.mp4";
+                String strFile = Environment.getExternalStorageDirectory() + "/360/1.mp4";
+
+                if (FileUtils.isFileExists(strFile)) {
+                    startMainPlayActivity();
+                    needCacheVideo = false;
+                } else {
+                    startCacheActivity();
+                }
             } else {
                 needPay = false;
                 startMainPlayActivity();
@@ -588,8 +598,17 @@ public class MainActivity extends AppCompatActivity {
                     startActivityForResult(intent, RequestCode.Pay_req);
                     return;
                 }
+
                 if (needCacheVideo) {
-                    startCacheActivity();
+//                    startCacheActivity();
+//                    String strFile = getExternalFilesDir("").getAbsolutePath() + "/360/1.mp4";
+                    String strFile = Environment.getExternalStorageDirectory() + "/360/1.mp4";
+                    if (FileUtils.isFileExists(strFile)) {
+                        startMainPlayActivity();
+                        needCacheVideo = false;
+                    } else {
+                        startCacheActivity();
+                    }
                 } else {
                     startMainPlayActivity();
                 }
