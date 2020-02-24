@@ -90,7 +90,7 @@ public class SubFilmActivity extends AppCompatActivity {
         });
 
         //加载字幕
-        //loadSubtitles();
+        loadSubtitles();
     }
 
     @Override
@@ -293,26 +293,26 @@ public class SubFilmActivity extends AppCompatActivity {
     private void loadSubtitles() {
         try {
             AssetManager assetManager = getResources().getAssets();
-            InputStream inputStreamCN = assetManager.open("chinese.srt");
-            InputStream inputStreamCA = assetManager.open("cantonese.srt");
-            InputStream inputStreamEN = assetManager.open("english.srt");
+            InputStream inputStreamCN = assetManager.open("jingjian.srt");
+//            InputStream inputStreamCA = assetManager.open("cantonese.srt");
+//            InputStream inputStreamEN = assetManager.open("english.srt");
 
             SubtitlesDataCoding dataCodingCN = new SubtitlesDataCoding();
-            SubtitlesDataCoding dataCodingCA = new SubtitlesDataCoding();
-            SubtitlesDataCoding dataCodingEN = new SubtitlesDataCoding();
+//            SubtitlesDataCoding dataCodingCA = new SubtitlesDataCoding();
+//            SubtitlesDataCoding dataCodingEN = new SubtitlesDataCoding();
             subtitleLstCN = dataCodingCN.readFileStream(inputStreamCN);
-            subtitleLstEN = dataCodingEN.readFileStream(inputStreamEN);
-            subtitleLstCA = dataCodingCA.readFileStream(inputStreamCA);
+//            subtitleLstEN = dataCodingEN.readFileStream(inputStreamEN);
+//            subtitleLstCA = dataCodingCA.readFileStream(inputStreamCA);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         subtitleView = findViewById(R.id.subtitle);
         subtitleView.setData(subtitleLstCN, SubtitleView.LANGUAGE_TYPE_CHINA);
-        subtitleView.setData(subtitleLstCA, SubtitleView.LANGUAGE_TYPE_CANTONESE);
-        subtitleView.setData(subtitleLstEN, SubtitleView.LANGUAGE_TYPE_ENGLISH);
+//        subtitleView.setData(subtitleLstCA, SubtitleView.LANGUAGE_TYPE_CANTONESE);
+//        subtitleView.setData(subtitleLstEN, SubtitleView.LANGUAGE_TYPE_ENGLISH);
 
-        Log.d("Subtitle", "ca size:"+subtitleLstCA.size());
+        Log.d("Subtitle", "ca size:"+subtitleLstCN.size());
 
         subtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CHINA);
     }

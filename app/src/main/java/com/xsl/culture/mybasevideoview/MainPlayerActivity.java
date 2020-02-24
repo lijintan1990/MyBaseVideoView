@@ -1349,7 +1349,7 @@ public class MainPlayerActivity extends Activity {
                     }
                     //mainPlayerActivityWeakReference.get().resumeBtn.setVisibility(View.VISIBLE);
                 }
-            }, 500);
+            }, 1000);
         }
     }
 

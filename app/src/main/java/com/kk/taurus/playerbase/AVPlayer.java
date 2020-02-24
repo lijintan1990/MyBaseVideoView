@@ -17,6 +17,7 @@
 package com.kk.taurus.playerbase;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
@@ -470,8 +471,10 @@ public final class AVPlayer implements IPlayer{
     public void setVolume(float left, float right) {
         mVolumeLeft = left;
         mVolumeRight = right;
-        if(isPlayerAvailable())
+        if(isPlayerAvailable()) {
+            Log.d(TAG, "setVolume left" + left + " right:"+right);
             mInternalPlayer.setVolume(left, right);
+        }
     }
 
     @Override
