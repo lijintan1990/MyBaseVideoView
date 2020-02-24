@@ -17,8 +17,8 @@ public class FileDownloadMsg {
         urls = new ArrayList<>();
         names = new ArrayList<>();
         VideoListInfo listInfo = NetworkReq.getInstance().getVideoLstInfo();
-        downloadPath = context.getExternalFilesDir("") + "/360";
-//        downloadPath = Environment.getExternalStorageDirectory().getPath() + "/360";
+        //downloadPath = context.getExternalFilesDir("") + "/360";
+        downloadPath = Environment.getExternalStorageDirectory().getPath() + "/360";
         for (VideoListInfo.DataBean dataBean : listInfo.getData()) {
             urls.add(dataBean.getVideoUrl360());
             names.add("" + (dataBean.getIndex() - 1) +".mp4");

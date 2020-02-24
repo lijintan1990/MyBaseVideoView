@@ -28,6 +28,7 @@ import android.widget.TextView;
 
 
 import com.xsl.culture.R;
+import com.xsl.culture.mybasevideoview.view.ActionActivity;
 import com.xsl.culture.mybasevideoview.view.AppliancesActivity;
 import com.xsl.culture.mybasevideoview.view.ChapterActivity;
 import com.example.mybasevideoview.view.dummy.RelateButton;
@@ -107,6 +108,7 @@ public class MainPlayerActivity extends Activity {
     String applienceName = null;
     // 動作視頻的地址
     String mActionUrl = null;
+    String actionName = null;
 
     //当前文本对应的ID
     int mWordId = -1;
@@ -157,8 +159,17 @@ public class MainPlayerActivity extends Activity {
         resumeBtn.setVisibility(View.GONE);
     }
 
+    boolean centerPlayerPlaying = false;
+
     @OnClick({R.id.chapter_btn, R.id.appliances_btn, R.id.action_btn, R.id.word_btn, R.id.back_btn})
     void buttonClick(View view) {
+        if (videoViewArrayList.get(12).getState() == IPlayer.STATE_PAUSED) {
+            centerPlayerPlaying = false;
+        } else {
+            centerPlayerPlaying = true;
+        }
+
+        Log.d(TAG, "centerPlayer state " + videoViewArrayList.get(12).getState());
         switch (view.getId()) {
             case R.id.action_btn:
                 if (buttonList.get(2).isSelected()) {
@@ -166,6 +177,8 @@ public class MainPlayerActivity extends Activity {
                 } else {
                     buttonList.get(2).setSelected(true);
                 }
+
+                createActionActivity(ActionActivity.class, RequestCode.Action_req, mActionUrl, actionName);
                 break;
             case R.id.appliances_btn:
                 if (buttonList.get(1).isSelected()) {
@@ -485,9 +498,10 @@ public class MainPlayerActivity extends Activity {
                 int time = videoViewArrayList.get(i).getCurrentPosition() + 1000;
                 videoViewArrayList.get(12).stop();
                 setCenterPlayerBlack(false);
-                Log.i(TAG, "play index " + i+ " in center");
+                Log.i(TAG, "play index " + i+ " in center URL：%s" + smallVideoUrls.get(i));
                 videoViewArrayList.get(12).setDataSource(new DataSource(smallVideoUrls.get(i)));
                 videoViewArrayList.get(12).start(time);
+                videoViewArrayList.get(12).setVolume(0, 0);
                 //把之前播放的窗口设置成透明
                 setLastCenterPlayerMaskTransact();
                 //当前点击的窗口设置成遮罩
@@ -548,7 +562,7 @@ public class MainPlayerActivity extends Activity {
 
         playersController.setBtnStateListener(new OnBtnStateListener() {
             @Override
-            public void onStateChange(int action, boolean enable, String url) {
+            public void onStateChange(int action, boolean enable, String url, String name) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -556,6 +570,7 @@ public class MainPlayerActivity extends Activity {
                             case OnBtnStateListener.XSL_ACTION_BTN_STATE:
                                 setBtnState(enable, 2);
                                 mActionUrl = url;
+                                actionName = name;
                                 break;
                             case OnBtnStateListener.XSL_CHAPTER_BTN_STATE:
                                 setBtnState(enable, 0);
@@ -757,6 +772,16 @@ public class MainPlayerActivity extends Activity {
         startActivityForResult(intent, requestCode);
     }
 
+    private void createActionActivity(Class<?> cls, int requestCode, String url, String name) {
+        Intent intent = new Intent(MainPlayerActivity.this, cls);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(String.valueOf(R.string.action_url), url);
+        bundle.putSerializable(String.valueOf(R.string.action_name), name);
+
+        intent.putExtras(bundle);
+        startActivityForResult(intent, requestCode);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
@@ -906,7 +931,7 @@ public class MainPlayerActivity extends Activity {
                     startTime = dataBean.getStartTime() * 1000;
                     endTime = (dataBean.getStartTime() + dataBean.getDuration()) * 1000;
                     if (startTime > curPlayTime) {
-                        curPlayTime = startTime;
+                        curPlayTime = startTime + 400;
                         Log.i(TAG, "centerPlayer stoped. seekTo chapter " + curChapter + " chapterStartTime " + startTime);
                         setCenterPlayerBlack(false);
                     } else if (curPlayTime >= endTime) {
@@ -922,7 +947,8 @@ public class MainPlayerActivity extends Activity {
             startTime = playersController.getCurTimeLineStartTime();
             endTime = startTime + playersController.getCurTimeLineEndTime();
             if (startTime > curPlayTime) {
-                curPlayTime = startTime;
+                curPlayTime = startTime + 400;
+
                 Log.i(TAG, "centerPlayer seekTo timeLine startTime" + curPlayTime);
             } else if (curPlayTime > endTime) {
                 curPlayTime = endTime - 500;
@@ -947,6 +973,8 @@ public class MainPlayerActivity extends Activity {
         String strDuration = XslUtils.convertSecToTimeString(duration / 1000);
         timeView.setText(strCurPlayTime + "/" + strDuration);
         timeView.setVisibility(View.VISIBLE);
+
+        resumeBtn.setVisibility(View.GONE);
 //        Handler handler = new Handler();
 //        handler.postDelayed(new Runnable() {
 //            @Override
@@ -959,6 +987,9 @@ public class MainPlayerActivity extends Activity {
 
     public void touchUp() {
         timeView.setVisibility(View.INVISIBLE);
+        if (videoViewArrayList.get(12).getState() == IPlayer.STATE_PAUSED) {
+            resumeBtn.setVisibility(View.VISIBLE);
+        }
     }
 
     public void touchMaskView() {
@@ -986,6 +1017,12 @@ public class MainPlayerActivity extends Activity {
 //            videoViewArrayList.get(12).resume();
 //        }
         super.onResume();
+
+        if (centerPlayerPlaying) {
+            playersController.resume_();
+            resumeBtn.setVisibility(View.GONE);
+        }
+
         Log.d(TAG, "xx onResume");
     }
 

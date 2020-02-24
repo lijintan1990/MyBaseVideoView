@@ -8,7 +8,7 @@ public interface OnBtnStateListener {
     int XSL_CHAPTER_BTN_STATE = 0xfff6;
 
     //主面板右侧按钮状态更改
-    void onStateChange(int action, boolean enable, String url);
+    void onStateChange(int action, boolean enable, String url, String name);
     void onWordStateChange(int action, boolean enable, int objId);
     void onChapterBtnTextUpdate(int chpaterStartTime, String text, String chapterName);
     void onApplience(int action, boolean enable, String url, String name);

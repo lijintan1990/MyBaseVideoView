@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.mybasevideoview.view.PayNoticeActiviy">
+    tools:context=".mybasevideoview.view.PayNoticeActiviy">
 
     <ImageButton
         android:id="@+id/close_pay"

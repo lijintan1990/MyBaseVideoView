@@ -433,19 +433,19 @@ public class PlayersController extends Thread implements IPlayerCtrl{
         if (btnStateListener != null) {
             //关闭动作按钮
             if (dataBean == null || !enable) {
-                btnStateListener.onStateChange(OnBtnStateListener.XSL_ACTION_BTN_STATE, enable,null);
+                btnStateListener.onStateChange(OnBtnStateListener.XSL_ACTION_BTN_STATE, enable,null, null);
                 return;
             }
             //打开动作按钮
             if (dataBean.getVideo().getVideoUrl360() != null && !dataBean.getVideo().getVideoUrl360().isEmpty())
                 btnStateListener.onStateChange(OnBtnStateListener.XSL_ACTION_BTN_STATE, enable,
-                    dataBean.getVideo().getVideoUrl360());
+                    dataBean.getVideo().getVideoUrl360(), dataBean.getVideo().getName());
             else if (dataBean.getVideo().getVideoUrl720() != null && !dataBean.getVideo().getVideoUrl720().isEmpty()) {
                 btnStateListener.onStateChange(OnBtnStateListener.XSL_ACTION_BTN_STATE, enable,
-                        dataBean.getVideo().getVideoUrl720());
+                        dataBean.getVideo().getVideoUrl720(), dataBean.getVideo().getName());
             } else if (dataBean.getVideo().getVideoUrl1080() != null && !dataBean.getVideo().getVideoUrl1080().isEmpty()) {
                 btnStateListener.onStateChange(OnBtnStateListener.XSL_ACTION_BTN_STATE, enable,
-                        dataBean.getVideo().getVideoUrl1080());
+                        dataBean.getVideo().getVideoUrl1080(), dataBean.getVideo().getName());
             }
         }
     }
@@ -454,7 +454,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
         if (btnStateListener != null) {
             //关闭文本按钮
             if (dataBean == null || !enable) {
-                btnStateListener.onStateChange(OnBtnStateListener.XSL_WORD_BTN_STATE, enable,null);
+                btnStateListener.onStateChange(OnBtnStateListener.XSL_WORD_BTN_STATE, enable,null, null);
                 return;
             }
             //打开文本按钮

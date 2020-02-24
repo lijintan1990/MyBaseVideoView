@@ -45,6 +45,7 @@
     <string name="applience_name">applience_name</string>
     <string name="applience_url"> applience_url </string>
     <string name="action_url"> action_url </string>
+    <string name="action_name"> action_name </string>
     <string name="subFile_url"> sub_file_url </string>
 
     <string name="word_name"> word_name </string>

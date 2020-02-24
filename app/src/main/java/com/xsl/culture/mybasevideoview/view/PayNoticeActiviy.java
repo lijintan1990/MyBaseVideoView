@@ -53,6 +53,11 @@ public class PayNoticeActiviy extends Activity {
 
     @OnClick(R.id.close_pay)
     void closePay(View view) {
+
+        Intent intent = new Intent();
+        intent.putExtra(getResources().getString(R.string.pay_result), -1);
+        setResult(RESULT_OK, intent);
+        SharedPreferenceUtil.getInstance(getApplicationContext()).putBoolean(getResources().getString(R.string.need_pay), true);
         finish();
     }
 

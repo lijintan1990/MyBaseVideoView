@@ -223,6 +223,11 @@ public class MainActivity extends AppCompatActivity {
                 startMainPlayActivity();
             }
         } else if (requestCode == RequestCode.Pay_req) {
+            Bundle bundle = data.getExtras();
+            int ret = bundle.getInt(getResources().getString(R.string.pay_result));
+            if (ret == -1) {
+                return;
+            }
             if (needCacheVideo) {
 //                String strFile = getExternalFilesDir("").getAbsolutePath() + "/360/1.mp4";
                 String strFile = Environment.getExternalStorageDirectory() + "/360/1.mp4";
@@ -714,28 +719,28 @@ public class MainActivity extends AppCompatActivity {
     private void loadSubtitles() {
         try {
             AssetManager assetManager = getResources().getAssets();
-            InputStream inputStreamCN = assetManager.open("chinese.srt");
-            InputStream inputStreamCA = assetManager.open("cantonese.srt");
-            InputStream inputStreamEN = assetManager.open("english.srt");
+            InputStream inputStreamCN = assetManager.open("home_v_src.srt");
+//            InputStream inputStreamCA = assetManager.open("cantonese.srt");
+//            InputStream inputStreamEN = assetManager.open("english.srt");
 
             SubtitlesDataCoding dataCodingCN = new SubtitlesDataCoding();
             SubtitlesDataCoding dataCodingCA = new SubtitlesDataCoding();
             SubtitlesDataCoding dataCodingEN = new SubtitlesDataCoding();
             subtitleLstCN = dataCodingCN.readFileStream(inputStreamCN);
-            subtitleLstEN = dataCodingEN.readFileStream(inputStreamEN);
-            subtitleLstCA = dataCodingCA.readFileStream(inputStreamCA);
+//            subtitleLstEN = dataCodingEN.readFileStream(inputStreamEN);
+//            subtitleLstCA = dataCodingCA.readFileStream(inputStreamCA);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         //關閉字幕
-//        subtitleView = findViewById(R.id.subtitle);
-//        subtitleView.setData(subtitleLstCN, SubtitleView.LANGUAGE_TYPE_CHINA);
+        subtitleView = findViewById(R.id.subtitle);
+        subtitleView.setData(subtitleLstCN, SubtitleView.LANGUAGE_TYPE_CHINA);
 //        subtitleView.setData(subtitleLstCA, SubtitleView.LANGUAGE_TYPE_CANTONESE);
 //        subtitleView.setData(subtitleLstEN, SubtitleView.LANGUAGE_TYPE_ENGLISH);
 //
-//        Log.d("Subtitle", "ca size:"+subtitleLstCA.size());
-//        subtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CHINA);
+        Log.d("Subtitle", "ca size:"+subtitleLstCN.size());
+        subtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CHINA);
     }
 
     private void updateSubtitle(int pts) {

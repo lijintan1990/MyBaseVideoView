@@ -35,6 +35,10 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordHolder>{
         wordHolder.textView.setText(dataLst.get(i).getText());
         if (dataLst.get(i).getBitmap() != null) {
             wordHolder.imageView.setBackground(new BitmapDrawable(dataLst.get(i).getBitmap()));
+        } else {
+            ViewGroup.LayoutParams params = wordHolder.imageView.getLayoutParams();
+            params.height = 0;
+            wordHolder.imageView.setLayoutParams(params);
         }
     }
 

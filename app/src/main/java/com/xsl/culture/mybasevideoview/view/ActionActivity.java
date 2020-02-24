@@ -2,18 +2,22 @@ package com.xsl.culture.mybasevideoview.view;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.widget.ImageButton;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.xsl.culture.R;
 import com.xsl.culture.mybasevideoview.model.RequestCode;
-import com.xsl.culture.mybasevideoview.model.VideoListInfo;
 import com.xsl.culture.mybasevideoview.utils.XslUtils;
 import com.kk.taurus.playerbase.entity.DataSource;
 import com.kk.taurus.playerbase.event.EventKey;
@@ -22,16 +26,12 @@ import com.kk.taurus.playerbase.widget.BaseVideoView;
 
 import java.lang.ref.WeakReference;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
 import static com.kk.taurus.playerbase.player.IPlayer.STATE_PAUSED;
 import static com.kk.taurus.playerbase.player.IPlayer.STATE_PLAYBACK_COMPLETE;
 import static com.kk.taurus.playerbase.player.IPlayer.STATE_STARTED;
 
 public class ActionActivity extends Activity {
-    private static final String TAG = "ActionActivity";
+    private static final String TAG = "actionActivity";
     //进度条相关参数
     BaseVideoView videoView = null;
     ImageView playCtrView = null;
@@ -44,16 +44,19 @@ public class ActionActivity extends Activity {
     // seek finish回调在设置成true，继续更新进度条
     boolean bNativeSeekFinish = true;
     private String playUrl = null;
+    private String name = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_action);
-        ButterKnife.bind(this);
+
         XslUtils.hideStausbar(new WeakReference<>(this), true);
         Intent intent = getIntent();
         playUrl = (String) intent.getSerializableExtra(String.valueOf(R.string.action_url));
+        name = (String) intent.getSerializableExtra(String.valueOf(R.string.action_name));
+        ((TextView)findViewById(R.id.name)).setText(name);
         if (playUrl != null) {
             init();
             videoPlay();
@@ -73,33 +76,30 @@ public class ActionActivity extends Activity {
             @Override
             public void onClick(View v) {
                 videoView.pause();
-                playButton.setVisibility(View.VISIBLE);
+                findViewById(R.id.centerPlay).setVisibility(View.VISIBLE);
             }
         });
-    }
 
-    @BindView(R.id.centerPlay)
-    ImageButton playButton;
-
-    @OnClick(R.id.centerPlay)
-    void clickCenterPlay(View view) {
-        if (videoView.getState() == STATE_PAUSED) {
-            videoView.resume();
-            playButton.setVisibility(View.GONE);
-        }
+        findViewById(R.id.centerPlay).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                videoView.resume();
+                findViewById(R.id.centerPlay).setVisibility(View.GONE);
+            }
+        });
     }
 
     @Override
     protected void onStop() {
         videoView.pause();
-        playButton.setVisibility(View.VISIBLE);
+        findViewById(R.id.centerPlay).setVisibility(View.VISIBLE);
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
         Intent intent = new Intent();
-        intent.putExtra(RequestCode.Key_ret_code, RequestCode.Action_req);
+        intent.putExtra(RequestCode.Key_ret_code, RequestCode.Appliance_req);
         setResult(RESULT_OK, intent);
         super.onDestroy();
     }
@@ -154,8 +154,6 @@ public class ActionActivity extends Activity {
                 if (eventCode == PLAYER_EVENT_ON_TIMER_UPDATE) {
                     if (bNativeSeekFinish) {
                         updateUI(bundle.getInt(EventKey.INT_ARG1), bundle.getInt(EventKey.INT_ARG2));
-                        long pos = videoView.getCurrentPosition();
-                        Log.d(TAG, "get pos:" + pos);
                     }
                 } else if (eventCode == PLAYER_EVENT_ON_SEEK_COMPLETE) {
                     Log.d(TAG, "after seek, get pos:" + videoView.getCurrentPosition());
