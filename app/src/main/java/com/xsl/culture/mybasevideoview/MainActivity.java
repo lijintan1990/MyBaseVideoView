@@ -598,6 +598,10 @@ public class MainActivity extends AppCompatActivity {
         wholeVideoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //TODO: for test
+//                needPay = false;
+//                needCacheVideo = false;
+
                 if (needPay) {
                     Intent intent = new Intent(MainActivity.this, PayNoticeActiviy.class);
                     startActivityForResult(intent, RequestCode.Pay_req);

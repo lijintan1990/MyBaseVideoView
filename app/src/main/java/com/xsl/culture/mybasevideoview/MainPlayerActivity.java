@@ -115,6 +115,10 @@ public class MainPlayerActivity extends Activity {
 
     //当前播放的章节
     int curChapter = 1;
+    // 是否是点击了切换章节，如果是切换章节，onResume里面就不能立马恢复播放，
+    // 而是要进行seek操作，否则，会出现声音
+    boolean chapterChange;
+
     //中间窗口的字幕
     SubtitleView normalSubtitleView;
 
@@ -163,10 +167,11 @@ public class MainPlayerActivity extends Activity {
 
     @OnClick({R.id.chapter_btn, R.id.appliances_btn, R.id.action_btn, R.id.word_btn, R.id.back_btn})
     void buttonClick(View view) {
-        if (videoViewArrayList.get(12).getState() == IPlayer.STATE_PAUSED) {
-            centerPlayerPlaying = false;
-        } else {
+        if (videoViewArrayList.get(12).getState() == IPlayer.STATE_PREPARED ||
+                videoViewArrayList.get(12).getState() == IPlayer.STATE_STARTED ) {
             centerPlayerPlaying = true;
+        } else {
+            centerPlayerPlaying = false;
         }
 
         Log.d(TAG, "centerPlayer state " + videoViewArrayList.get(12).getState());
@@ -262,7 +267,9 @@ public class MainPlayerActivity extends Activity {
 
     private void seekChapter(int time, String chapterId, String chapterTitle) {
         setCenterPlayerBlack(true);
-        setLastCenterPlayerMaskTransact();
+//        setLastCenterPlayerMaskTransact();
+        setSmallPlayerMaskBlack();
+
         time = time * 1000 + 1000;
         Log.d(TAG, "stop center player, seekChapter time" + time + "code:" + chapterId + " name:" + chapterTitle);
 
@@ -826,6 +833,7 @@ public class MainPlayerActivity extends Activity {
                 buttonList.get(0).setSelected(false);
                 return;
             }
+            chapterChange = true;
             ChapterListInfo.DataBean dataBean = NetworkReq.getInstance().getChapterListInfo().getData().get(chapterIndex - 1);
 
             String text;
@@ -896,8 +904,11 @@ public class MainPlayerActivity extends Activity {
 
     public void setCenterPlayerBlack(boolean yes) {
         if (yes) {
+            Log.d(TAG, "setCenterPlayerBlack black");
             centerBlackLayout.setBackgroundColor(Color.BLACK);
+            normalSubtitleView.hide();
         } else {
+            Log.d(TAG, "setCenterPlayerBlack transparent");
             centerBlackLayout.setBackgroundColor(Color.TRANSPARENT);
         }
     }
@@ -930,10 +941,21 @@ public class MainPlayerActivity extends Activity {
                 if (Integer.parseInt(dataBean.getCode()) == curChapter) {
                     startTime = dataBean.getStartTime() * 1000;
                     endTime = (dataBean.getStartTime() + dataBean.getDuration()) * 1000;
+
+                    if (Math.abs(startTime - curPlayTime) < 800) {
+                        break;
+                    }
                     if (startTime > curPlayTime) {
-                        curPlayTime = startTime + 400;
+                        //第十二章节倒退的时候会倒回到前一个章节视频，多加一点
+                        if (curChapter == 12) {
+                            curPlayTime = startTime + 800;
+                        } else if (curChapter == 9) {
+                            curPlayTime = startTime + 1000;
+                        } else {
+                            curPlayTime = startTime + 500;
+                        }
                         Log.i(TAG, "centerPlayer stoped. seekTo chapter " + curChapter + " chapterStartTime " + startTime);
-                        setCenterPlayerBlack(false);
+                        setCenterPlayerBlack(true);
                     } else if (curPlayTime >= endTime) {
                         curPlayTime = endTime - 400;
                         Log.i(TAG, "centerPlayer stoped. seekTo chapter " + curChapter + " endTime " + curPlayTime);
@@ -947,7 +969,7 @@ public class MainPlayerActivity extends Activity {
             startTime = playersController.getCurTimeLineStartTime();
             endTime = startTime + playersController.getCurTimeLineEndTime();
             if (startTime > curPlayTime) {
-                curPlayTime = startTime + 400;
+                curPlayTime = startTime + 500;
 
                 Log.i(TAG, "centerPlayer seekTo timeLine startTime" + curPlayTime);
             } else if (curPlayTime > endTime) {
@@ -1018,10 +1040,12 @@ public class MainPlayerActivity extends Activity {
 //        }
         super.onResume();
 
-        if (centerPlayerPlaying) {
+        if (centerPlayerPlaying && !chapterChange) {
             playersController.resume_();
             resumeBtn.setVisibility(View.GONE);
         }
+
+        chapterChange = false;
 
         Log.d(TAG, "xx onResume");
     }
@@ -1287,7 +1311,14 @@ public class MainPlayerActivity extends Activity {
 
                 } else if (eventCode == OnPlayerEventListener.PLAYER_EVENT_ON_SEEK_COMPLETE) {
                     Log.d(TAG, "mySeek finish, get pos:" + videoView.getCurrentPosition());
-                    bNativeSeekFinish = true;
+                    new Handler().postDelayed(new Runnable() {
+                        //等待小视频seek完，反正controller在小视频没有seek完情况下轮训
+                        public void run() {
+                            // do something
+                            bNativeSeekFinish = true;
+                        }
+
+                    },  500);
                     playersController.seekTo_(videoViewArrayList.get(12).getCurrentPosition());
                 } else if (eventCode == OnPlayerEventListener.PLAYER_EVENT_ON_PLAY_COMPLETE) {
                     Log.d(TAG, "PLAYER_EVENT_ON_PLAY_COMPLETE");
@@ -1392,6 +1423,15 @@ public class MainPlayerActivity extends Activity {
         }
     }
 
+    private void setSmallPlayerMaskBlack() {
+        //把之前播放的窗口设置成透明
+        int curIndex = playersController.getCenterVideoViewIndex();
+        for (int i=0; i!=12; i++) {
+            Log.i(TAG, "set play index " + curIndex + " black");
+            maskViews.get(i).setBackgroundColor(getResources().getColor(R.color.mask_view_color));
+        }
+    }
+
     public boolean useLocalVideo = true;
     public static class PlayControlHandler extends Handler {
         WeakReference<List<BaseVideoView>> videoViewLst;
@@ -1407,7 +1447,8 @@ public class MainPlayerActivity extends Activity {
             super.handleMessage(msg);
             switch (msg.what) {
                 case OnPlayCtrlEventListener.PLAY_TIMELINE_CHANGE:
-                    //videoViewLst.get().get(12).stop();
+                    videoViewLst.get().get(12).stop();
+                    Log.d(TAG, "timeline change");
                     mainPlayerActivityWeakReference.get().setCenterPlayerBlack(true);
                     mainPlayerActivityWeakReference.get().showArroy(-1);
 //                    videoViewLst.get().get(msg.arg2).setBackgroundResource(R.drawable.xsl_video_shape);

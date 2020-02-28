@@ -505,15 +505,15 @@ public class PlayersController extends Thread implements IPlayerCtrl{
 
         for (TimeLineInfo.DataBean dataBean : timeLineInfo.getData()) {
             if (dataBean.getStartTime() * 1000 <= currentPlayTime
-                    && (dataBean.getStartTime() + dataBean.getDuration()) * 1000 >= currentPlayTime
+                    && (dataBean.getStartTime() + dataBean.getDuration()) * 1000 > currentPlayTime
                     && dataBean.getDuration() > 0) {
                 type = dataBean.getType();
 
                 if (type == DataType.XSL_VIDEO) {
-                    //关联视频以及中间视频播放处理
                     if (MainPlayerActivity.bNativeSeekFinish) {
                         videoProc(dataBean);
-                        //Log.d(TAG, "currentPlayTime:" + currentPlayTime + " startTime:" + dataBean.getStartTime() + " duration:" + dataBean.getDuration() + " id:" + dataBean.getObjId());
+                        if (timesCount++ % 50 == 0)
+                            Log.d(TAG, "currentPlayTime:" + currentPlayTime + " startTime:" + dataBean.getStartTime() + " duration:" + dataBean.getDuration() + " id:" + dataBean.getObjId());
                         videoTimeLinePlaying.add(dataBean.getObjId() - 1);
                     }
                 } else if (type == DataType.XSL_CHAPTER) {
@@ -615,7 +615,8 @@ public class PlayersController extends Thread implements IPlayerCtrl{
 //                            }
 //                        }
                     } else {
-                        currentPlayTime = lst.get(0).getCurrentPosition();
+                        //不能用第一个，不然选择第九章的时候，获取的时间戳就不对，太坑，seek应该是有问题
+                        currentPlayTime = lst.get(7).getCurrentPosition();
                         //Log.d(TAG, "小视频 play currentPlayTime: " + currentPlayTime + "use view index playTime:"+ lst.get(centerVideoViewIndex).getCurrentPosition());
                         //通知更新进度条
                         playCtrlEventListener.onPlayTimeCallback(OnPlayCtrlEventListener.PLAY_TIME_SET_CTRL, totalDuration, currentPlayTime);

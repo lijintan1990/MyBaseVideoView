@@ -318,6 +318,7 @@ public class DownloadActivity extends Activity {
     void back() {
         Intent intent = new Intent();
         intent.putExtra(getResources().getString(R.string.download_result), -1);
+        SharedPreferenceUtil.getInstance(this).putBoolean(getResources().getString(R.string.need_pay), false);
         setResult(RESULT_OK, intent);
         finish();
     }
