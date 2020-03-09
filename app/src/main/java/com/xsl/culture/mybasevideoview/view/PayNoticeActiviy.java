@@ -22,6 +22,7 @@ import com.xsl.culture.mybasevideoview.model.PayInfo;
 import com.xsl.culture.mybasevideoview.model.SharedPreferenceUtil;
 import com.xsl.culture.mybasevideoview.model.WeinxinPayInfo;
 import com.xsl.culture.mybasevideoview.utils.CommonDialog;
+import com.xsl.culture.mybasevideoview.utils.RestoreParamMng;
 import com.xsl.culture.mybasevideoview.utils.XslUtils;
 import com.xsl.culture.wxapi.WXPayEntryActivity;
 
@@ -57,7 +58,7 @@ public class PayNoticeActiviy extends Activity {
         Intent intent = new Intent();
         intent.putExtra(getResources().getString(R.string.pay_result), -1);
         setResult(RESULT_OK, intent);
-        SharedPreferenceUtil.getInstance(getApplicationContext()).putBoolean(getResources().getString(R.string.need_pay), true);
+        RestoreParamMng.getInstance().setNeedPayState(true);
         finish();
     }
 
@@ -113,7 +114,8 @@ public class PayNoticeActiviy extends Activity {
                     Intent intent = new Intent();
                     intent.putExtra(getResources().getString(R.string.pay_result), 0);
                     setResult(RESULT_OK, intent);
-                    SharedPreferenceUtil.getInstance(getApplicationContext()).putBoolean(getResources().getString(R.string.need_pay), false);
+//                    SharedPreferenceUtil.getInstance(getApplicationContext()).putBoolean(getResources().getString(R.string.need_pay), false);
+                    RestoreParamMng.getInstance().setNeedPayState(false);
                     finish();
                 } else {
                     Toast.makeText(PayNoticeActiviy.this, "支付失败", LENGTH_LONG ).show();
@@ -174,7 +176,8 @@ public class PayNoticeActiviy extends Activity {
                             Intent intent = new Intent();
                             intent.putExtra(getResources().getString(R.string.pay_result), result);
                             setResult(RESULT_OK, intent);
-                            SharedPreferenceUtil.getInstance(getApplicationContext()).putBoolean(getResources().getString(R.string.need_pay), false);
+//                            SharedPreferenceUtil.getInstance(getApplicationContext()).putBoolean(getResources().getString(R.string.need_pay), false);
+                            RestoreParamMng.getInstance().setNeedPayState(false);
                             finish();
                         } else {
                             Toast.makeText(PayNoticeActiviy.this, "支付失败", LENGTH_LONG ).show();
@@ -209,7 +212,8 @@ public class PayNoticeActiviy extends Activity {
                             Intent intent = new Intent();
                             intent.putExtra(getResources().getString(R.string.pay_result), result);
                             setResult(RESULT_OK, intent);
-                            SharedPreferenceUtil.getInstance(getApplicationContext()).putBoolean(getResources().getString(R.string.need_pay), false);
+//                            SharedPreferenceUtil.getInstance(getApplicationContext()).putBoolean(getResources().getString(R.string.need_pay), false);
+                            RestoreParamMng.getInstance().setNeedPayState(false);
                             finish();
                         } else {
                             Toast.makeText(PayNoticeActiviy.this, "支付失败", LENGTH_LONG ).show();

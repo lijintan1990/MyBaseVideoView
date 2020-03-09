@@ -539,8 +539,10 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                 break;
         }
 
-        maskViewListener.setMaskViewStatus(OnMaskViewListener.ACTION_PLAY_MASK, videoTimeLinePlaying);
-
+        if (videoTimeLinePlaying.size() > 0) {
+            Log.d(TAG, "currentPlayTime:" + currentPlayTime);
+            maskViewListener.setMaskViewStatus(OnMaskViewListener.ACTION_PLAY_MASK, videoTimeLinePlaying);
+        }
 
         if (!enableAction) {
             actionProc(null, false);
@@ -588,7 +590,10 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                     //中间窗口有视频播放，那么开始计时
                     if (centerVideoViewIndex != -1 && lst.get(12).getState() == IPlayer.STATE_STARTED) {
                         currentPlayTime = lst.get(12).getCurrentPosition();
-                        //Log.d(TAG, "小视频 play currentPlayTime: " + currentPlayTime + "use view index playTime:"+ lst.get(centerVideoViewIndex).getCurrentPosition());
+//                        if (lst.get(centerVideoViewIndex).getCurrentPosition() == 6448600) {
+//                            currentPlayTime = 6448600;
+//                        }
+                        Log.d(TAG, "小视频 play currentPlayTime: " + currentPlayTime + "use view index playTime:"+ lst.get(centerVideoViewIndex).getCurrentPosition());
                         //通知更新进度条
                         playCtrlEventListener.onPlayTimeCallback(OnPlayCtrlEventListener.PLAY_TIME_SET_CTRL, totalDuration, currentPlayTime);
 //                        int subTime = lst.get(centerVideoViewIndex).getCurrentPosition() - lst.get(12).getCurrentPosition();
@@ -617,7 +622,7 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                     } else {
                         //不能用第一个，不然选择第九章的时候，获取的时间戳就不对，太坑，seek应该是有问题
                         currentPlayTime = lst.get(7).getCurrentPosition();
-                        //Log.d(TAG, "小视频 play currentPlayTime: " + currentPlayTime + "use view index playTime:"+ lst.get(centerVideoViewIndex).getCurrentPosition());
+//                        Log.d(TAG, "小视频 play currentPlayTime: " + currentPlayTime + "use view index playTime:"+ lst.get(centerVideoViewIndex).getCurrentPosition());
                         //通知更新进度条
                         playCtrlEventListener.onPlayTimeCallback(OnPlayCtrlEventListener.PLAY_TIME_SET_CTRL, totalDuration, currentPlayTime);
                     }

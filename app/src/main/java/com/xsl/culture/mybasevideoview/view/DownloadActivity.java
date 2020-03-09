@@ -3,6 +3,7 @@ package com.xsl.culture.mybasevideoview.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,7 +25,8 @@ import com.arialyy.aria.util.ALog;
 import com.xsl.culture.R;
 import com.xsl.culture.mybasevideoview.model.FileDownloadMsg;
 import com.xsl.culture.mybasevideoview.model.RequestCode;
-import com.xsl.culture.mybasevideoview.model.SharedPreferenceUtil;
+import com.xsl.culture.mybasevideoview.utils.FileUtils;
+import com.xsl.culture.mybasevideoview.utils.RestoreParamMng;
 import com.xsl.culture.mybasevideoview.utils.XslUtils;
 
 import java.io.File;
@@ -262,21 +264,35 @@ public class DownloadActivity extends Activity {
         if (downloadFinish) {
             entryMainPlay();
         } else {
-            startDownload();
-            downloadBtn.setVisibility(View.GONE);
-            textView.setText("正在缓存");
-            bar.setVisibility(View.VISIBLE);
-            bar.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    //直接消费掉触摸事件
-                    return true;
+            boolean needDownload = false;
+            for (int i=0; i!= 12; i++) {
+                String strFile = Environment.getExternalStorageDirectory() + "/360/";
+                strFile += i;
+                strFile += ".mp4";
+                if (!FileUtils.isFileExists(strFile)) {
+                    RestoreParamMng.getInstance().setNeedCacheState(true);
+                    needDownload = true;
                 }
-            });
+                break;
+            }
+            if (needDownload) {
+                startDownload();
+                downloadBtn.setVisibility(View.GONE);
+                textView.setText("正在缓存");
+                bar.setVisibility(View.VISIBLE);
+                bar.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        //直接消费掉触摸事件
+                        return true;
+                    }
+                });
 
-            bar.setMax(100);
+                bar.setMax(100);
+            } else {
+                entryMainPlay();
+            }
         }
-
     }
 
     /**
@@ -318,7 +334,6 @@ public class DownloadActivity extends Activity {
     void back() {
         Intent intent = new Intent();
         intent.putExtra(getResources().getString(R.string.download_result), -1);
-        SharedPreferenceUtil.getInstance(this).putBoolean(getResources().getString(R.string.need_pay), false);
         setResult(RESULT_OK, intent);
         finish();
     }
@@ -330,7 +345,7 @@ public class DownloadActivity extends Activity {
         downloadBtn.setText("点击进入");
         bar.setVisibility(View.GONE);
         downloadFinish = true;
-        SharedPreferenceUtil.getInstance(this).putBoolean(getResources().getString(R.string.need_cache_view), false);
+        RestoreParamMng.getInstance().setNeedCacheState(false);
     }
 
     @DownloadGroup.onSubTaskRunning void onSubTaskRunning(DownloadGroupTask groupTask,

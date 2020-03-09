@@ -49,6 +49,7 @@ import com.xsl.culture.mybasevideoview.model.SubtitlesDataCoding;
 import com.xsl.culture.mybasevideoview.model.SubtitlesModel;
 import com.xsl.culture.mybasevideoview.utils.FileUtils;
 import com.xsl.culture.mybasevideoview.utils.NetworkCheck;
+import com.xsl.culture.mybasevideoview.utils.RestoreParamMng;
 import com.xsl.culture.mybasevideoview.utils.XslUtils;
 import com.xsl.culture.mybasevideoview.utils.ZipUtils;
 import com.xsl.culture.mybasevideoview.view.AboutActivity;
@@ -66,7 +67,12 @@ import com.xsl.culture.mybasevideoview.view.subTitle.SubtitleView;
 //import java.util.ArrayList;
 //import java.util.List;
 //
+import org.json.JSONObject;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
@@ -133,6 +139,9 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
+
+    boolean videoPlaying = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
         //SharedPreferenceUtil.getInstance(this).remove(getResources().getString(R.string.need_cache_view));
 
         Log.d(TAG, "main thread id:"+Thread.currentThread().getId());
-        getPreference();
         init();
         getNetworkData();
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -217,9 +225,9 @@ public class MainActivity extends AppCompatActivity {
             Bundle bundle = data.getExtras();
             int ret = bundle.getInt(getResources().getString(R.string.download_result));
             if (ret == -1) {
-                needCacheVideo = true;
+                RestoreParamMng.getInstance().setNeedCacheState(true);
             } else if (ret == RequestCode.MainPlay_req) {
-                needCacheVideo = false;
+                RestoreParamMng.getInstance().setNeedCacheState(false);
                 startMainPlayActivity();
             }
         } else if (requestCode == RequestCode.Pay_req) {
@@ -228,18 +236,25 @@ public class MainActivity extends AppCompatActivity {
             if (ret == -1) {
                 return;
             }
-            if (needCacheVideo) {
+            if (RestoreParamMng.getInstance().getCacheState()) {
 //                String strFile = getExternalFilesDir("").getAbsolutePath() + "/360/1.mp4";
-                String strFile = Environment.getExternalStorageDirectory() + "/360/1.mp4";
 
-                if (FileUtils.isFileExists(strFile)) {
-                    startMainPlayActivity();
-                    needCacheVideo = false;
-                } else {
+                for (int i=0; i!= 12; i++) {
+                    String strFile = Environment.getExternalStorageDirectory() + "/360/";
+                    strFile += i;
+                    strFile += ".mp4";
+                    if (!FileUtils.isFileExists(strFile)) {
+                        RestoreParamMng.getInstance().setNeedCacheState(true);
+                    }
+                    break;
+                }
+                Log.d(TAG, "needCacheView:" + RestoreParamMng.getInstance().getCacheState());
+                if (RestoreParamMng.getInstance().getCacheState()) {
                     startCacheActivity();
+                } else {
+                    startMainPlayActivity();
                 }
             } else {
-                needPay = false;
                 startMainPlayActivity();
             }
         }
@@ -520,30 +535,6 @@ public class MainActivity extends AppCompatActivity {
  //       }
     }
 
-    private boolean needCacheVideo;
-    private boolean needScreenTips;
-    private boolean needPay = true;
-    private void getPreference() {
-        if (SharedPreferenceUtil.getInstance(this).contains(getResources().getString(R.string.need_cache_view))) {
-            needCacheVideo = SharedPreferenceUtil.getInstance(this).getBoolean(getResources().getString(R.string.need_cache_view));
-        } else {
-            needCacheVideo = true;
-        }
-
-        Log.d(TAG, "needCacheVideo: " + needCacheVideo);
-        if (SharedPreferenceUtil.getInstance(this).contains(getResources().getString(R.string.need_screen_tips))) {
-            needScreenTips = SharedPreferenceUtil.getInstance(this).getBoolean(getResources().getString(R.string.need_screen_tips));
-        } else {
-            needScreenTips = false;
-        }
-
-        if (SharedPreferenceUtil.getInstance(this).contains(getResources().getString(R.string.need_pay))) {
-            needPay = SharedPreferenceUtil.getInstance(this).getBoolean(getResources().getString(R.string.need_pay));
-        } else {
-            needPay = true;
-        }
-    }
-
     private void init() {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -598,23 +589,18 @@ public class MainActivity extends AppCompatActivity {
         wholeVideoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: for test
-//                needPay = false;
-//                needCacheVideo = false;
-
-                if (needPay) {
+                if (RestoreParamMng.getInstance().getPayState()) {
                     Intent intent = new Intent(MainActivity.this, PayNoticeActiviy.class);
                     startActivityForResult(intent, RequestCode.Pay_req);
                     return;
                 }
 
-                if (needCacheVideo) {
+                if (RestoreParamMng.getInstance().getCacheState()) {
 //                    startCacheActivity();
 //                    String strFile = getExternalFilesDir("").getAbsolutePath() + "/360/1.mp4";
                     String strFile = Environment.getExternalStorageDirectory() + "/360/1.mp4";
                     if (FileUtils.isFileExists(strFile)) {
                         startMainPlayActivity();
-                        needCacheVideo = false;
                     } else {
                         startCacheActivity();
                     }
@@ -683,15 +669,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-//        if (STATE_PAUSED == videoView.getState()) {
-//            playBtn.setVisibility(View.GONE);
-//        }
-//        videoView.resume();
+        if (videoPlaying) {
+            playBtn.setVisibility(View.GONE);
+            videoView.resume();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        if (videoView.getState() == STATE_STARTED || videoView.getState() == IPlayer.STATE_PREPARED) {
+            videoPlaying = true;
+        } else {
+            videoPlaying = false;
+        }
+
         videoView.pause();
         playBtn.setVisibility(View.VISIBLE);
     }

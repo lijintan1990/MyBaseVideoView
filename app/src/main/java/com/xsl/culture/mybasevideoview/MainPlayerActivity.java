@@ -273,8 +273,12 @@ public class MainPlayerActivity extends Activity {
         time = time * 1000 + 1000;
         Log.d(TAG, "stop center player, seekChapter time" + time + "code:" + chapterId + " name:" + chapterTitle);
 
-        playersController.seekChapter(time);
         curChapter = Integer.parseInt(chapterId);
+        if (curChapter == 10) {
+            time += 500;
+        }
+        playersController.seekChapter(time);
+
         updateChapterTxt(curChapter, chapterTitle);
         resumeBtn.setVisibility(View.GONE);
         normalSubtitleView.hide();
@@ -853,7 +857,7 @@ public class MainPlayerActivity extends Activity {
                     bNativeSeekFinish = true;
                 }
 
-            },  1000);
+            },  500);
         }
     }
 
