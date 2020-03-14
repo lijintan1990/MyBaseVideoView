@@ -504,6 +504,12 @@ public class PlayersController extends Thread implements IPlayerCtrl{
         videoTimeLinePlaying.clear();
 
         for (TimeLineInfo.DataBean dataBean : timeLineInfo.getData()) {
+            if (dataBean.getObjId() - 1 == 6) {
+                if (dataBean.getStartTime() == 2171){
+                    Log.d(TAG, "currentPlayTime:" + currentPlayTime + " startTime:" + dataBean.getStartTime() + " duration:" + dataBean.getDuration() + " id:" + dataBean.getObjId());
+                }
+            }
+
             if (dataBean.getStartTime() * 1000 <= currentPlayTime
                     && (dataBean.getStartTime() + dataBean.getDuration()) * 1000 > currentPlayTime
                     && dataBean.getDuration() > 0) {
@@ -512,9 +518,8 @@ public class PlayersController extends Thread implements IPlayerCtrl{
                 if (type == DataType.XSL_VIDEO) {
                     if (MainPlayerActivity.bNativeSeekFinish) {
                         videoProc(dataBean);
-                        if (timesCount++ % 50 == 0)
-                            Log.d(TAG, "currentPlayTime:" + currentPlayTime + " startTime:" + dataBean.getStartTime() + " duration:" + dataBean.getDuration() + " id:" + dataBean.getObjId());
-                        videoTimeLinePlaying.add(dataBean.getObjId() - 1);
+//                        if (timesCount++ % 50 == 0)
+                         videoTimeLinePlaying.add(dataBean.getObjId() - 1);
                     }
                 } else if (type == DataType.XSL_CHAPTER) {
                     //防止seek的时候这里有事件触发，导致错乱, 在当前章节末尾十秒内就不再回调
@@ -540,7 +545,10 @@ public class PlayersController extends Thread implements IPlayerCtrl{
         }
 
         if (videoTimeLinePlaying.size() > 0) {
-            Log.d(TAG, "currentPlayTime:" + currentPlayTime);
+            for (int i=0; i!=videoTimeLinePlaying.size(); i++) {
+                Log.d(TAG, "currentPlayTime:" + currentPlayTime + " " + videoTimeLinePlaying.get(i) + " index 6 time:" + videoViewList.get().get(6).getCurrentPosition());
+            }
+
             maskViewListener.setMaskViewStatus(OnMaskViewListener.ACTION_PLAY_MASK, videoTimeLinePlaying);
         }
 

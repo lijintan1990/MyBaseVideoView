@@ -598,12 +598,12 @@ public class MainActivity extends AppCompatActivity {
                 if (RestoreParamMng.getInstance().getCacheState()) {
 //                    startCacheActivity();
 //                    String strFile = getExternalFilesDir("").getAbsolutePath() + "/360/1.mp4";
-                    String strFile = Environment.getExternalStorageDirectory() + "/360/1.mp4";
-                    if (FileUtils.isFileExists(strFile)) {
-                        startMainPlayActivity();
-                    } else {
+//                    String strFile = Environment.getExternalStorageDirectory() + "/360/1.mp4";
+//                    if (FileUtils.isFileExists(strFile)) {
+//                        startMainPlayActivity();
+//                    } else {
                         startCacheActivity();
-                    }
+//                    }
                 } else {
                     startMainPlayActivity();
                 }

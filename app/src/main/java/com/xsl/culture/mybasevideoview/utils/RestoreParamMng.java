@@ -118,8 +118,8 @@ public class RestoreParamMng {
                             e.printStackTrace();
                         }
                     } else {
-                         restore = new Restore();
-                         GsonImplHelp.get().toObject(content, Restore.class);
+//                         restore = new Restore();
+                         restore = GsonImplHelp.get().toObject(content, Restore.class);
                     }
 
 //                } catch (FileNotFoundException e) {
@@ -154,7 +154,7 @@ public class RestoreParamMng {
     }
 
     public static String read(File file) {
-        String content = null;
+        String content = "";
         //如果path是传递过来的参数，可以做一个非目录的判断
         if (file.isDirectory()) {
             Log.d("TestFile", "The File doesn't not exist.");

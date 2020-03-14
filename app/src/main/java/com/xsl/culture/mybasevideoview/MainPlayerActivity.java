@@ -13,30 +13,22 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
-
-import com.xsl.culture.R;
-import com.xsl.culture.mybasevideoview.view.ActionActivity;
-import com.xsl.culture.mybasevideoview.view.AppliancesActivity;
-import com.xsl.culture.mybasevideoview.view.ChapterActivity;
 import com.example.mybasevideoview.view.dummy.RelateButton;
 import com.kk.taurus.playerbase.entity.DataSource;
 import com.kk.taurus.playerbase.event.OnErrorEventListener;
 import com.kk.taurus.playerbase.event.OnPlayerEventListener;
 import com.kk.taurus.playerbase.player.IPlayer;
 import com.kk.taurus.playerbase.widget.BaseVideoView;
+import com.xsl.culture.R;
 import com.xsl.culture.mybasevideoview.controller.NetworkReq;
 import com.xsl.culture.mybasevideoview.controller.OnBtnStateListener;
 import com.xsl.culture.mybasevideoview.controller.OnMaskViewListener;
@@ -48,6 +40,9 @@ import com.xsl.culture.mybasevideoview.model.SharedPreferenceUtil;
 import com.xsl.culture.mybasevideoview.model.SubtitlesDataCoding;
 import com.xsl.culture.mybasevideoview.model.SubtitlesModel;
 import com.xsl.culture.mybasevideoview.utils.XslUtils;
+import com.xsl.culture.mybasevideoview.view.ActionActivity;
+import com.xsl.culture.mybasevideoview.view.AppliancesActivity;
+import com.xsl.culture.mybasevideoview.view.ChapterActivity;
 import com.xsl.culture.mybasevideoview.view.MySeekBar;
 import com.xsl.culture.mybasevideoview.view.PlayControlMaskView;
 import com.xsl.culture.mybasevideoview.view.Transact2Activity;
@@ -63,6 +58,7 @@ import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+
 import butterknife.BindView;
 import butterknife.BindViews;
 import butterknife.ButterKnife;
@@ -261,6 +257,14 @@ public class MainPlayerActivity extends Activity {
             @Override
             public void seekToChapter(int time, String chapterId, String chapterTitle) {
                 seekChapter(time, chapterId, chapterTitle);
+                String text;
+                int chapterIndex = Integer.parseInt(chapterId);
+                if (chapterIndex < 10) {
+                    text = "0" + chapterId;
+                } else {
+                    text = "" + chapterIndex;
+                }
+                buttonList.get(0).setText(text);
             }
         });
     }
@@ -274,8 +278,12 @@ public class MainPlayerActivity extends Activity {
         Log.d(TAG, "stop center player, seekChapter time" + time + "code:" + chapterId + " name:" + chapterTitle);
 
         curChapter = Integer.parseInt(chapterId);
-        if (curChapter == 10) {
+        if (curChapter == 10  || curChapter == 8) {
             time += 500;
+        } else if (curChapter == 6) {
+            time -= 500;
+        } else if (curChapter == 11) {
+            time += 1000;
         }
         playersController.seekChapter(time);
 
@@ -662,8 +670,11 @@ public class MainPlayerActivity extends Activity {
                         }
                     } else {
                         state = 0;
+//                        if (i == 6) {
+//                            Log.d(TAG, "currentPlayTime" + playersController.getCurrentPosition() + " index 6 time:" + videoViewArrayList.get(6).getCurrentPosition());
+//                        }
                     }
-
+                    //-1 透明 0 纯黑 1遮罩 70%透明度
                     Message msg = playControlHandler.obtainMessage(action, i, state);
                     playControlHandler.sendMessage(msg);
                 }

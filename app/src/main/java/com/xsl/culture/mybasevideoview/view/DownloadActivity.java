@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -70,6 +71,8 @@ public class DownloadActivity extends Activity {
         setContentView(R.layout.activity_download);
         XslUtils.hideStausbar(new WeakReference<>(this), true);
         ButterKnife.bind(this);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        RestoreParamMng.getInstance().setNeedPayState(false);
     }
 
     long taskId = 0;
@@ -272,8 +275,8 @@ public class DownloadActivity extends Activity {
                 if (!FileUtils.isFileExists(strFile)) {
                     RestoreParamMng.getInstance().setNeedCacheState(true);
                     needDownload = true;
+                    break;
                 }
-                break;
             }
             if (needDownload) {
                 startDownload();
