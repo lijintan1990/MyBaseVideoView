@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,6 +25,10 @@ import com.arialyy.aria.core.task.DownloadTask;
 import com.arialyy.aria.core.wrapper.ITaskWrapper;
 import com.arialyy.aria.util.ALog;
 import com.xsl.culture.R;
+import com.xsl.culture.mybasevideoview.dialog.BaseDialogFragment;
+import com.xsl.culture.mybasevideoview.dialog.ConfirmDialog;
+import com.xsl.culture.mybasevideoview.dialog.DialogDismissListener;
+import com.xsl.culture.mybasevideoview.dialog.DialogResultListener;
 import com.xsl.culture.mybasevideoview.model.FileDownloadMsg;
 import com.xsl.culture.mybasevideoview.model.RequestCode;
 import com.xsl.culture.mybasevideoview.utils.FileUtils;
@@ -43,7 +48,7 @@ import butterknife.OnClick;
 
 import static java.security.AccessController.getContext;
 
-public class DownloadActivity extends Activity {
+public class DownloadActivity extends AppCompatActivity {
     private static final String TAG = "download";
     private List<AbsEntity> mData = new ArrayList<>();
 
@@ -233,6 +238,8 @@ public class DownloadActivity extends Activity {
 
     @DownloadGroup.onTaskStop() void taskStop(DownloadGroupTask task) {
         Log.d(TAG, "group task stop");
+        showDialog(task);
+
 //        getBinding().setSpeed("");
 //        getBinding().setStateStr(getString(R.string.start));
     }
@@ -248,9 +255,36 @@ public class DownloadActivity extends Activity {
     }
 
     @DownloadGroup.onTaskFail() void taskFail(DownloadGroupTask task) {
-        Log.d(TAG, "group task fail");
+        Log.d(TAG, "group task fail " + Thread.currentThread().getId());
+
 //        getBinding().setStateStr(getString(R.string.resume));
 //        getBinding().setSpeed("");
+    }
+
+    void showDialog(DownloadGroupTask groupTask) {
+        ConfirmDialog.newConfirmBuilder()
+//                .setTitle(getResources().getString(R.string.giveup_edit_title))
+                .setMessage(getResources().getString(R.string.giveup_edit_content))
+                .setLeftText(getResources().getString(R.string.giveup_edit_cancel))
+                .setRightText(getResources().getString(R.string.giveup_edit_ok))
+                .setAnimation(R.style.DialogAnimFromCenter)
+                .build()
+
+                .setDialogResultListener(new DialogResultListener<Boolean>() {
+                    @Override
+                    public void result(Boolean result) {
+                        if (result) {
+                            //重新下载
+                            startDownload();
+                        }
+                    }
+                })
+                .setDialogDismissListener(new DialogDismissListener() {
+                    @Override
+                    public void dismiss(BaseDialogFragment dialog) {
+
+                    }
+                }).show(getSupportFragmentManager(), "dialog");
     }
 
     void entryMainPlay() {
@@ -394,9 +428,11 @@ public class DownloadActivity extends Activity {
 
     @DownloadGroup.onSubTaskComplete void onSubTaskComplete(DownloadGroupTask groupTask,
                                                             DownloadEntity subEntity) {
+        Log.w(TAG, "download complite " + groupTask);
     }
 
     @DownloadGroup.onSubTaskFail void onSubTaskFail(DownloadGroupTask groupTask,
                                                     DownloadEntity subEntity) {
+        Log.w(TAG, "download failed");
     }
 }

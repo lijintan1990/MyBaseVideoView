@@ -145,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        skip();
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
@@ -174,6 +175,19 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    protected void skip() {
+        // 避免从桌面启动程序后，会重新实例化入口类的activity
+        if (!this.isTaskRoot()) {
+            Intent intent = getIntent();
+            if (intent != null) {
+                String action = intent.getAction();
+                if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && Intent.ACTION_MAIN.equals(action)) {
+                    finish();
+                    return;
+                }
+            }
+        }
+    }
     private void getNetworkData() {
         NetworkReq.getInstance().getTimeLine();
         NetworkReq.getInstance().getChapter();
@@ -222,6 +236,7 @@ public class MainActivity extends AppCompatActivity {
                 textViewList.get(1).setText("字幕选择: ENGLISH");
             }
         } else if (requestCode == RequestCode.Download_req) {
+            if (data == null) return;
             Bundle bundle = data.getExtras();
             int ret = bundle.getInt(getResources().getString(R.string.download_result));
             if (ret == -1) {
@@ -536,6 +551,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
+        // 避免从桌面启动程序后，会重新实例化入口类的activity
+        if (!this.isTaskRoot()) { // 当前类不是该Task的根部，那么之前启动
+            Intent intent = getIntent();
+            if (intent != null) {
+                String action = intent.getAction();
+                if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && Intent.ACTION_MAIN.equals(action)) { // 当前类是从桌面启动的
+                    finish(); // finish掉该类，直接打开该Task中现存的Activity
+                    return;
+                }
+            }
+        }
+
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, REQUEST_PERMISSION_CODE);
@@ -664,6 +691,9 @@ public class MainActivity extends AppCompatActivity {
         };
 
         videoView.setOnPlayerEventListener(playerEventListener);
+
+
+
     }
 
     @Override

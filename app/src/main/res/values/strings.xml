@@ -71,4 +71,9 @@
     <string name="had_show_boot_paper">had_show_boot_paper</string>
 
     <string name="pay_result">pay_result</string>
+
+
+    <string name="giveup_edit_content">下载失败，是否再次尝试下载？</string>
+    <string name="giveup_edit_ok">确定</string>
+    <string name="giveup_edit_cancel">取消</string>
 </resources>

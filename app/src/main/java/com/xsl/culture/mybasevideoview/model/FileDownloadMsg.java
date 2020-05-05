@@ -19,10 +19,13 @@ public class FileDownloadMsg {
         VideoListInfo listInfo = NetworkReq.getInstance().getVideoLstInfo();
         //downloadPath = context.getExternalFilesDir("") + "/360";
         downloadPath = Environment.getExternalStorageDirectory().getPath() + "/360";
+        int i = 0;
         for (VideoListInfo.DataBean dataBean : listInfo.getData()) {
             urls.add(dataBean.getVideoUrl360());
             names.add("" + (dataBean.getIndex() - 1) +".mp4");
             //测试
+//            if (++i == 1)
+//                break;
             //break;
         }
     }
