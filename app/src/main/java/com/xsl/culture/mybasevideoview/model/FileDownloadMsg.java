@@ -28,8 +28,8 @@ public class FileDownloadMsg {
             urls.add(dataBean.getVideoUrl360());
             names.add("" + (dataBean.getIndex() - 1) +".mp4");
             //测试
-            if (++i == 2)
-                break;
+//            if (++i == 2)
+//                break;
             //break;
         }
     }

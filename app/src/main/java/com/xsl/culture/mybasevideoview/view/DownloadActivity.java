@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.arialyy.annotations.Download;
 import com.arialyy.annotations.DownloadGroup;
@@ -25,12 +26,14 @@ import com.arialyy.aria.core.task.DownloadTask;
 import com.arialyy.aria.core.wrapper.ITaskWrapper;
 import com.arialyy.aria.util.ALog;
 import com.xsl.culture.R;
+import com.xsl.culture.mybasevideoview.controller.NetworkReq;
 import com.xsl.culture.mybasevideoview.dialog.BaseDialogFragment;
 import com.xsl.culture.mybasevideoview.dialog.ConfirmDialog;
 import com.xsl.culture.mybasevideoview.dialog.DialogDismissListener;
 import com.xsl.culture.mybasevideoview.dialog.DialogResultListener;
 import com.xsl.culture.mybasevideoview.model.FileDownloadMsg;
 import com.xsl.culture.mybasevideoview.model.RequestCode;
+import com.xsl.culture.mybasevideoview.model.VideoListInfo;
 import com.xsl.culture.mybasevideoview.utils.FileUtils;
 import com.xsl.culture.mybasevideoview.utils.RestoreParamMng;
 import com.xsl.culture.mybasevideoview.utils.XslUtils;
@@ -239,7 +242,7 @@ public class DownloadActivity extends AppCompatActivity {
 
     @DownloadGroup.onTaskStop() void taskStop(DownloadGroupTask task) {
         Log.d(TAG, "group task stop");
-        showDialog(task);
+        showDialog(task, true);
 
 //        getBinding().setSpeed("");
 //        getBinding().setStateStr(getString(R.string.start));
@@ -258,13 +261,14 @@ public class DownloadActivity extends AppCompatActivity {
     @DownloadGroup.onTaskFail() void taskFail(DownloadGroupTask task) {
         Log.d(TAG, "group task fail " + Thread.currentThread().getId());
 
-        showDialog(task);
+        task.stop();
+        showDialog(task, false);
 //        getBinding().setStateStr(getString(R.string.resume));
 //        getBinding().setSpeed("");
     }
 
 
-    void showDialog(DownloadGroupTask groupTask) {
+    void showDialog(DownloadGroupTask groupTask, boolean useOldTask) {
         ConfirmDialog.newConfirmBuilder()
 //                .setTitle(getResources().getString(R.string.giveup_edit_title))
                     .setMessage(getResources().getString(R.string.giveup_edit_content))
@@ -275,8 +279,13 @@ public class DownloadActivity extends AppCompatActivity {
                         @Override
                         public void result(Boolean result) {
                             if (result) {
-                                //重新下载
-                                startDownload();
+
+                                if (useOldTask) {
+                                    groupTask.start();
+                                } else {
+                                    //重新下载
+                                    startDownload();
+                                }
                             }
                         }
                     })
@@ -314,6 +323,13 @@ public class DownloadActivity extends AppCompatActivity {
                 }
             }
             if (needDownload) {
+                VideoListInfo listInfo = NetworkReq.getInstance().getVideoLstInfo();
+
+                if (listInfo == null) {
+                    NetworkReq.getInstance().getVideoList();
+                    Toast.makeText(this, "无法连接服务器，请检查网络是否连接", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 startDownload();
                 downloadBtn.setVisibility(View.GONE);
                 textView.setText("正在缓存");
