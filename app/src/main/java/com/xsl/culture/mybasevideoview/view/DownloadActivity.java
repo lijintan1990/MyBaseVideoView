@@ -98,9 +98,9 @@ public class DownloadActivity extends AppCompatActivity {
         }
         if (mData.size() == 0) {
             FileDownloadMsg downloadMsg = new FileDownloadMsg(this);
-            Log.d(TAG,"url:" + downloadMsg.getUrls().get(0) +
-                    " names:"+downloadMsg.getNames() + " path:" + downloadMsg.getDownloadPath()
-                    + " aliasName:" + downloadMsg.getAliasName());
+//            Log.d(TAG,"url:" + downloadMsg.getUrls().get(0) +
+//                    " names:"+downloadMsg.getNames() + " path:" + downloadMsg.getDownloadPath()
+//                    + " aliasName:" + downloadMsg.getAliasName());
 
             taskId = Aria.download(getContext())
                     .loadGroup(downloadMsg.getUrls())
@@ -258,34 +258,34 @@ public class DownloadActivity extends AppCompatActivity {
     @DownloadGroup.onTaskFail() void taskFail(DownloadGroupTask task) {
         Log.d(TAG, "group task fail " + Thread.currentThread().getId());
 
+        showDialog(task);
 //        getBinding().setStateStr(getString(R.string.resume));
 //        getBinding().setSpeed("");
     }
 
+
     void showDialog(DownloadGroupTask groupTask) {
         ConfirmDialog.newConfirmBuilder()
 //                .setTitle(getResources().getString(R.string.giveup_edit_title))
-                .setMessage(getResources().getString(R.string.giveup_edit_content))
-                .setLeftText(getResources().getString(R.string.giveup_edit_cancel))
-                .setRightText(getResources().getString(R.string.giveup_edit_ok))
-                .setAnimation(R.style.DialogAnimFromCenter)
-                .build()
-
-                .setDialogResultListener(new DialogResultListener<Boolean>() {
-                    @Override
-                    public void result(Boolean result) {
-                        if (result) {
-                            //重新下载
-                            startDownload();
+                    .setMessage(getResources().getString(R.string.giveup_edit_content))
+                    .setLeftText(getResources().getString(R.string.giveup_edit_cancel))
+                    .setRightText(getResources().getString(R.string.giveup_edit_ok))
+                    .setAnimation(R.style.DialogAnimFromCenter)
+                    .build().setDialogResultListener(new DialogResultListener<Boolean>() {
+                        @Override
+                        public void result(Boolean result) {
+                            if (result) {
+                                //重新下载
+                                startDownload();
+                            }
                         }
-                    }
-                })
-                .setDialogDismissListener(new DialogDismissListener() {
-                    @Override
-                    public void dismiss(BaseDialogFragment dialog) {
+                    })
+                    .setDialogDismissListener(new DialogDismissListener() {
+                        @Override
+                        public void dismiss(BaseDialogFragment dialog) {
 
-                    }
-                }).show(getSupportFragmentManager(), "dialog");
+                        }
+                    }).show(getSupportFragmentManager(), "dialog");
     }
 
     void entryMainPlay() {

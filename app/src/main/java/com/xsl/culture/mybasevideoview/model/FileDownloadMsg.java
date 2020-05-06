@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Environment;
 
 import com.xsl.culture.mybasevideoview.controller.NetworkReq;
+import com.xsl.culture.mybasevideoview.dialog.ConfirmDialog;
 
 import java.util.ArrayList;
 
@@ -17,6 +18,9 @@ public class FileDownloadMsg {
         urls = new ArrayList<>();
         names = new ArrayList<>();
         VideoListInfo listInfo = NetworkReq.getInstance().getVideoLstInfo();
+        if (listInfo == null) {
+            return;
+        }
         //downloadPath = context.getExternalFilesDir("") + "/360";
         downloadPath = Environment.getExternalStorageDirectory().getPath() + "/360";
         int i = 0;
@@ -24,8 +28,8 @@ public class FileDownloadMsg {
             urls.add(dataBean.getVideoUrl360());
             names.add("" + (dataBean.getIndex() - 1) +".mp4");
             //测试
-//            if (++i == 1)
-//                break;
+            if (++i == 2)
+                break;
             //break;
         }
     }
