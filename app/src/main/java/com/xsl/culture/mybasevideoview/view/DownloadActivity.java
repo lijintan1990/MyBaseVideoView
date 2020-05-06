@@ -221,8 +221,9 @@ public class DownloadActivity extends AppCompatActivity {
         long speed = task.getSpeed();
         if (speed != 0) {
             int relayTime = (int) ((task.getFileSize() - task.getCurrentProgress()) / speed);
+            String temp = XslUtils.convertSecToTimeString(relayTime);
             String strRelayTime = "剩余时间:";
-            relayTimeView.setText(strRelayTime + relayTime);
+            relayTimeView.setText(strRelayTime + temp);
         }
 
         sizeView.setText("" + (int) (task.getCurrentProgress()>>20) + "MB");
