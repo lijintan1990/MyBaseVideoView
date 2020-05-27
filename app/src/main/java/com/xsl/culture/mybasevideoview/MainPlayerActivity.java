@@ -34,6 +34,7 @@ import com.xsl.culture.mybasevideoview.controller.OnBtnStateListener;
 import com.xsl.culture.mybasevideoview.controller.OnMaskViewListener;
 import com.xsl.culture.mybasevideoview.controller.OnPlayCtrlEventListener;
 import com.xsl.culture.mybasevideoview.controller.PlayersController;
+import com.xsl.culture.mybasevideoview.dialog.ConfirmDialog;
 import com.xsl.culture.mybasevideoview.model.ChapterListInfo;
 import com.xsl.culture.mybasevideoview.model.RequestCode;
 import com.xsl.culture.mybasevideoview.model.SharedPreferenceUtil;
@@ -685,7 +686,6 @@ public class MainPlayerActivity extends Activity {
         if (duration != 0 && NetworkReq.getInstance().getChapterListInfo() != null) {
             mySeekBar.setChapterListInfo(NetworkReq.getInstance().getChapterListInfo(), duration);
         }
-
         startPlay();
     }
 

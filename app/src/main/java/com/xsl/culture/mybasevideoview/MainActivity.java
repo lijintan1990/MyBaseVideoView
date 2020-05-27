@@ -616,6 +616,10 @@ public class MainActivity extends AppCompatActivity {
         wholeVideoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (NetworkReq.getInstance().getVideoLstInfo() == null) {
+                   Toast.makeText(getApplicationContext(), "请检查网络是否正常", Toast.LENGTH_SHORT).show();
+                   return;
+                }
                 if (RestoreParamMng.getInstance().getPayState()) {
                     Intent intent = new Intent(MainActivity.this, PayNoticeActiviy.class);
                     startActivityForResult(intent, RequestCode.Pay_req);
