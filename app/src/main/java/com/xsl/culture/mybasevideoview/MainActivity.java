@@ -130,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int UPDATE_WHOLE_MOVIE_THUMBNAIL = 3;
     private static final int UPDATE_PLAY_TIME = 4;
     private static final int UPDATE_PLAY_DURATION = 5;
+    private static final int GETHOMEPAGEINFO = 6;
 
     View wifiNoticeView;
 
@@ -235,6 +236,8 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 textViewList.get(1).setText("字幕选择: ENGLISH");
             }
+
+            subtitleView.setLanguage(curLangugue);
         } else if (requestCode == RequestCode.Download_req) {
             if (data == null) return;
             Bundle bundle = data.getExtras();
@@ -313,7 +316,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<HomePageInfo> call, Throwable t) {
-                Log.w(TAG, "get homepage failed, "+t.toString());
+                Log.w(TAG, "get homepage failed, "+t.toString() + " try again");
+                new Handler().postDelayed(new Runnable(){
+                    public void run() {
+                        setImageViewBmp();
+                    }
+                }, 2000);
             }
         });
     }
@@ -617,8 +625,21 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (NetworkReq.getInstance().getVideoLstInfo() == null) {
-                   Toast.makeText(getApplicationContext(), "请检查网络是否正常", Toast.LENGTH_SHORT).show();
+                    NetworkReq.getInstance().getVideoList();
+                    NetworkReq.getInstance().getChapter();
+                    NetworkReq.getInstance().getTimeLine();
+                    Toast.makeText(getApplicationContext(), "请检查网络是否正常", Toast.LENGTH_SHORT).show();
                    return;
+                }
+                if (NetworkReq.getInstance().getChapterListInfo() == null) {
+                    NetworkReq.getInstance().getChapter();
+                    Toast.makeText(getApplicationContext(), "请检查网络是否正常", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (NetworkReq.getInstance().getTimelineInfo() == null) {
+                    Toast.makeText(getApplicationContext(), "请检查网络是否正常", Toast.LENGTH_SHORT).show();
+                    NetworkReq.getInstance().getTimeLine();
+                    return;
                 }
                 if (RestoreParamMng.getInstance().getPayState()) {
                     Intent intent = new Intent(MainActivity.this, PayNoticeActiviy.class);
@@ -750,15 +771,15 @@ public class MainActivity extends AppCompatActivity {
         try {
             AssetManager assetManager = getResources().getAssets();
             InputStream inputStreamCN = assetManager.open("home_v_src.srt");
-//            InputStream inputStreamCA = assetManager.open("cantonese.srt");
-//            InputStream inputStreamEN = assetManager.open("english.srt");
+            InputStream inputStreamCA = assetManager.open("home_fan_src.srt");
+            InputStream inputStreamEN = assetManager.open("home_en_src.srt");
 
             SubtitlesDataCoding dataCodingCN = new SubtitlesDataCoding();
             SubtitlesDataCoding dataCodingCA = new SubtitlesDataCoding();
             SubtitlesDataCoding dataCodingEN = new SubtitlesDataCoding();
             subtitleLstCN = dataCodingCN.readFileStream(inputStreamCN);
-//            subtitleLstEN = dataCodingEN.readFileStream(inputStreamEN);
-//            subtitleLstCA = dataCodingCA.readFileStream(inputStreamCA);
+            subtitleLstEN = dataCodingEN.readFileStream(inputStreamEN);
+            subtitleLstCA = dataCodingCA.readFileStream(inputStreamCA);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -766,11 +787,11 @@ public class MainActivity extends AppCompatActivity {
         //關閉字幕
         subtitleView = findViewById(R.id.subtitle);
         subtitleView.setData(subtitleLstCN, SubtitleView.LANGUAGE_TYPE_CHINA);
-//        subtitleView.setData(subtitleLstCA, SubtitleView.LANGUAGE_TYPE_CANTONESE);
-//        subtitleView.setData(subtitleLstEN, SubtitleView.LANGUAGE_TYPE_ENGLISH);
+        subtitleView.setData(subtitleLstCA, SubtitleView.LANGUAGE_TYPE_CANTONESE);
+        subtitleView.setData(subtitleLstEN, SubtitleView.LANGUAGE_TYPE_ENGLISH);
 //
         Log.d("Subtitle", "ca size:"+subtitleLstCN.size());
-        subtitleView.setLanguage(SubtitleView.LANGUAGE_TYPE_CHINA);
+        subtitleView.setLanguage(curLangugue);
     }
 
     private void updateSubtitle(int pts) {

@@ -55,6 +55,8 @@ public class ChapterListInfo {
         private String code;
         private int objId;
         private String name;
+        private String tcName;
+        private String enName;
         private int type;
         private int startTime;
         private int duration;
@@ -131,6 +133,22 @@ public class ChapterListInfo {
 
         public void setRelevanceType(int relevanceType) {
             this.relevanceType = relevanceType;
+        }
+
+        public String getTcName() {
+            return tcName;
+        }
+
+        public void setTcName(String tcName) {
+            this.tcName = tcName;
+        }
+
+        public String getEnName() {
+            return enName;
+        }
+
+        public void setEnName(String enName) {
+            this.enName = enName;
         }
     }
 }

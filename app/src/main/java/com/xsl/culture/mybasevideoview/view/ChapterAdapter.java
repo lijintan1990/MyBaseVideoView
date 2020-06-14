@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.xsl.culture.R;
+import com.xsl.culture.mybasevideoview.MainActivity;
 import com.xsl.culture.mybasevideoview.controller.NetworkReq;
 import com.xsl.culture.mybasevideoview.model.ChapterListInfo;
 
@@ -56,55 +57,124 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
 
         switch (chapter) {
             case 1:
-                title += "一";
+                if (MainActivity.curLangugue != langugueActivity.english) {
+                    title += "一";
+                } else {
+                    title += "01";
+                }
                 break;
             case 2:
-                title += "二";
+                if (MainActivity.curLangugue != langugueActivity.english) {
+                    title += "二";
+                } else {
+                    title += "02";
+                }
                 break;
             case 3:
-                title += "三";
+                if (MainActivity.curLangugue != langugueActivity.english) {
+
+                    title += "三";
+                } else {
+                    title += "03";
+                }
                 break;
             case 4:
-                title += "四";
+                if (MainActivity.curLangugue != langugueActivity.english) {
+                    title += "四";
+                } else {
+                    title += "04";
+                }
                 break;
             case 5:
-                title += "五";
+                if (MainActivity.curLangugue != langugueActivity.english) {
+
+                    title += "五";
+                }
                 break;
             case 6:
-                title += "六";
+                if (MainActivity.curLangugue != langugueActivity.english) {
+                    title += "六";
+                } else {
+                    title += "06";
+                }
                 break;
             case 7:
-                title += "七";
+                if (MainActivity.curLangugue != langugueActivity.english) {
+                    title += "七";
+                } else {
+                    title += "07";
+                }
                 break;
             case 8:
-                title += "八";
+                if (MainActivity.curLangugue != langugueActivity.english) {
+                    title += "八";
+                } else {
+                    title += "08";
+                }
                 break;
             case 9:
-                title += "九";
+                if (MainActivity.curLangugue != langugueActivity.english) {
+                    title += "九";
+                }
+                else {
+                    title += "09";
+                }
                 break;
             case 10:
-                title += "十";
+                if (MainActivity.curLangugue != langugueActivity.english) {
+                    title += "十";
+                } else {
+                    title += "10";
+                }
                 break;
             case 11:
-                title += "十一";
+                if (MainActivity.curLangugue != langugueActivity.english) {
+                    title += "十一";
+                }  else {
+                    title += "11";
+                }
                 break;
             case 12:
-                title += "十二";
+                if (MainActivity.curLangugue != langugueActivity.english) {
+                    title += "十二";
+                } else {
+                    title += "12";
+                }
                 break;
             case 13:
-                title += "十三";
+                if (MainActivity.curLangugue != langugueActivity.english) {
+                    title += "十三";
+                } else {
+                    title += "13";
+                }
                 break;
             case 14:
-                title += "十四";
+                if (MainActivity.curLangugue != langugueActivity.english) {
+                    title += "十四";
+                } else {
+                    title += "14";
+                }
                 break;
             case 15:
-                title += "十五";
+                if (MainActivity.curLangugue != langugueActivity.english) {
+                    title += "十五";
+                } else {
+                    title += "15";
+                }
                 break;
             case 16:
-                title += "十六";
+                if (MainActivity.curLangugue != langugueActivity.english) {
+                    title += "十六";
+                } else {
+                    title += "16";
+                }
                 break;
             case 17:
-                title += "十七";
+                if (MainActivity.curLangugue != langugueActivity.english) {
+                    title += "十七";
+                } else {
+                    title += "17";
+                }
                 break;
         }
         return title;
@@ -122,26 +192,59 @@ public class ChapterAdapter extends RecyclerView.Adapter<ChapterAdapter.ChapterV
                 int chapterNum;
                 String strChapterNum;
                 for (int i=0; i!=mid; i++) {
-                    String str = "第";
-                    chapterNum = i+1;
-                    strChapterNum = getIndex(chapterNum);
-                    if(i < 10) {
-                        str = str + strChapterNum + "章   ";
-                    } else {
-                        str = str + strChapterNum + "章   ";
+                    String str = "";
+                    if (MainActivity.curLangugue != langugueActivity.english)  {
+                        str = "第";
                     }
 
-                    str = str + data.get(i).getName();
+                    chapterNum = i+1;
+                    strChapterNum = getIndex(chapterNum);
+                    if (MainActivity.curLangugue != langugueActivity.english) {
+                        if (i < 10) {
+                            str = str + strChapterNum + "章   ";
+                        } else {
+                            str = str + strChapterNum + "章   ";
+                        }
+                    } else {
+                        str = "Chapter " + strChapterNum + " ";
+                    }
+
+                    if (MainActivity.curLangugue == langugueActivity.chinese) {
+                        str = str + data.get(i).getName();
+
+                    } else if (MainActivity.curLangugue == langugueActivity.english) {
+                        str = str + data.get(i).getEnName();
+                    } else {
+                        str = str + data.get(i).getTcName();
+                    }
+
                     mDatas.add(str);
 
-                    String strRight = "第";
+                    String strRight = "";
+                    if (MainActivity.curLangugue != langugueActivity.english) {
+                        strRight = "第";
+                    }
+
                     right = mid + i;
                     if (right >= data.size())
                         break;
                     chapterNum = right + 1;
                     strChapterNum = getIndex(chapterNum);
-                    strRight = strRight + strChapterNum + "章   ";
-                    strRight = strRight + data.get(right).getName();
+                    if (MainActivity.curLangugue != langugueActivity.english) {
+                        strRight = strRight + strChapterNum + "章   ";
+                    } else {
+                        strRight = "Chapter " + strChapterNum + " ";
+                    }
+
+                    if (MainActivity.curLangugue == langugueActivity.chinese) {
+                        strRight = strRight + data.get(right).getName();
+
+                    } else if (MainActivity.curLangugue == langugueActivity.english) {
+                        strRight = strRight + data.get(right).getEnName();
+
+                    } else {
+                        strRight = strRight + data.get(right).getTcName();
+                    }
                     mDatas.add(strRight);
                 }
             }

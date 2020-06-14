@@ -18,6 +18,12 @@ public interface NetDataInterface {
     @GET("api/home/getChapterList")
     Call<ChapterListInfo> getChapterList();
 
+    /**
+     *
+     * @param textId
+     * @param type 类型 1：简体 2：繁体 3：英文
+     * @return
+     */
     @GET("api/home/getTextItemList")
     Call<WordMsgs> getWordMsgs(@Query("textId") int textId, @Query("type") int type);
 
