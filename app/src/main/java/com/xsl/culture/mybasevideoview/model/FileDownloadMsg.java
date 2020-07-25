@@ -30,7 +30,6 @@ public class FileDownloadMsg {
             //测试
 //            if (++i == 2)
 //                break;
-            break;
         }
     }
 
